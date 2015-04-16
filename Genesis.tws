@@ -195,7 +195,7 @@ Tiddler
 p71
 (dp72
 g21
-V<<setbackground "title.png">>\u000a<div id="title_screen">\u000a	[[New Game]]\u000a	[[Settings]]\u000a	<a href="https://github.com/Ballista-Line/Link-Game">GitHub</a>\u000a</div>
+V<<setbackground "title.png">>\u000a<div id="title_screen">\u000a	[[New Game]]\u000a	[[Settings]]\u000a	<a href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a>\u000a</div>
 p73
 sg23
 VStart
@@ -206,8 +206,8 @@ g26
 I4
 I16
 I1
-I44
-I27
+I45
+I8
 I3
 I106
 I1
