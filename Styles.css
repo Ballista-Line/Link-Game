@@ -13,13 +13,11 @@
    left:300px;
    width:700px;
    height:500px;
-   z-index: 0;
-}/*
+   z-index: -1;
+}
 .passage {
-   position: fixed;
-   top:380px;
    z-index: 10;
-}*/
+}
 .passage a {
    text-decoration: underline;
    color: #FFF;
@@ -40,15 +38,17 @@
       1px -1px 0 #000,
       -1px 1px 0 #000,
        1px 1px 0 #000;
+   z-index: 10;
 }
-#text_meter_outer {
+#text_meter_outer, #auto_meter_outer {
    display: inline-block;
    height: 20px;
    width: 300px;
    background-color: #400;
    padding: 5px;
+   z-index: 10;
 }
-#text_meter_inner {
+#text_meter_inner, #auto_meter_inner {
    display: inline-block;
    height: 20px;
    width: 150px;
