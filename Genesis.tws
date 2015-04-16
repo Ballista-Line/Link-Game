@@ -27,8 +27,8 @@ I00
 sS'pos'
 p15
 (lp16
-I10
-aI150
+F10.0
+aF150.0
 asS'passage'
 p17
 (itiddlywiki
@@ -37,7 +37,7 @@ p18
 (dp20
 S'text'
 p21
-VGenesis
+VThe Dawn Series IV: Genesis
 p22
 sS'title'
 p23
@@ -50,12 +50,12 @@ struct_time
 p26
 ((I2015
 I4
+I16
 I14
-I17
-I41
-I35
-I1
-I104
+I50
+I58
+I3
+I106
 I1
 tp27
 (dp28
@@ -135,15 +135,15 @@ g14
 I00
 sg15
 (lp54
-F6.0
-aF422.0
+F11.0
+aF423.0
 asg17
 (itiddlywiki
 Tiddler
 p55
 (dp56
 g21
-V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a               // alert("SDF");\u000a      if(isAuto()){\u000a         var s=getPassageTitle();\u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      type(place,\u000a         state.history[0].variables[params[0]],//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(50);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+params[0]);\u000a   },\u000a   init: function() {\u000a      $("body").append("<img class='background' />");\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      state.history[0].variables["speaker"] = params[0];\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000amacros['setnext'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a   }\u000a}\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}
+V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a               // alert("SDF");\u000a      if(isAuto()){\u000a         \u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         state.history[0].variables[params[0]]\u000a            .replace("%n",getPlayerName())\u000a            .replace("%e",getPlayerElement()),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(50);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+params[0]);\u000a   },\u000a   init: function() {\u000a      $("body").append("<img class='background' />");\u000a      $("body").append("<div id='textBox'></div>");\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      state.history[0].variables["speaker"] = params[0];\u000a   }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ $("#textBox").show(); }\u000a      else{                  $("#textBox").hide(); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000amacros['setnext'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a   }\u000a}\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}
 p57
 sg23
 VModuleScript
@@ -153,9 +153,9 @@ g26
 ((I2015
 I4
 I16
-I1
-I41
-I53
+I16
+I21
+I45
 I3
 I106
 I1
@@ -195,7 +195,7 @@ Tiddler
 p71
 (dp72
 g21
-V<<setbackground "title.png">>\u000a<div id="title_screen">\u000a	[[New Game]]\u000a	[[Settings]]\u000a	<a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Issues</a>\u000a</div>
+V<<setbackground "title.png">>\u000a<<showdialogue false>>\u000a<div id="title_screen">\u000a	[[New Game|Greeting00]]\u000a	[[Settings]]\u000a	<a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Issues</a> | <a style="font-size:50%;" href="http://www.roblox.com/games/3053085/Darkened-Dawn" target="_blank">TDSI</a>\u000a</div>
 p73
 sg23
 VStart
@@ -205,9 +205,9 @@ g26
 ((I2015
 I4
 I16
-I14
-I28
-I47
+I15
+I53
+I30
 I3
 I106
 I1
@@ -237,7 +237,7 @@ g14
 I00
 sg15
 (lp85
-F4.0
+F12.0
 aF549.0
 asg17
 (itiddlywiki
@@ -245,7 +245,7 @@ Tiddler
 p86
 (dp87
 g21
-V/* Styles.css Tue.Apr.14.2015 Jaiden King */\u000a\u000a.character {\u000a   position: fixed;\u000a   top:120px;\u000a   max-width:600px;\u000a   max-height:300px;\u000a   z-index: 1;\u000a}\u000a.background {\u000a   position: fixed;\u000a   top:20px;\u000a   left:300px;\u000a   width:700px;\u000a   height:500px;\u000a   z-index: -1;\u000a}\u000a.passage {\u000a   z-index: 10;\u000a}\u000a.passage a {\u000a   text-decoration: underline;\u000a   color: #FFF;\u000a}\u000a.passage a:hover {\u000a   color: #999;\u000a}\u000a#title_screen{\u000a   position: fixed;\u000a   top: 170px;\u000a   left: 350px;\u000a   font-size: 30pt;\u000a   line-height: 40pt;\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a   z-index: 10;\u000a}\u000a#text_meter_outer, #auto_meter_outer {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 300px;\u000a   background-color: #400;\u000a   padding: 5px;\u000a   z-index: 10;\u000a}\u000a#text_meter_inner, #auto_meter_inner {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 150px;\u000a   background-color: #F00;\u000a}\u000a#continueButton {\u000a   position: fixed;\u000a   top: 495px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#menuButtons {\u000a   position: fixed;;\u000a   top: 380px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a}\u000a#textBox {\u000a   z-index: 10;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a   border: 2px solid gray;\u000a   background-color: #000;\u000a}
+V/* Styles.css Tue.Apr.14.2015 Jaiden King \u000a * ALL EDITS SHOULD BE MADE IN THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a */\u000a\u000a.character {\u000a   position: fixed;\u000a   top:120px;\u000a   max-width:600px;\u000a   max-height:300px;\u000a   z-index: -9;\u000a}\u000a.background {\u000a   position: fixed;\u000a   top:20px;\u000a   left:300px;\u000a   width:700px;\u000a   height:500px;\u000a   z-index: -10;\u000a}\u000a.passage {\u000a   transition-duration: 0s;\u000a\u000a}\u000a.passage a {\u000a   text-decoration: underline;\u000a   color: #FFF;\u000a}\u000a.passage a:hover {\u000a   color: #999;\u000a}\u000a#title_screen{\u000a   position: fixed;\u000a   top: 170px;\u000a   left: 350px;\u000a   font-size: 30pt;\u000a   line-height: 40pt;\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a   z-index: 10;\u000a}\u000a#text_meter_outer, #auto_meter_outer {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 300px;\u000a   background-color: #400;\u000a   padding: 5px;\u000a   z-index: 10;\u000a}\u000a#text_meter_inner, #auto_meter_inner {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 150px;\u000a   background-color: #F00;\u000a}\u000a#continueButton {\u000a   position: fixed;\u000a   top: 495px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#menuButtons {\u000a   position: fixed;;\u000a   top: 380px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a}\u000a#textBox {\u000a   z-index: -1;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a   border: 2px solid gray;\u000a   background-color: #000;\u000a}\u000a#passageBox {\u000a   z-index: 11;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a}
 p88
 sg23
 VStyles
@@ -255,9 +255,9 @@ g26
 ((I2015
 I4
 I16
-I1
-I27
-I9
+I15
+I37
+I51
 I3
 I106
 I1
@@ -339,29 +339,29 @@ g14
 I00
 sg15
 (lp116
-F296.0
-aF325.0
+F11.0
+aF675.0
 asg17
 (itiddlywiki
 Tiddler
 p117
 (dp118
 g21
-V<<setbackground "intro01.png">>\u000a<<setspeaker "">>\u000a<<msg "Many eons ago, there existed the gods and the goddesses.">>\u000a<<continue "intro01">>
+S'jquery:on\nhash:off\nbookmark:on\nmodernizr:off\nundo:on\nobfuscate:off\nexitprompt:off\nblankcss:off\n'
 p119
 sg23
-VNew Game
+VStorySettings
 p120
 sg25
 g26
 ((I2015
 I4
-I15
-I23
-I58
-I2
-I2
-I105
+I14
+I22
+I10
+I48
+I1
+I104
 I1
 tp121
 (dp122
@@ -374,9 +374,9 @@ g26
 ((I2015
 I4
 I14
-I21
-I38
-I46
+I22
+I10
+I41
 I1
 I104
 I1
@@ -389,69 +389,19 @@ g14
 I00
 sg15
 (lp131
-F5.0
-aF676.0
+F140.0
+aF675.0
 asg17
 (itiddlywiki
 Tiddler
 p132
 (dp133
 g21
-S'jquery:on\nhash:off\nbookmark:on\nmodernizr:off\nundo:on\nobfuscate:off\nexitprompt:off\nblankcss:off\n'
+Vversion.extensions.timedgotoMacro={major:1,minor:2,revision:0};\u000amacros["goto"]=macros.timedgoto={timer:null,handler:function(a,b,c,d){function cssTimeUnit(s){if(typeof s=="string"){if(s.slice(-2).toLowerCase()=="ms"){return +(s.slice(0,-2))||0\u000a}else{if(s.slice(-1).toLowerCase()=="s"){return +(s.slice(0,-1))*1000||0\u000a}}}throwError(a,s+" isn't a CSS time unit");return 0}var t,d,m,s;\u000at=c[c.length-1];d=d.fullArgs();m=0;if(b!="goto"){d=d.slice(0,d.lastIndexOf(t));\u000am=cssTimeUnit(t)}d=eval(Wikifier.parse(d));if(d+""&&state&&state.init){if(macros["goto"].timer){clearTimeout(macros["goto"].timer)\u000a}s=state.history[0].passage.title;macros["goto"].timer=setTimeout(function(){if(state.history[0].passage.title==s){state.display(d,a)\u000a}},m)}}};
 p134
 sg23
-VStorySettings
-p135
-sg25
-g26
-((I2015
-I4
-I14
-I22
-I10
-I48
-I1
-I104
-I1
-tp136
-(dp137
-tp138
-Rp139
-sg31
-(lp140
-sg33
-g26
-((I2015
-I4
-I14
-I22
-I10
-I41
-I1
-I104
-I1
-tp141
-(dp142
-tp143
-Rp144
-sbsa(dp145
-g14
-I00
-sg15
-(lp146
-F131.0
-aF675.0
-asg17
-(itiddlywiki
-Tiddler
-p147
-(dp148
-g21
-Vversion.extensions.timedgotoMacro={major:1,minor:2,revision:0};\u000amacros["goto"]=macros.timedgoto={timer:null,handler:function(a,b,c,d){function cssTimeUnit(s){if(typeof s=="string"){if(s.slice(-2).toLowerCase()=="ms"){return +(s.slice(0,-2))||0\u000a}else{if(s.slice(-1).toLowerCase()=="s"){return +(s.slice(0,-1))*1000||0\u000a}}}throwError(a,s+" isn't a CSS time unit");return 0}var t,d,m,s;\u000at=c[c.length-1];d=d.fullArgs();m=0;if(b!="goto"){d=d.slice(0,d.lastIndexOf(t));\u000am=cssTimeUnit(t)}d=eval(Wikifier.parse(d));if(d+""&&state&&state.init){if(macros["goto"].timer){clearTimeout(macros["goto"].timer)\u000a}s=state.history[0].passage.title;macros["goto"].timer=setTimeout(function(){if(state.history[0].passage.title==s){state.display(d,a)\u000a}},m)}}};
-p149
-sg23
 VtimedgotoScript
-p150
+p135
 sg25
 g26
 ((I2015
@@ -463,14 +413,14 @@ I49
 I1
 I104
 I1
-tp151
-(dp152
-tp153
-Rp154
+tp136
+(dp137
+tp138
+Rp139
 sg31
-(lp155
+(lp140
 Vscript
-p156
+p141
 asg33
 g26
 ((I2015
@@ -479,6 +429,56 @@ I14
 I22
 I50
 I16
+I1
+I104
+I1
+tp142
+(dp143
+tp144
+Rp145
+sbsa(dp146
+g14
+I00
+sg15
+(lp147
+F417.0
+aF412.0
+asg17
+(itiddlywiki
+Tiddler
+p148
+(dp149
+g21
+V<<msg "However, many humans used their powers for evil, starting wars and abusing their powers. In the modern day, humanity is divided amongst factions, each dominated by one element. As a member of the noble class, you were granted the opprotunity to attend a training camp.">>\u000a<<continue "intro02">>
+p150
+sg23
+Vintro01
+p151
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I6
+I22
+I3
+I106
+I1
+tp152
+(dp153
+tp154
+Rp155
+sg31
+(lp156
+sg33
+g26
+((I2015
+I4
+I14
+I22
+I52
+I56
 I1
 I104
 I1
@@ -491,27 +491,27 @@ g14
 I00
 sg15
 (lp162
-F419.0
-aF326.0
+F482.0
+aF12.0
 asg17
 (itiddlywiki
 Tiddler
 p163
 (dp164
 g21
-V<<msg "Each deity had great powers of creation and destruction.">>\u000a<<continue "intro02">>
+V<<set $str to parameter(0)>>\u000a<div id="passageBox"><<type str>></div>
 p165
 sg23
-Vintro01
+Vmsg
 p166
 sg25
 g26
 ((I2015
 I4
 I16
-I0
-I7
-I47
+I14
+I43
+I51
 I3
 I106
 I1
@@ -526,9 +526,9 @@ g26
 ((I2015
 I4
 I14
-I22
-I52
-I56
+I23
+I16
+I34
 I1
 I104
 I1
@@ -541,7 +541,7 @@ g14
 I00
 sg15
 (lp177
-F482.0
+F731.0
 aF12.0
 asg17
 (itiddlywiki
@@ -549,21 +549,21 @@ Tiddler
 p178
 (dp179
 g21
-V<<set $str to parameter(0)>>\u000a<div id="textBox"><<type str>></div>
+V<<set $nextPassage to parameter(0)>>\u000a<div id="continueButton">[[Next|parameter(0)]]</div>\u000a<div id="menuButtons">[[Auto]] [[Settings]]</div>
 p180
 sg23
-Vmsg
+Vcontinue
 p181
 sg25
 g26
 ((I2015
 I4
-I14
-I23
-I43
-I58
+I16
 I1
-I104
+I14
+I33
+I3
+I106
 I1
 tp182
 (dp183
@@ -577,8 +577,8 @@ g26
 I4
 I14
 I23
-I16
-I34
+I22
+I58
 I1
 I104
 I1
@@ -591,27 +591,27 @@ g14
 I00
 sg15
 (lp192
-F731.0
-aF12.0
+F905.0
+aF13.0
 asg17
 (itiddlywiki
 Tiddler
 p193
 (dp194
 g21
-V<<set $nextPassage to parameter(0)>>\u000a<div id="continueButton">[[Next|parameter(0)]]</div>\u000a<div id="menuButtons">[[Auto]] [[Settings]]</div>
+V<<toggleauto>>\u000a<<goto previous()>>
 p195
 sg23
-Vcontinue
+VAuto
 p196
 sg25
 g26
 ((I2015
 I4
 I16
-I1
-I14
-I33
+I0
+I27
+I18
 I3
 I106
 I1
@@ -625,12 +625,12 @@ sg33
 g26
 ((I2015
 I4
-I14
-I23
-I22
-I58
-I1
-I104
+I16
+I0
+I26
+I55
+I3
+I106
 I1
 tp202
 (dp203
@@ -641,27 +641,27 @@ g14
 I00
 sg15
 (lp207
-F541.0
-aF327.0
+F292.0
+aF411.0
 asg17
 (itiddlywiki
 Tiddler
 p208
 (dp209
 g21
-V<<msg "Around our Sun, one of these goddesses created Earth.">>\u000a<<continue "intro03">>
+V<<setbackground "intro01.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "">>\u000a<<setname>>\u000a<<msg "Many eons ago, there existed several gods and goddesses. Each deity possesed the power of an element. In the early days of humanity, there was chaos. When the gods gave the gift of elemental power to humanity, they used it to build great cities.">>\u000a<<continue "intro01">>
 p210
 sg23
-Vintro02
+VGreeting00
 p211
 sg25
 g26
 ((I2015
 I4
 I16
-I0
-I17
-I23
+I16
+I2
+I43
 I3
 I106
 I1
@@ -675,12 +675,12 @@ sg33
 g26
 ((I2015
 I4
-I14
-I22
-I52
-I56
-I1
-I104
+I16
+I15
+I49
+I43
+I3
+I106
 I1
 tp217
 (dp218
@@ -691,27 +691,27 @@ g14
 I00
 sg15
 (lp222
-F663.0
-aF327.0
+F541.0
+aF413.0
 asg17
 (itiddlywiki
 Tiddler
 p223
 (dp224
 g21
-V<<msg "Upon the Earth, this goddess created humans.">>\u000a<<continue "Start">>
+V<div id="passageBox">Which element do you choose to study?\u000a[[Fire|intro_03_fire]]\u000a[[Water|intro_03_water]]\u000a[[Earth|intro_03_earth]]\u000a[[More options...|intro02_more]]\u000a</div>
 p225
 sg23
-Vintro03
+Vintro02
 p226
 sg25
 g26
 ((I2015
 I4
 I16
-I0
-I17
-I27
+I16
+I12
+I47
 I3
 I106
 I1
@@ -725,12 +725,12 @@ sg33
 g26
 ((I2015
 I4
-I14
-I22
-I52
-I56
-I1
-I104
+I16
+I16
+I7
+I2
+I3
+I106
 I1
 tp232
 (dp233
@@ -741,27 +741,27 @@ g14
 I00
 sg15
 (lp237
-F905.0
-aF13.0
+F540.0
+aF543.0
 asg17
 (itiddlywiki
 Tiddler
 p238
 (dp239
 g21
-V<<toggleauto>>\u000a<<goto previous()>>
+V<div id="passageBox">Which element do you choose to study?\u000a[[Air|intro_03_air]]\u000a[[Light|intro_03_light]]\u000a[[Darkness|intro_03_dark]]\u000a[[Less options...|intro02]]\u000a</div>
 p240
 sg23
-VAuto
+Vintro02_more
 p241
 sg25
 g26
 ((I2015
 I4
 I16
-I0
-I27
-I18
+I16
+I16
+I38
 I3
 I106
 I1
@@ -776,9 +776,9 @@ g26
 ((I2015
 I4
 I16
-I0
-I26
-I55
+I16
+I7
+I2
 I3
 I106
 I1
@@ -786,10 +786,410 @@ tp247
 (dp248
 tp249
 Rp250
+sbsa(dp251
+g14
+I00
+sg15
+(lp252
+F832.0
+aF411.0
+asg17
+(itiddlywiki
+Tiddler
+p253
+(dp254
+g21
+V<<msg "You have chosen %e. Well done, %n.">>\u000a<<continue "scene_00_00">>
+p255
+sg23
+Vintro_03
+p256
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I24
+I54
+I3
+I106
+I1
+tp257
+(dp258
+tp259
+Rp260
+sg31
+(lp261
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I7
+I2
+I3
+I106
+I1
+tp262
+(dp263
+tp264
+Rp265
+sbsa(dp266
+g14
+I00
+sg15
+(lp267
+F693.0
+aF232.0
+asg17
+(itiddlywiki
+Tiddler
+p268
+(dp269
+g21
+V<<set $trainingElement to "Fire">>\u000a<<goto "intro_03">>
+p270
+sg23
+Vintro_03_fire
+p271
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I20
+I55
+I3
+I106
+I1
+tp272
+(dp273
+tp274
+Rp275
+sg31
+(lp276
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I7
+I2
+I3
+I106
+I1
+tp277
+(dp278
+tp279
+Rp280
+sbsa(dp281
+g14
+I00
+sg15
+(lp282
+F695.0
+aF359.0
+asg17
+(itiddlywiki
+Tiddler
+p283
+(dp284
+g21
+V<<set $trainingElement to "Water">>\u000a<<goto "intro_03">>
+p285
+sg23
+Vintro_03_water
+p286
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I20
+I59
+I3
+I106
+I1
+tp287
+(dp288
+tp289
+Rp290
+sg31
+(lp291
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I7
+I2
+I3
+I106
+I1
+tp292
+(dp293
+tp294
+Rp295
+sbsa(dp296
+g14
+I00
+sg15
+(lp297
+F696.0
+aF484.0
+asg17
+(itiddlywiki
+Tiddler
+p298
+(dp299
+g21
+V<<set $trainingElement to "Earth">>\u000a<<goto "intro_03">>
+p300
+sg23
+Vintro_03_earth
+p301
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I21
+I3
+I3
+I106
+I1
+tp302
+(dp303
+tp304
+Rp305
+sg31
+(lp306
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I7
+I2
+I3
+I106
+I1
+tp307
+(dp308
+tp309
+Rp310
+sbsa(dp311
+g14
+I00
+sg15
+(lp312
+F696.0
+aF611.0
+asg17
+(itiddlywiki
+Tiddler
+p313
+(dp314
+g21
+V<<set $trainingElement to "Air">>\u000a<<goto "intro_03">>
+p315
+sg23
+Vintro_03_air
+p316
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I21
+I7
+I3
+I106
+I1
+tp317
+(dp318
+tp319
+Rp320
+sg31
+(lp321
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I7
+I2
+I3
+I106
+I1
+tp322
+(dp323
+tp324
+Rp325
+sbsa(dp326
+g14
+I00
+sg15
+(lp327
+F697.0
+aF734.0
+asg17
+(itiddlywiki
+Tiddler
+p328
+(dp329
+g21
+V<<set $trainingElement to "Light">>\u000a<<goto "intro_03">>
+p330
+sg23
+Vintro_03_light
+p331
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I21
+I11
+I3
+I106
+I1
+tp332
+(dp333
+tp334
+Rp335
+sg31
+(lp336
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I7
+I2
+I3
+I106
+I1
+tp337
+(dp338
+tp339
+Rp340
+sbsa(dp341
+g14
+I00
+sg15
+(lp342
+F698.0
+aF860.0
+asg17
+(itiddlywiki
+Tiddler
+p343
+(dp344
+g21
+V<<set $trainingElement to "Darkness">>\u000a<<goto "intro_03">>
+p345
+sg23
+Vintro_03_dark
+p346
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I21
+I18
+I3
+I106
+I1
+tp347
+(dp348
+tp349
+Rp350
+sg31
+(lp351
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I7
+I2
+I3
+I106
+I1
+tp352
+(dp353
+tp354
+Rp355
+sbsa(dp356
+g14
+I00
+sg15
+(lp357
+F969.0
+aF414.0
+asg17
+(itiddlywiki
+Tiddler
+p358
+(dp359
+g21
+V<<msg "Welcome to camp.">>\u000a<<continue "scene_00_01">>
+p360
+sg23
+Vscene_00_00
+p361
+sg25
+g26
+((I2015
+I4
+I16
+I16
+I24
+I47
+I3
+I106
+I1
+tp362
+(dp363
+tp364
+Rp365
+sg31
+(lp366
+sg33
+g26
+((I2015
+I4
+I16
+I16
+I23
+I49
+I3
+I106
+I1
+tp367
+(dp368
+tp369
+Rp370
 sbsasS'scale'
-p251
+p371
 F1.0
 sS'snapping'
-p252
+p372
 I00
 ss.

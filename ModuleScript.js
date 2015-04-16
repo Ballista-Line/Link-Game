@@ -1,6 +1,8 @@
 // ModuleScript.js Tue.Apr.14.2015 Jaiden King
 // This script houses many of the features that makes this game feel
 // like a visual novel.
+// 
+// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE
 
 function setTextSpeed(speed) {
    if(speed < 0){ speed = 0; }
@@ -34,6 +36,18 @@ function setNextPassage(name) {
    state.history[0].variables["nextPassage"] = name;
 }
 
+function getPlayerName() {
+   return state.history[0].variables["PlayerName"];
+}
+
+function setPlayerName(name) {
+   state.history[0].variables["PlayerName"] = name;
+}
+
+function getPlayerElement() {
+   return state.history[0].variables["trainingElement"];
+}
+
 function isAuto() {
    return state.history[0].variables["autoAdvance"];
 }
@@ -46,6 +60,8 @@ function toggleAuto() {
    setAuto(!isAuto());
 }
 
+// This is the name of the passage when typing begins.
+var s;
 // Prints a single letter at a time onto the screen, "recursively". If
 // the text is set to "auto advance" then it will automatically advance
 // to the next dialogue, under standard conditions.
@@ -58,7 +74,7 @@ function type(place, str, i) {
    if (i == str.length+1) {
                // alert("SDF");
       if(isAuto()){
-         var s=getPassageTitle();
+         
          setTimeout(function(){
             if(getPassageTitle()==s){
                state.display(getNextPassage(),place)
@@ -74,8 +90,11 @@ function type(place, str, i) {
 
 macros['type'] = {
    handler: function(place, macroName, params, parser) {
+      s=getPassageTitle();
       type(place,
-         state.history[0].variables[params[0]],//this is a hack. Idk why 
+         state.history[0].variables[params[0]]
+            .replace("%n",getPlayerName())
+            .replace("%e",getPlayerElement()),//this is a hack. Idk why 
                                                //the value isn't being
                                                //passed.
          1);
@@ -96,6 +115,7 @@ macros['setbackground'] = {
    },
    init: function() {
       $("body").append("<img class='background' />");
+      $("body").append("<div id='textBox'></div>");
    }
 }
 
@@ -103,6 +123,13 @@ macros['setbackground'] = {
 macros['setspeaker'] = {
    handler: function(place, macroName, params, parser) {
       state.history[0].variables["speaker"] = params[0];
+   }
+}
+
+macros['showdialogue'] = {
+   handler: function(place, macroName, params, parser) {
+      if(params[0]=="true"){ $("#textBox").show(); }
+      else{                  $("#textBox").hide(); }
    }
 }
 
@@ -155,5 +182,12 @@ macros['setnext'] = {
 macros['toggleauto'] = {
    handler: function(place, macroName, params, parser) {
       toggleAuto();
+   }
+}
+
+//This is called at the beginning to set the player's name
+macros['setname'] = {
+   handler:  function(place, macroName, params, parser) {
+      setPlayerName(prompt("What is your name?","Leeroy"));
    }
 }
