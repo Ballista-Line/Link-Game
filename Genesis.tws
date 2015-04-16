@@ -5,7 +5,7 @@ S''
 p2
 sS'saveDestination'
 p3
-V/Users/jaidenking/Documents/CMPM 80K/Link-Game/Genesis.tws
+VC:\u005cUsers\u005cjaaking\u005cDesktop\u005cLink-Game\u005cGenesis.tws
 p4
 sS'metadata'
 p5
@@ -195,7 +195,7 @@ Tiddler
 p71
 (dp72
 g21
-V<<setbackground "title.png">>\u000a<div id="title_screen">\u000a	[[New Game]]\u000a	[[Settings]]\u000a	<a href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a>\u000a</div>
+V<<setbackground "title.png">>\u000a<div id="title_screen">\u000a	[[New Game]]\u000a	[[Settings]]\u000a	<a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Issues</a>\u000a</div>
 p73
 sg23
 VStart
@@ -205,9 +205,9 @@ g26
 ((I2015
 I4
 I16
-I1
-I45
-I8
+I14
+I28
+I47
 I3
 I106
 I1
