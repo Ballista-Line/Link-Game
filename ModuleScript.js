@@ -44,6 +44,13 @@ function setPlayerName(name) {
    state.history[0].variables["PlayerName"] = name;
 }
 
+function getSpeaker() {
+   return state.history[0].variables["Speaker"];
+}
+
+function setSpeaker(name) {
+   state.history[0].variables["Speaker"] = name;
+}
 function getPlayerElement() {
    return state.history[0].variables["trainingElement"];
 }
@@ -116,13 +123,15 @@ macros['setbackground'] = {
    init: function() {
       $("body").append("<img class='background' />");
       $("body").append("<div id='textBox'></div>");
+      $("body").append("<div id='speaker'></div>");
    }
 }
 
 // Sets the name of the current speaker.
 macros['setspeaker'] = {
    handler: function(place, macroName, params, parser) {
-      state.history[0].variables["speaker"] = params[0];
+      setSpeaker(params[0]);
+      $("#speaker").html(getSpeaker());
    }
 }
 

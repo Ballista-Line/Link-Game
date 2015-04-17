@@ -100,3 +100,19 @@
    height: 100px;
    padding: 10px;
 }
+#speaker {
+   z-index: 5;
+   position: fixed;
+   top: 390px;
+   left: 300px;
+   width: 200px;
+   height: 50px;
+   padding: 10px;
+   -webkit-text-stroke: 1px black;
+   text-shadow:
+       3px 3px 0 #000,
+     -1px -1px 0 #000,  
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+       1px 1px 0 #000;
+}
