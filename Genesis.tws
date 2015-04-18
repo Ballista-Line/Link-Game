@@ -143,7 +143,7 @@ Tiddler
 p55
 (dp56
 g21
-V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = name;\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a               // alert("SDF");\u000a      if(isAuto()){\u000a         \u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         state.history[0].variables[params[0]]\u000a            .replace("%n",getPlayerName())\u000a            .replace("%e",getPlayerElement()),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(50);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(params[0]);\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000amacros['setnext'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a   }\u000a}\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlot1")) {\u000a         var saveData = getCookieObject("saveSlot1");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a   }\u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){\u000a         var game = getCookieObject("saveSlot1");\u000a         \u000a         setSpeaker(game.speaker);\u000a\u000a         setBackgroundSrc(game.background);\u000a         setVar("background",game.background);\u000a         \u000a         showDialogue(game.showdialogue);\u000a         \u000a         setPlayerName(game.name);\u000a         \u000a         setVar("trainingElement",game.element);\u000a         \u000a         state.display(game.passage,place);\u000a      },1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      saveGame("saveSlot1");\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "background": getVar("background"),\u000a      "passage": getPassageTitle(),\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue")\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000a/* Build the out-of-passage html elements. If you have a saved game, also\u000a * enables the continue button.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker'></div>");\u000a}\u000a\u000ainitialize();\u000a
+V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = name;\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a               // alert("SDF");\u000a      if(isAuto()){\u000a         \u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         state.history[0].variables[params[0]]\u000a            .replace("%n",getPlayerName())\u000a            .replace("%e",getPlayerElement()),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(50);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(params[0]);\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000amacros['setnext'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a   }\u000a}\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlot1")) {\u000a         var saveData = getCookieObject("saveSlot1");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a   }\u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){\u000a         var game = getCookieObject("saveSlot1");\u000a         \u000a         setSpeaker(game.speaker);\u000a\u000a         setBackgroundSrc(game.background);\u000a         setVar("background",game.background);\u000a         \u000a         showDialogue(game.showdialogue);\u000a         \u000a         setPlayerName(game.name);\u000a         \u000a         setVar("trainingElement",game.element);\u000a         \u000a         state.display(game.passage,place);\u000a      },1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      saveGame("saveSlot1");\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "background": getVar("background"),\u000a      "passage": getPassageTitle(),\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue")\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000a/* Build the out-of-passage html elements. If you have a saved game, also\u000a * enables the continue button.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a}\u000a\u000ainitialize();\u000a
 p57
 sg23
 VModuleScript
@@ -153,9 +153,9 @@ g26
 ((I2015
 I4
 I17
-I20
-I53
-I9
+I21
+I8
+I6
 I4
 I107
 I1
@@ -195,7 +195,7 @@ Tiddler
 p71
 (dp72
 g21
-V<<loadTitlescreen>>\u000a<<setbackground "title.png">>\u000a<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen">\u000a	[[New Game|Greeting00]]\u000a	<<if $canContinue is "true">>[[Continue|ContinueFromSave]]<<else>>Continue<<endif>>\u000a	[[Settings]]\u000a	<a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Issues</a> | <a style="font-size:50%;" href="http://www.roblox.com/games/3053085/Darkened-Dawn" target="_blank">TDSI</a>\u000a</div>
+V<<loadTitlescreen>>\u000a<<setbackground "title.png">>\u000a<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen" class="stroke">\u000a	[[New Game|Greeting00]]\u000a	<<if $canContinue is "true">>[[Continue|ContinueFromSave]]<<else>>Continue<<endif>>\u000a	[[Settings]]\u000a	<a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a style="font-size:50%;" href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Issues</a> | <a style="font-size:50%;" href="http://www.roblox.com/games/3053085/Darkened-Dawn" target="_blank">TDSI</a>\u000a</div>\u000a<div id="splash" class="stroke"><<Splash>></div>
 p73
 sg23
 VStart
@@ -205,9 +205,9 @@ g26
 ((I2015
 I4
 I17
-I20
-I8
-I40
+I21
+I10
+I21
 I4
 I107
 I1
@@ -245,7 +245,7 @@ Tiddler
 p86
 (dp87
 g21
-V/* Styles.css Tue.Apr.14.2015 Jaiden King \u000a * ALL EDITS SHOULD BE MADE IN THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a */\u000a\u000a.character {\u000a   position: fixed;\u000a   top:120px;\u000a   max-width:600px;\u000a   max-height:300px;\u000a   z-index: -9;\u000a}\u000a.background {\u000a   position: fixed;\u000a   top:20px;\u000a   left:300px;\u000a   width:700px;\u000a   height:500px;\u000a   z-index: -10;\u000a}\u000a.passage {\u000a   transition-duration: 0s;\u000a\u000a}\u000a.passage a {\u000a   text-decoration: underline;\u000a   color: #FFF;\u000a}\u000a.passage a:hover {\u000a   color: #999;\u000a}\u000a#title_screen{\u000a   position: fixed;\u000a   top: 170px;\u000a   left: 350px;\u000a   font-size: 30pt;\u000a   line-height: 40pt;\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a   z-index: 10;\u000a}\u000a#text_meter_outer, #auto_meter_outer {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 300px;\u000a   background-color: #400;\u000a   padding: 5px;\u000a   z-index: 10;\u000a}\u000a#text_meter_inner, #auto_meter_inner {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 150px;\u000a   background-color: #F00;\u000a}\u000a#continueButton {\u000a   position: fixed;\u000a   top: 495px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#menuButtons {\u000a   position: fixed;;\u000a   top: 380px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a}\u000a#textBox {\u000a   z-index: -1;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a   border: 2px solid gray;\u000a   background-color: #000;\u000a}\u000a#passageBox {\u000a   z-index: 11;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a}\u000a#speaker {\u000a   z-index: 5;\u000a   position: fixed;\u000a   top: 390px;\u000a   left: 300px;\u000a   width: 200px;\u000a   height: 50px;\u000a   padding: 10px;\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a}
+V/* Styles.css Tue.Apr.14.2015 Jaiden King \u000a * ALL EDITS SHOULD BE MADE IN THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a */\u000a\u000a.character {\u000a   position: fixed;\u000a   top:120px;\u000a   max-width:600px;\u000a   max-height:300px;\u000a   z-index: -9;\u000a}\u000a.background {\u000a   position: fixed;\u000a   top:20px;\u000a   left:300px;\u000a   width:700px;\u000a   height:500px;\u000a   z-index: -10;\u000a}\u000a.passage {\u000a   transition-duration: 0s;\u000a\u000a}\u000a.passage a {\u000a   text-decoration: underline;\u000a   color: #FFF;\u000a}\u000a.passage a:hover {\u000a   color: #999;\u000a}\u000a#title_screen{\u000a   position: fixed;\u000a   top: 170px;\u000a   left: 350px;\u000a   font-size: 30pt;\u000a   line-height: 40pt;\u000a   z-index: 10;\u000a}\u000a#text_meter_outer, #auto_meter_outer {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 300px;\u000a   background-color: #400;\u000a   padding: 5px;\u000a   z-index: 10;\u000a}\u000a#text_meter_inner, #auto_meter_inner {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 150px;\u000a   background-color: #F00;\u000a}\u000a#continueButton {\u000a   position: fixed;\u000a   top: 495px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#menuButtons {\u000a   position: fixed;;\u000a   top: 380px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#textBox {\u000a   z-index: -1;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a   border: 2px solid gray;\u000a   background-color: #000;\u000a}\u000a#passageBox {\u000a   z-index: 11;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a}\u000a#speaker {\u000a   z-index: 5;\u000a   position: fixed;\u000a   top: 390px;\u000a   left: 300px;\u000a   width: 200px;\u000a   height: 50px;\u000a   padding: 10px;\u000a}\u000a.stroke {\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a}\u000a#splash {\u000a   position: fixed;\u000a   top: 100px;\u000a   left: 700px;\u000a   width: 300px;\u000a   height: 300px;\u000a   text-align: center;\u000a   vertical-align: center;\u000a   -moz-transform:rotate(20deg);\u000a   -webkit-transform:rotate(20deg);\u000a   -o-transform:rotate(20deg);\u000a   -ms-transform:rotate(20deg);\u000a}\u000a
 p88
 sg23
 VStyles
@@ -254,12 +254,12 @@ sg25
 g26
 ((I2015
 I4
-I16
-I16
-I48
-I27
-I3
-I106
+I17
+I21
+I8
+I55
+I4
+I107
 I1
 tp90
 (dp91
@@ -549,7 +549,7 @@ Tiddler
 p178
 (dp179
 g21
-V<<set $nextPassage to parameter(0)>>\u000a<div id="continueButton">[[Next|parameter(0)]]</div>\u000a<div id="menuButtons">[[Auto]] [[Settings]]</div>\u000a<<savegame>>
+V<<set $nextPassage to parameter(0)>>\u000a<div id="continueButton">[[Next|parameter(0)]]</div>\u000a<div id="menuButtons" class="stroke">[[Auto]] [[Settings]]</div>\u000a<<savegame>>
 p180
 sg23
 Vcontinue
@@ -559,9 +559,9 @@ g26
 ((I2015
 I4
 I17
-I20
-I5
-I27
+I21
+I8
+I32
 I4
 I107
 I1
@@ -1293,8 +1293,8 @@ g14
 I00
 sg15
 (lp403
-F240.0
-aF160.0
+F233.0
+aF140.0
 asg17
 (itiddlywiki
 Tiddler
@@ -1343,8 +1343,8 @@ g14
 I00
 sg15
 (lp418
-F364.0
-aF160.0
+F357.0
+aF140.0
 asg17
 (itiddlywiki
 Tiddler
@@ -1388,10 +1388,60 @@ tp428
 (dp429
 tp430
 Rp431
+sbsa(dp432
+g14
+I00
+sg15
+(lp433
+F233.0
+aF267.0
+asg17
+(itiddlywiki
+Tiddler
+p434
+(dp435
+g21
+V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!"\u000a)>>
+p436
+sg23
+VSplash
+p437
+sg25
+g26
+((I2015
+I4
+I17
+I21
+I11
+I3
+I4
+I107
+I1
+tp438
+(dp439
+tp440
+Rp441
+sg31
+(lp442
+sg33
+g26
+((I2015
+I4
+I17
+I21
+I6
+I38
+I4
+I107
+I1
+tp443
+(dp444
+tp445
+Rp446
 sbsasS'scale'
-p432
+p447
 F1.0
 sS'snapping'
-p433
+p448
 I00
 ss.

@@ -307,7 +307,7 @@ function saveGame(slot) {
 function initialize() {
    $("body").append("<img class='background' />");
    $("body").append("<div id='textBox'></div>");
-   $("body").append("<div id='speaker'></div>");
+   $("body").append("<div id='speaker' class='stroke'></div>");
 }
 
 initialize();
