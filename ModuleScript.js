@@ -289,6 +289,13 @@ macros['savegame'] = {
    }
 }
 
+// Characters aren't being saved yet!
+macros['addcharacter'] = {
+   handler: function(place, macroName, params, parser) {
+      $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+params[0]+"' alt='"+params[0]+"' />");
+   }
+}
+
 function saveGame(slot) {
    var game = {
       "speaker": getSpeaker(),
@@ -308,6 +315,7 @@ function initialize() {
    $("body").append("<img class='background' />");
    $("body").append("<div id='textBox'></div>");
    $("body").append("<div id='speaker' class='stroke'></div>");
+   $("body").append("<div id='characters'></div>")
 }
 
 initialize();

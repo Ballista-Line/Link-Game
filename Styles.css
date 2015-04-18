@@ -89,11 +89,12 @@
 #speaker {
    z-index: 5;
    position: fixed;
-   top: 390px;
+   top: 380px;
    left: 300px;
    width: 200px;
-   height: 50px;
-   padding: 10px;
+   height: 60px;
+   padding: 5px;
+   font-size: 14pt;
 }
 .stroke {
    -webkit-text-stroke: 1px black;
@@ -118,4 +119,13 @@
    -webkit-transform:rotate(20deg);
    -o-transform:rotate(20deg);
    -ms-transform:rotate(20deg);
+}
+#characters, .portrait {
+   z-index: -9;
+}
+.portrait {
+   position: fixed;
+   height: 500px;
+   top: 20px;
+   left: 500px;
 }
