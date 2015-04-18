@@ -4,6 +4,8 @@
 // 
 // ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE
 
+var rivalName = "Alastor"
+
 // The following 3 functions are from w3schools.com
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -129,6 +131,7 @@ function filter(string) {
    return string.replace("%n",getPlayerName())
                 .replace("%e",getPlayerElement())
                 .replace("%ae",getOppositeElement(getPlayerElement()))
+                .replace("%r",rivalName);
 }
 
 // This is the name of the passage when typing begins.
@@ -154,7 +157,7 @@ function type(place, str, i) {
       }
       return;
    }
-   new Wikifier(place, text.replace("!","!!!"));
+   new Wikifier(place, text);
    //type(place,str,i+1);
    setTimeout(function(){type(place,str,i+1);},getTextSpeed());
 }
@@ -170,7 +173,7 @@ macros['type'] = {
    },
    init: function() {
       // Sets the default text speed
-      setTextSpeed(50);
+      setTextSpeed(30);
       setAutoInterval(3000);
       setAuto(false);
    },
