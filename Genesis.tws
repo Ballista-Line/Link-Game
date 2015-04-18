@@ -245,7 +245,7 @@ Tiddler
 p86
 (dp87
 g21
-V/* Styles.css Tue.Apr.14.2015 Jaiden King \u000a * ALL EDITS SHOULD BE MADE IN THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a */\u000a\u000a.character {\u000a   position: fixed;\u000a   top:120px;\u000a   max-width:600px;\u000a   max-height:300px;\u000a   z-index: -9;\u000a}\u000a.background {\u000a   position: fixed;\u000a   top:20px;\u000a   left:300px;\u000a   width:700px;\u000a   height:500px;\u000a   z-index: -10;\u000a}\u000a.passage {\u000a   transition-duration: 0s;\u000a\u000a}\u000a.passage a {\u000a   text-decoration: underline;\u000a   color: #FFF;\u000a}\u000a.passage a:hover {\u000a   color: #999;\u000a}\u000a#title_screen{\u000a   position: fixed;\u000a   top: 170px;\u000a   left: 350px;\u000a   font-size: 30pt;\u000a   line-height: 40pt;\u000a   z-index: 10;\u000a}\u000a#text_meter_outer, #auto_meter_outer {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 300px;\u000a   background-color: #400;\u000a   padding: 5px;\u000a   z-index: 10;\u000a}\u000a#text_meter_inner, #auto_meter_inner {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 150px;\u000a   background-color: #F00;\u000a}\u000a#continueButton {\u000a   position: fixed;\u000a   top: 495px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#menuButtons {\u000a   position: fixed;;\u000a   top: 380px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#textBox {\u000a   z-index: -1;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a   border: 2px solid gray;\u000a   background-color: #000;\u000a}\u000a#passageBox {\u000a   z-index: 11;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a}\u000a#speaker {\u000a   z-index: 5;\u000a   position: fixed;\u000a   top: 390px;\u000a   left: 300px;\u000a   width: 200px;\u000a   height: 50px;\u000a   padding: 10px;\u000a}\u000a.stroke {\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a}\u000a#splash {\u000a   position: fixed;\u000a   top: 100px;\u000a   left: 700px;\u000a   width: 300px;\u000a   height: 300px;\u000a   text-align: center;\u000a   vertical-align: center;\u000a   -moz-transform:rotate(20deg);\u000a   -webkit-transform:rotate(20deg);\u000a   -o-transform:rotate(20deg);\u000a   -ms-transform:rotate(20deg);\u000a}\u000a
+V/* Styles.css Tue.Apr.14.2015 Jaiden King \u000a * ALL EDITS SHOULD BE MADE IN THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a */\u000a\u000a.character {\u000a   position: fixed;\u000a   top:120px;\u000a   max-width:600px;\u000a   max-height:300px;\u000a   z-index: -9;\u000a}\u000a.background {\u000a   position: fixed;\u000a   top:20px;\u000a   left:300px;\u000a   width:700px;\u000a   height:500px;\u000a   z-index: -10;\u000a}\u000a.passage {\u000a   transition-duration: 0s;\u000a\u000a}\u000a.passage a {\u000a   text-decoration: underline;\u000a   color: #FFF;\u000a}\u000a.passage a:hover {\u000a   color: #999;\u000a}\u000a#title_screen{\u000a   position: fixed;\u000a   top: 170px;\u000a   left: 350px;\u000a   font-size: 30pt;\u000a   line-height: 40pt;\u000a   z-index: 10;\u000a}\u000a#text_meter_outer, #auto_meter_outer {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 300px;\u000a   background-color: #400;\u000a   padding: 5px;\u000a   z-index: 10;\u000a}\u000a#text_meter_inner, #auto_meter_inner {\u000a   display: inline-block;\u000a   height: 20px;\u000a   width: 150px;\u000a   background-color: #F00;\u000a}\u000a#continueButton {\u000a   position: fixed;\u000a   top: 495px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#menuButtons {\u000a   position: fixed;;\u000a   top: 380px;\u000a   left: 300px;\u000a   z-index: 11;\u000a   text-align: right;\u000a   width: 690px;\u000a}\u000a#textBox {\u000a   z-index: -1;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a   border: 2px solid gray;\u000a   background-color: #000;\u000a}\u000a#passageBox {\u000a   z-index: 11;\u000a   position: fixed;\u000a   top: 400px;\u000a   left: 300px;\u000a   width: 680px;\u000a   height: 100px;\u000a   padding: 10px;\u000a}\u000a#speaker {\u000a   z-index: 5;\u000a   position: fixed;\u000a   top: 390px;\u000a   left: 300px;\u000a   width: 200px;\u000a   height: 50px;\u000a   padding: 10px;\u000a}\u000a.stroke {\u000a   -webkit-text-stroke: 1px black;\u000a   text-shadow:\u000a       3px 3px 0 #000,\u000a     -1px -1px 0 #000,  \u000a      1px -1px 0 #000,\u000a      -1px 1px 0 #000,\u000a       1px 1px 0 #000;\u000a}\u000a#splash {\u000a   font-size: 18pt;\u000a   line-height: 20pt;\u000a   position: fixed;\u000a   top: 100px;\u000a   left: 700px;\u000a   width: 300px;\u000a   height: 300px;\u000a   text-align: center;\u000a   vertical-align: center;\u000a   -moz-transform:rotate(20deg);\u000a   -webkit-transform:rotate(20deg);\u000a   -o-transform:rotate(20deg);\u000a   -ms-transform:rotate(20deg);\u000a}\u000a
 p88
 sg23
 VStyles
@@ -256,8 +256,8 @@ g26
 I4
 I17
 I21
-I8
-I55
+I12
+I6
 I4
 I107
 I1
@@ -1401,7 +1401,7 @@ Tiddler
 p434
 (dp435
 g21
-V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!"\u000a)>>
+V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!",\u000a"The fourth in a series!",\u000a"An amazing game!",\u000a"Meme-free!",\u000a"\u005c"10/10 pretty good\u005c" -IGN, probably",\u000a"Lies!",\u000a"Responsive developers!",\u000a"Hidden agendas!",\u000a"Too many endings!",\u000a"An A+ project!",\u000a"Refresh for a new message!",\u000a"Johnathan Pagnutti is a cool guy!",\u000a"I've spent too much time making splash text!",\u000a"Don't blink!",\u000a"Auto-saves your progress!",\u000a"Continue where you left off!",\u000a"Your decisions matter!",\u000a"\u005c"No false choices!\u005c"",\u000a"Inspired by Japanese visual novels!",\u000a"\u005c"Completely original!\u005c"",\u000a"I'm not stealing this effect from Minecraft!",\u000a"Este burrito es muy bueno, pero necesito salsa verde!"\u000a)>>
 p436
 sg23
 VSplash
@@ -1412,8 +1412,8 @@ g26
 I4
 I17
 I21
-I11
-I3
+I31
+I27
 I4
 I107
 I1
