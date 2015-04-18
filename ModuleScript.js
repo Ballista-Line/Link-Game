@@ -4,6 +4,42 @@
 // 
 // ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE
 
+// The following 3 functions are from w3schools.com
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+// Modified from the w3schools version
+function checkCookie(cname) {
+    return (getCookie(cname) != "");
+}
+
+function deleteCookie(cname){
+   setCookie(cname, "", -10);
+}
+
+function getCookieObject(cname){
+   return JSON.parse(getCookie(cname));
+}
+
+function setCookieObject(cname, obj, exdays) {
+   setCookie(cname, JSON.stringify(obj), exdays);
+}
+
 function setTextSpeed(speed) {
    if(speed < 0){ speed = 0; }
    else if(speed > 149) { speed = 149; }
@@ -50,7 +86,17 @@ function getSpeaker() {
 
 function setSpeaker(name) {
    state.history[0].variables["Speaker"] = name;
+   $("#speaker").html(getSpeaker());
 }
+
+function setVar(name, value) {
+   state.history[0].variables[name] = value;
+}
+
+function getVar(name) {
+   return state.history[0].variables[name];
+}
+
 function getPlayerElement() {
    return state.history[0].variables["trainingElement"];
 }
@@ -114,16 +160,16 @@ macros['type'] = {
    },
 };
 
+function setBackgroundSrc(src) {
+   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);
+}
+
 // Sets the $background_URL variable.
 macros['setbackground'] = {
    handler: function(place, macroName, params, parser) {
       // state.history[0].variables["background_URL"] = params[0];
-      $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+params[0]);
-   },
-   init: function() {
-      $("body").append("<img class='background' />");
-      $("body").append("<div id='textBox'></div>");
-      $("body").append("<div id='speaker'></div>");
+      setVar("background",params[0]);
+      setBackgroundSrc(params[0]);
    }
 }
 
@@ -131,14 +177,18 @@ macros['setbackground'] = {
 macros['setspeaker'] = {
    handler: function(place, macroName, params, parser) {
       setSpeaker(params[0]);
-      $("#speaker").html(getSpeaker());
    }
+}
+
+function showDialogue(state) {
+   if(state){ $("#textBox").show(); setVar("showdialogue",true); }
+   else{      $("#textBox").hide(); setVar("showdialogue",false); }
 }
 
 macros['showdialogue'] = {
    handler: function(place, macroName, params, parser) {
-      if(params[0]=="true"){ $("#textBox").show(); }
-      else{                  $("#textBox").hide(); }
+      if(params[0]=="true"){ showDialogue(true); }
+      else{                  showDialogue(false); }
    }
 }
 
@@ -200,3 +250,64 @@ macros['setname'] = {
       setPlayerName(prompt("What is your name?","Leeroy"));
    }
 }
+
+macros['loadTitlescreen'] = {
+   handler:  function(place, macroName, params, parser) {
+      if(checkCookie("saveSlot1")) {
+         var saveData = getCookieObject("saveSlot1");
+         setVar("canContinue","true")
+      }else{
+         setVar("canContinue","false");
+      }
+   }
+}
+
+macros['loadgame'] = {
+   handler: function(place, macroName, params, parser) {
+      setTimeout(function(){
+         var game = getCookieObject("saveSlot1");
+         
+         setSpeaker(game.speaker);
+
+         setBackgroundSrc(game.background);
+         setVar("background",game.background);
+         
+         showDialogue(game.showdialogue);
+         
+         setPlayerName(game.name);
+         
+         setVar("trainingElement",game.element);
+         
+         state.display(game.passage,place);
+      },1);
+   }
+}
+
+macros['savegame'] = {
+   handler: function(place, macroName, params, parser) {
+      saveGame("saveSlot1");
+   }
+}
+
+function saveGame(slot) {
+   var game = {
+      "speaker": getSpeaker(),
+      "background": getVar("background"),
+      "passage": getPassageTitle(),
+      "name": getPlayerName(),
+      "element": getPlayerElement(),
+      "showdialogue": getVar("showdialogue")
+   }
+   setCookie(slot,JSON.stringify(game),100);
+}
+
+/* Build the out-of-passage html elements. If you have a saved game, also
+ * enables the continue button.
+ */
+function initialize() {
+   $("body").append("<img class='background' />");
+   $("body").append("<div id='textBox'></div>");
+   $("body").append("<div id='speaker'></div>");
+}
+
+initialize();
