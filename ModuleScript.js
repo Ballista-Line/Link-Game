@@ -85,7 +85,7 @@ function getSpeaker() {
 }
 
 function setSpeaker(name) {
-   state.history[0].variables["Speaker"] = name;
+   state.history[0].variables["Speaker"] = filter(name);
    $("#speaker").html(getSpeaker());
 }
 
@@ -101,6 +101,17 @@ function getPlayerElement() {
    return state.history[0].variables["trainingElement"];
 }
 
+function getOppositeElement(e) {
+   switch(e){
+      case "Fire": return "Water";
+      case "Water": return "Fire";
+      case "Earth": return "Air";
+      case "Air": return "Earth";
+      case "Light": return "Darkness";
+      case "Darkness": return "Light";
+   }
+}
+
 function isAuto() {
    return state.history[0].variables["autoAdvance"];
 }
@@ -111,6 +122,13 @@ function setAuto(val) {
 
 function toggleAuto() {
    setAuto(!isAuto());
+}
+
+// Filters out flags from a string and replaces them with appropriate values
+function filter(string) {
+   return string.replace("%n",getPlayerName())
+                .replace("%e",getPlayerElement())
+                .replace("%ae",getOppositeElement(getPlayerElement()))
 }
 
 // This is the name of the passage when typing begins.
@@ -136,7 +154,7 @@ function type(place, str, i) {
       }
       return;
    }
-   new Wikifier(place, text);
+   new Wikifier(place, text.replace("!","!!!"));
    //type(place,str,i+1);
    setTimeout(function(){type(place,str,i+1);},getTextSpeed());
 }
@@ -145,9 +163,7 @@ macros['type'] = {
    handler: function(place, macroName, params, parser) {
       s=getPassageTitle();
       type(place,
-         state.history[0].variables[params[0]]
-            .replace("%n",getPlayerName())
-            .replace("%e",getPlayerElement()),//this is a hack. Idk why 
+         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why 
                                                //the value isn't being
                                                //passed.
          1);
@@ -176,7 +192,7 @@ macros['setbackground'] = {
 // Sets the name of the current speaker.
 macros['setspeaker'] = {
    handler: function(place, macroName, params, parser) {
-      setSpeaker(params[0]);
+      setSpeaker(filter(params[0]));
    }
 }
 
