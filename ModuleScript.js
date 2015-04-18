@@ -4,7 +4,9 @@
 // 
 // ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE
 
-var rivalName = "Alastor"
+var rivalName = "Alastor";
+var audio = new Audio("");
+var volume = 0.2;
 
 // The following 3 functions are from w3schools.com
 function setCookie(cname, cvalue, exdays) {
@@ -312,6 +314,16 @@ macros['savegame'] = {
 macros['addcharacter'] = {
    handler: function(place, macroName, params, parser) {
       $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+params[0]+"' alt='"+params[0]+"' />");
+   }
+}
+
+macros['playsound'] = {
+   handler: function(place, macroName, params, parser) {
+      audio.pause();
+      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);
+      audio.loop = true;
+      audio.volume = volume;
+      audio.play();
    }
 }
 

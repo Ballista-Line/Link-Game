@@ -9,13 +9,18 @@
    max-height:300px;
    z-index: -9;
 }
-.background {
+.background,#settings {
    position: fixed;
    top:20px;
    left:300px;
    width:700px;
    height:500px;
    z-index: -10;
+}
+#settings {
+   z-index: 0;
+   padding: 20px;
+   background-color:rgba(0,0,0,0.9);  
 }
 .passage {
    transition-duration: 0s;
