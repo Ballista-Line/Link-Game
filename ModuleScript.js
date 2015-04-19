@@ -5,9 +5,11 @@
 // ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE
 
 var rivalName = "Alastor";
+var allyName = "Ian"
 var audio = new Audio("");
 var volume = 0.2;
 var points = {"rival":0,"ally":0};
+var flags = {"f1":0,"f2":0,"f3":0,"f4":0};
 
 // The following 3 functions are from w3schools.com
 function setCookie(cname, cvalue, exdays) {
@@ -131,10 +133,11 @@ function toggleAuto() {
 
 // Filters out flags from a string and replaces them with appropriate values
 function filter(string) {
-   return string.replace("%n",getPlayerName())
-                .replace("%e",getPlayerElement())
-                .replace("%ae",getOppositeElement(getPlayerElement()))
-                .replace("%r",rivalName);
+   return string.replace(new RegExp("%n",'g'),getPlayerName())
+                .replace(new RegExp("%e",'g'),getPlayerElement())
+                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))
+                .replace(new RegExp("%r",'g'),rivalName)
+                .replace(new RegExp("%a",'g'),allyName);
 }
 
 // This is the name of the passage when typing begins.
@@ -300,6 +303,8 @@ macros['loadgame'] = {
          
          setVar("trainingElement",game.element);
 
+         resetpoints();
+
          addpoints("rival",game.points.rival);
          addpoints("ally",game.points.ally);
          
@@ -331,8 +336,35 @@ macros['playsound'] = {
    }
 }
 
+//resets points AND flags
+function resetpoints() {
+   points.rival = 0;
+   setVar("rprival",0);
+   points.ally = 0;
+   setVar("rpally",0);
+   flags = {"f1":0,"f2":0,"f3":0,"f4":0};
+   setVar("f1",0);
+   setVar("f2",0);
+   setVar("f3",0);
+   setVar("f4",0);
+}
+
+macros['setflag'] = {
+   handler: function(place, macroName, params, parser) {
+      flags[params[0]] = parseInt(params[1]);
+      alert(flags[params[0]]);
+   }
+}
+
+macros['newgame'] = {
+   handler: function(place, macroName, params, parser) {
+      resetpoints();
+   }
+}
+
 function addpoints(name,amount){
    points[name] += parseInt(amount);
+   setVar("rp"+name,points[name]);
 }
 
 macros['addpoints'] = {
@@ -361,7 +393,7 @@ function initialize() {
    $("body").append("<img class='background' />");
    $("body").append("<div id='textBox'></div>");
    $("body").append("<div id='speaker' class='stroke'></div>");
-   $("body").append("<div id='characters'></div>")
+   $("body").append("<div id='characters'></div>");
 }
 
 initialize();
