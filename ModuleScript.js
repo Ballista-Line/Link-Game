@@ -7,6 +7,7 @@
 var rivalName = "Alastor";
 var audio = new Audio("");
 var volume = 0.2;
+var points = {"rival":0,"ally":0};
 
 // The following 3 functions are from w3schools.com
 function setCookie(cname, cvalue, exdays) {
@@ -324,6 +325,16 @@ macros['playsound'] = {
       audio.loop = true;
       audio.volume = volume;
       audio.play();
+   }
+}
+
+function addpoints(name,amount){
+   points[name] += parseInt(amount);
+}
+
+macros['addpoints'] = {
+   handler: function(place, macroName, params, parser) {
+      addpoints(params[0],params[1]);
    }
 }
 
