@@ -348,7 +348,7 @@ function saveGame(slot) {
       "passage": getPassageTitle(),
       "name": getPlayerName(),
       "element": getPlayerElement(),
-      "showdialogue": getVar("showdialogue")
+      "showdialogue": getVar("showdialogue"),
       "points": points
    }
    setCookie(slot,JSON.stringify(game),100);
