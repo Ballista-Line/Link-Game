@@ -299,6 +299,9 @@ macros['loadgame'] = {
          setPlayerName(game.name);
          
          setVar("trainingElement",game.element);
+
+         addpoints("rival",game.points.rival);
+         addpoints("ally",game.points.ally);
          
          state.display(game.passage,place);
       },1);
@@ -346,6 +349,7 @@ function saveGame(slot) {
       "name": getPlayerName(),
       "element": getPlayerElement(),
       "showdialogue": getVar("showdialogue")
+      "points": points
    }
    setCookie(slot,JSON.stringify(game),100);
 }
