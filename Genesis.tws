@@ -1238,7 +1238,7 @@ tp384
 Rp385
 sbsa(dp386
 g14
-I00
+I01
 sg15
 (lp387
 F668.5
@@ -1249,7 +1249,7 @@ Tiddler
 p388
 (dp389
 g21
-VTODO: Add a skip-text button which goes to a passage which sets a variable and goes back to the previous passage in which the text will be fully typed.
+VTODO: Add a skip-text button which goes to a passage which sets a variable and goes back to the previous passage in which the text will be fully typed.\u000aTODO: add a slider to the settings screen for audio volume.
 p390
 sg23
 VUntitled Annotation 1
@@ -1258,12 +1258,12 @@ sg25
 g26
 ((I2015
 I4
+I18
 I17
-I19
-I50
-I44
-I4
-I107
+I26
+I55
+I5
+I108
 I1
 tp392
 (dp393
