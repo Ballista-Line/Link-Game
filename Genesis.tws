@@ -143,7 +143,7 @@ Tiddler
 p55
 (dp56
 g21
-V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.2;\u000avar points = {"rival":0,"ally":0};\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a               // alert("SDF");\u000a      if(isAuto()){\u000a         \u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000amacros['setnext'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a   }\u000a}\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlot1")) {\u000a         var saveData = getCookieObject("saveSlot1");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a   }\u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){\u000a         var game = getCookieObject("saveSlot1");\u000a         \u000a         setSpeaker(game.speaker);\u000a\u000a         setBackgroundSrc(game.background);\u000a         setVar("background",game.background);\u000a         \u000a         showDialogue(game.showdialogue);\u000a         \u000a         setPlayerName(game.name);\u000a         \u000a         setVar("trainingElement",game.element);\u000a\u000a         resetpoints();\u000a\u000a         addpoints("rival",game.points.rival);\u000a         addpoints("ally",game.points.ally);\u000a         \u000a         state.display(game.passage,place);\u000a      },1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      saveGame("saveSlot1");\u000a   }\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+params[0]+"' alt='"+params[0]+"' />");\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "background": getVar("background"),\u000a      "passage": getPassageTitle(),\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000a/* Build the out-of-passage html elements. If you have a saved game, also\u000a * enables the continue button.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a}\u000a\u000ainitialize();\u000a
+V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.2;\u000avar points = {"rival":0,"ally":0};\u000avar flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a               // alert("SDF");\u000a      if(isAuto()){\u000a         \u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000amacros['setnext'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a   }\u000a}\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlot1")) {\u000a         var saveData = getCookieObject("saveSlot1");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a   }\u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){\u000a         var game = getCookieObject("saveSlot1");\u000a         \u000a         setSpeaker(game.speaker);\u000a\u000a         setBackgroundSrc(game.background);\u000a         setVar("background",game.background);\u000a         \u000a         showDialogue(game.showdialogue);\u000a         \u000a         setPlayerName(game.name);\u000a         \u000a         setVar("trainingElement",game.element);\u000a\u000a         resetpoints();\u000a\u000a         addpoints("rival",game.points.rival);\u000a         addpoints("ally",game.points.ally);\u000a         \u000a         state.display(game.passage,place);\u000a      },1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      saveGame("saveSlot1");\u000a   }\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+params[0]+"' alt='"+params[0]+"' />");\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000a//resets points AND flags\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a   flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a   setVar("f1",0);\u000a   setVar("f2",0);\u000a   setVar("f3",0);\u000a   setVar("f4",0);\u000a}\u000a\u000amacros['setflag'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      flags[params[0]] = parseInt(params[1]);\u000a   }\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "background": getVar("background"),\u000a      "passage": getPassageTitle(),\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000a/* Build the out-of-passage html elements. If you have a saved game, also\u000a * enables the continue button.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a}\u000a\u000ainitialize();\u000a
 p57
 sg23
 VModuleScript
@@ -152,12 +152,12 @@ sg25
 g26
 ((I2015
 I4
-I18
 I19
-I10
-I10
-I5
-I108
+I17
+I36
+I40
+I6
+I109
 I1
 tp59
 (dp60
@@ -195,7 +195,7 @@ Tiddler
 p71
 (dp72
 g21
-V<<loadTitlescreen>>\u000a<<setbackground "title.png">>\u000a<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen" class="stroke">\u000a	[[New Game|Greeting00]]\u000a	<<if $canContinue is "true">>[[Continue|ContinueFromSave]]<<else>>Continue<<endif>>\u000a	[[Settings]]<span style="font-size:50%;">\u000a	<a href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Issues</a> | <a href="http://www.roblox.com/games/3053085/Darkened-Dawn" target="_blank">TDSI</a> | <<print document.lastModified>></span>\u000a</div>\u000a<div id="splash" class="stroke"><<Splash>></div>\u000a<<playsound "intro.mp3">>
+V<<loadTitlescreen>>\u000a<<setbackground "title.png">>\u000a<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen" class="stroke">\u000a	[[New Game|Greeting00]]\u000a	<<if $canContinue is "true">>[[Continue|ContinueFromSave]]<<else>>Continue<<endif>>\u000a	[[Settings]]<span style="font-size:50%;">\u000a	<a href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Submit an Issue</a> | <a href="http://www.roblox.com/games/3053085/Darkened-Dawn" target="_blank">TDSI</a> | <<print document.lastModified>></span>\u000a</div>\u000a<div id="splash" class="stroke"><<Splash>></div>\u000a<<playsound "intro.mp3">>
 p73
 sg23
 VStart
@@ -204,12 +204,12 @@ sg25
 g26
 ((I2015
 I4
-I18
-I15
-I29
-I39
-I5
-I108
+I19
+I16
+I37
+I20
+I6
+I109
 I1
 tp75
 (dp76
@@ -441,8 +441,8 @@ g14
 I00
 sg15
 (lp147
-F662.0
-aF784.5
+F296.92749825296954
+aF1100.8961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -641,8 +641,8 @@ g14
 I00
 sg15
 (lp207
-F394.5
-aF783.5
+F29.427498252969773
+aF1099.8961681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -691,8 +691,8 @@ g14
 I00
 sg15
 (lp222
-F3498.5
-aF731.75
+F3133.4274982529705
+aF1048.1461681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -741,8 +741,8 @@ g14
 I00
 sg15
 (lp237
-F3497.5
-aF861.75
+F3132.4274982529705
+aF1178.1461681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -791,8 +791,8 @@ g14
 I00
 sg15
 (lp252
-F3787.0
-aF798.5
+F3421.9274982529705
+aF1114.8961681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -841,8 +841,8 @@ g14
 I00
 sg15
 (lp267
-F3650.5
-aF550.75
+F3285.4274982529705
+aF867.14616818076
 asg17
 (itiddlywiki
 Tiddler
@@ -891,8 +891,8 @@ g14
 I00
 sg15
 (lp282
-F3652.5
-aF677.75
+F3287.4274982529705
+aF994.14616818076
 asg17
 (itiddlywiki
 Tiddler
@@ -941,8 +941,8 @@ g14
 I00
 sg15
 (lp297
-F3653.5
-aF802.75
+F3288.4274982529705
+aF1119.1461681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -991,8 +991,8 @@ g14
 I00
 sg15
 (lp312
-F3653.5
-aF929.75
+F3288.4274982529705
+aF1246.1461681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -1041,8 +1041,8 @@ g14
 I00
 sg15
 (lp327
-F3654.5
-aF1052.75
+F3289.4274982529705
+aF1369.1461681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -1091,8 +1091,8 @@ g14
 I00
 sg15
 (lp342
-F3655.5
-aF1178.75
+F3290.4274982529705
+aF1495.1461681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -1141,8 +1141,8 @@ g14
 I00
 sg15
 (lp357
-F1035.1666666666667
-aF781.9999999999999
+F670.0941649196362
+aF1098.3961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -1191,8 +1191,8 @@ g14
 I00
 sg15
 (lp372
-F1158.1666666666656
-aF781.9999999999999
+F793.094164919635
+aF1098.3961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -1401,7 +1401,7 @@ Tiddler
 p434
 (dp435
 g21
-V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!",\u000a"The fourth in a series!",\u000a"An amazing game!",\u000a"Meme-free!",\u000a"\u005c"10/10 pretty good\u005c" -IGN, probably",\u000a"Lies!",\u000a"Responsive developers!",\u000a"Hidden agendas!",\u000a"Too many endings!",\u000a"An A+ project!",\u000a"Refresh for a new message!",\u000a"Johnathan Pagnutti is a cool guy!",\u000a"I've spent too much time making splash text!",\u000a"Don't blink!",\u000a"Auto-saves your progress!",\u000a"Continue where you left off!",\u000a"Your decisions matter!",\u000a"\u005c"No false choices!\u005c"",\u000a"Inspired by Japanese visual novels!",\u000a"\u005c"Completely original!\u005c"",\u000a"I'm not stealing this effect from Minecraft!",\u000a"Este burrito es muy bueno, pero necesito salsa verde!",\u000a"Not for profit!",\u000a"Do not abet terrorism!"\u000a)>>
+V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!",\u000a"The fourth in a series!",\u000a"An amazing game!",\u000a"Meme-free!",\u000a"\u005c"10/10 pretty good\u005c" -IGN, probably",\u000a"Lies!",\u000a"Responsive developers!",\u000a"Hidden agendas!",\u000a"Too many endings!",\u000a"An A+ project!",\u000a"Refresh for a new message!",\u000a"Johnathan Pagnutti is a cool guy!",\u000a"I've spent too much time making splash text!",\u000a"Don't blink!",\u000a"Auto-saves your progress!",\u000a"Continue where you left off!",\u000a"Your decisions matter!",\u000a"\u005c"No false choices!\u005c"",\u000a"Inspired by Japanese visual novels!",\u000a"\u005c"Completely original!\u005c"",\u000a"I'm not stealing this effect from Minecraft!",\u000a"Este burrito es muy bueno, pero necesito salsa verde!",\u000a"Not for profit!",\u000a"Do not abet terrorism!",\u000a"Three different types of links!",\u000a"Over 30 nodes!"\u000a)>>
 p436
 sg23
 VSplash
@@ -1410,12 +1410,12 @@ sg25
 g26
 ((I2015
 I4
-I18
-I15
-I27
-I41
-I5
-I108
+I19
+I17
+I38
+I19
+I6
+I109
 I1
 tp438
 (dp439
@@ -1443,8 +1443,8 @@ g14
 I00
 sg15
 (lp448
-F912.5000000000005
-aF780.8333333333333
+F547.4274982529698
+aF1097.2295015140928
 asg17
 (itiddlywiki
 Tiddler
@@ -1493,8 +1493,8 @@ g14
 I00
 sg15
 (lp463
-F1280.1666666666654
-aF781.9999999999998
+F915.0941649196345
+aF1098.3961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -1543,8 +1543,8 @@ g14
 I00
 sg15
 (lp478
-F1409.1666666666665
-aF913.8333333333333
+F1044.0941649196361
+aF1230.229501514093
 asg17
 (itiddlywiki
 Tiddler
@@ -1593,8 +1593,8 @@ g14
 I00
 sg15
 (lp493
-F1406.5692066997972
-aF783.400423338855
+F1041.4967049527668
+aF1099.7965915196146
 asg17
 (itiddlywiki
 Tiddler
@@ -1643,8 +1643,8 @@ g14
 I00
 sg15
 (lp508
-F1412.8333333333333
-aF654.8333333333333
+F1047.7608315863029
+aF971.2295015140933
 asg17
 (itiddlywiki
 Tiddler
@@ -1693,8 +1693,8 @@ g14
 I00
 sg15
 (lp523
-F1534.6466040861394
-aF654.8398674765325
+F1169.574102339109
+aF971.2360356572925
 asg17
 (itiddlywiki
 Tiddler
@@ -1743,8 +1743,8 @@ g14
 I00
 sg15
 (lp538
-F1657.876863611264
-aF657.7056874654886
+F1292.8043618642337
+aF974.1018556462486
 asg17
 (itiddlywiki
 Tiddler
@@ -1793,8 +1793,8 @@ g14
 I00
 sg15
 (lp553
-F1777.4665930425178
-aF656.6979569298732
+F1412.3940912954874
+aF973.0941251106332
 asg17
 (itiddlywiki
 Tiddler
@@ -1843,8 +1843,8 @@ g14
 I00
 sg15
 (lp568
-F1898.4892324682498
-aF657.1231363887358
+F1533.4167307212194
+aF973.5193045694958
 asg17
 (itiddlywiki
 Tiddler
@@ -1893,8 +1893,8 @@ g14
 I00
 sg15
 (lp583
-F2019.511871893982
-aF657.5483158475986
+F1654.4393701469517
+aF973.9444840283586
 asg17
 (itiddlywiki
 Tiddler
@@ -1943,8 +1943,8 @@ g14
 I00
 sg15
 (lp598
-F2139.890115958035
-aF655.1744892324682
+F1774.8176142110053
+aF971.5706574132282
 asg17
 (itiddlywiki
 Tiddler
@@ -1993,8 +1993,8 @@ g14
 I00
 sg15
 (lp613
-F2263.8011227682673
-aF653.4632799558253
+F1898.728621021238
+aF969.8594481365853
 asg17
 (itiddlywiki
 Tiddler
@@ -2043,8 +2043,8 @@ g14
 I00
 sg15
 (lp628
-F2389.319160684703
-aF652.3992269464381
+F2024.2466589376738
+aF968.7953951271982
 asg17
 (itiddlywiki
 Tiddler
@@ -2093,8 +2093,8 @@ g14
 I00
 sg15
 (lp643
-F2387.4610712313643
-aF527.7360574268366
+F2022.388569484335
+aF844.1322256075966
 asg17
 (itiddlywiki
 Tiddler
@@ -2143,8 +2143,8 @@ g14
 I00
 sg15
 (lp658
-F2507.5924903368314
-aF527.3108779679737
+F2142.519988589802
+aF843.7070461487338
 asg17
 (itiddlywiki
 Tiddler
@@ -2193,8 +2193,8 @@ g14
 I00
 sg15
 (lp673
-F2627.9569298730007
-aF528.7437879624516
+F2262.884428125971
+aF845.1399561432116
 asg17
 (itiddlywiki
 Tiddler
@@ -2243,8 +2243,8 @@ g14
 I00
 sg15
 (lp688
-F2751.845389287685
-aF529.9436775262288
+F2386.7728875406556
+aF846.3398457069889
 asg17
 (itiddlywiki
 Tiddler
@@ -2293,8 +2293,8 @@ g14
 I00
 sg15
 (lp703
-F2993.630680584595
-aF788.9578030200718
+F2628.5581788375657
+aF1105.3539712008312
 asg17
 (itiddlywiki
 Tiddler
@@ -2343,8 +2343,8 @@ g14
 I00
 sg15
 (lp718
-F2512.124240750969
-aF653.4069574820543
+F2147.0517390039395
+aF969.8031256628143
 asg17
 (itiddlywiki
 Tiddler
@@ -2393,8 +2393,8 @@ g14
 I00
 sg15
 (lp733
-F1529.1479845389279
-aF781.7106570955273
+F1164.0754827918975
+aF1098.1068252762868
 asg17
 (itiddlywiki
 Tiddler
@@ -2443,8 +2443,8 @@ g14
 I00
 sg15
 (lp748
-F1655.0110436223072
-aF780.9359469906129
+F1289.9385418752768
+aF1097.3321151713724
 asg17
 (itiddlywiki
 Tiddler
@@ -2493,8 +2493,8 @@ g14
 I00
 sg15
 (lp763
-F1775.6085035891776
-aF780.277747101049
+F1410.5360018421472
+aF1096.6739152818086
 asg17
 (itiddlywiki
 Tiddler
@@ -2543,8 +2543,8 @@ g14
 I00
 sg15
 (lp778
-F1900.0386526780778
-aF780.9359469906128
+F1534.9661509310474
+aF1097.3321151713724
 asg17
 (itiddlywiki
 Tiddler
@@ -2593,8 +2593,8 @@ g14
 I00
 sg15
 (lp793
-F2020.4030922142467
-aF780.9359469906127
+F1655.3305904672163
+aF1097.3321151713722
 asg17
 (itiddlywiki
 Tiddler
@@ -2643,8 +2643,8 @@ g14
 I00
 sg15
 (lp808
-F1531.0
-aF914.0
+F1165.9274982529696
+aF1230.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -2693,8 +2693,8 @@ g14
 I00
 sg15
 (lp823
-F1653.0
-aF913.0
+F1287.9274982529696
+aF1229.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -2743,8 +2743,8 @@ g14
 I00
 sg15
 (lp838
-F1775.0
-aF914.0
+F1409.9274982529696
+aF1230.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -2793,8 +2793,8 @@ g14
 I00
 sg15
 (lp853
-F1899.0
-aF913.0
+F1533.9274982529696
+aF1229.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -2843,8 +2843,8 @@ g14
 I00
 sg15
 (lp868
-F2021.0
-aF913.0
+F1655.9274982529696
+aF1229.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -2893,8 +2893,8 @@ g14
 I00
 sg15
 (lp883
-F2147.0
-aF1036.0
+F1781.9274982529703
+aF1352.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -2943,8 +2943,8 @@ g14
 I00
 sg15
 (lp898
-F2147.0
-aF1160.0
+F1781.9274982529703
+aF1476.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -2993,8 +2993,8 @@ g14
 I00
 sg15
 (lp913
-F2147.0
-aF912.0
+F1781.9274982529703
+aF1228.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -3043,8 +3043,8 @@ g14
 I00
 sg15
 (lp928
-F2271.0
-aF911.0
+F1905.9274982529707
+aF1227.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -3093,8 +3093,8 @@ g14
 I00
 sg15
 (lp943
-F2394.0
-aF910.0
+F2028.9274982529707
+aF1226.3961681807598
 asg17
 (itiddlywiki
 Tiddler
@@ -3143,8 +3143,8 @@ g14
 I00
 sg15
 (lp958
-F2269.9999999999986
-aF1035.0000000000002
+F1904.9274982529694
+aF1351.39616818076
 asg17
 (itiddlywiki
 Tiddler
@@ -3193,8 +3193,8 @@ g14
 I00
 sg15
 (lp973
-F2391.6666666666665
-aF1036.6666666666656
+F2026.5941649196373
+aF1353.0628348474254
 asg17
 (itiddlywiki
 Tiddler
@@ -3243,8 +3243,8 @@ g14
 I00
 sg15
 (lp988
-F2269.999999999999
-aF1161.6666666666663
+F1904.9274982529698
+aF1478.062834847426
 asg17
 (itiddlywiki
 Tiddler
@@ -3293,8 +3293,8 @@ g14
 I00
 sg15
 (lp1003
-F2390.0
-aF1161.6666666666663
+F2024.9274982529707
+aF1478.062834847426
 asg17
 (itiddlywiki
 Tiddler
@@ -3393,8 +3393,8 @@ g14
 I00
 sg15
 (lp1033
-F536.5
-aF786.0
+F171.42749825296963
+aF1102.3961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3443,8 +3443,8 @@ g14
 I00
 sg15
 (lp1048
-F3117.4999999999995
-aF787.4999999999999
+F2752.42749825297
+aF1103.8961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3493,8 +3493,8 @@ g14
 I00
 sg15
 (lp1063
-F3241.9999999999995
-aF787.4999999999999
+F2876.92749825297
+aF1103.8961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3543,8 +3543,8 @@ g14
 I00
 sg15
 (lp1078
-F3364.4999999999995
-aF787.4999999999999
+F2999.42749825297
+aF1103.8961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3593,8 +3593,8 @@ g14
 I00
 sg15
 (lp1093
-F3908.2499999999995
-aF796.2499999999999
+F3543.17749825297
+aF1112.6461681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3643,8 +3643,8 @@ g14
 I00
 sg15
 (lp1108
-F4030.7499999999995
-aF794.9999999999999
+F3665.67749825297
+aF1111.3961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3693,8 +3693,8 @@ g14
 I00
 sg15
 (lp1123
-F4154.25
-aF799.25
+F3789.177498252969
+aF1115.6461681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -3743,8 +3743,8 @@ g14
 I00
 sg15
 (lp1138
-F4324.499999999998
-aF800.8333333333327
+F3959.427498252966
+aF1117.2295015140921
 asg17
 (itiddlywiki
 Tiddler
@@ -3793,8 +3793,8 @@ g14
 I00
 sg15
 (lp1153
-F4326.166666666666
-aF924.1666666666669
+F3961.094164919634
+aF1240.5628348474265
 asg17
 (itiddlywiki
 Tiddler
@@ -3843,8 +3843,8 @@ g14
 I00
 sg15
 (lp1168
-F4322.833333333335
-aF677.4999999999993
+F3957.7608315863026
+aF993.8961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3893,8 +3893,8 @@ g14
 I00
 sg15
 (lp1183
-F4473.333333333331
-aF799.9999999999999
+F4108.260831586298
+aF1116.3961681807593
 asg17
 (itiddlywiki
 Tiddler
@@ -3943,8 +3943,8 @@ g14
 I00
 sg15
 (lp1198
-F4603.333333333326
-aF800.0000000000001
+F4238.260831586292
+aF1116.3961681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -3993,8 +3993,8 @@ g14
 I00
 sg15
 (lp1213
-F4728.333333333331
-aF801.6666666666665
+F4363.260831586297
+aF1118.062834847426
 asg17
 (itiddlywiki
 Tiddler
@@ -4043,8 +4043,8 @@ g14
 I00
 sg15
 (lp1228
-F4871.666666666665
-aF427.5
+F4506.594164919631
+aF743.89616818076
 asg17
 (itiddlywiki
 Tiddler
@@ -4093,8 +4093,8 @@ g14
 I00
 sg15
 (lp1243
-F4994.999999999998
-aF430.83333333333303
+F4629.927498252964
+aF747.229501514093
 asg17
 (itiddlywiki
 Tiddler
@@ -4143,8 +4143,8 @@ g14
 I00
 sg15
 (lp1258
-F5128.666666666667
-aF505.8333333333335
+F4763.594164919633
+aF822.2295015140935
 asg17
 (itiddlywiki
 Tiddler
@@ -4193,8 +4193,8 @@ g14
 I00
 sg15
 (lp1273
-F5125.333333333335
-aF365.8333333333332
+F4760.260831586301
+aF682.2295015140932
 asg17
 (itiddlywiki
 Tiddler
@@ -4243,8 +4243,8 @@ g14
 I00
 sg15
 (lp1288
-F5258.333333333329
-aF434.1666666666665
+F4893.260831586295
+aF750.5628348474265
 asg17
 (itiddlywiki
 Tiddler
@@ -4293,8 +4293,8 @@ g14
 I00
 sg15
 (lp1303
-F5385.333333333337
-aF360.8333333333327
+F5020.260831586303
+aF677.2295015140926
 asg17
 (itiddlywiki
 Tiddler
@@ -4343,8 +4343,8 @@ g14
 I00
 sg15
 (lp1318
-F5388.66666666666
-aF502.49999999999966
+F5023.594164919626
+aF818.8961681807597
 asg17
 (itiddlywiki
 Tiddler
@@ -4393,8 +4393,8 @@ g14
 I00
 sg15
 (lp1333
-F5532.499999999999
-aF427.4999999999999
+F5167.427498252965
+aF743.8961681807599
 asg17
 (itiddlywiki
 Tiddler
@@ -4443,8 +4443,8 @@ g14
 I00
 sg15
 (lp1348
-F4871.666666666665
-aF809.1666666666665
+F4506.594164919631
+aF1125.562834847426
 asg17
 (itiddlywiki
 Tiddler
@@ -4493,8 +4493,8 @@ g14
 I00
 sg15
 (lp1363
-F4874.999999999999
-aF1137.4999999999998
+F4509.927498252965
+aF1453.8961681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -4593,15 +4593,15 @@ g14
 I00
 sg15
 (lp1393
-F5713.333333333331
-aF795.0000000000002
+F5348.260831586297
+aF1111.3961681807598
 asg17
 (itiddlywiki
 Tiddler
 p1394
 (dp1395
 g21
-V<<EndOfDemo>>\u000a<<print $rprival>>\u000a<<print $rpally>>
+V<<setbackground "camp_outer.png">>\u000a<<setspeaker " ">>\u000a<<msg "[It's been a long day. I head back to my cabin and try to get some sleep.]">>\u000a<<continue "n1 1">>
 p1396
 sg23
 Vn1
@@ -4610,12 +4610,12 @@ sg25
 g26
 ((I2015
 I4
-I18
-I22
-I9
-I12
-I5
-I108
+I19
+I16
+I53
+I3
+I6
+I109
 I1
 tp1398
 (dp1399
@@ -4643,8 +4643,8 @@ g14
 I00
 sg15
 (lp1408
-F4996.66666666666
-aF806.6666666666665
+F4631.594164919626
+aF1123.062834847426
 asg17
 (itiddlywiki
 Tiddler
@@ -4693,8 +4693,8 @@ g14
 I00
 sg15
 (lp1423
-F5122.000000000002
-aF739.9999999999994
+F4756.927498252968
+aF1056.3961681807589
 asg17
 (itiddlywiki
 Tiddler
@@ -4743,8 +4743,8 @@ g14
 I00
 sg15
 (lp1438
-F5120.333333333329
-aF873.3333333333331
+F4755.260831586295
+aF1189.7295015140926
 asg17
 (itiddlywiki
 Tiddler
@@ -4793,8 +4793,8 @@ g14
 I00
 sg15
 (lp1453
-F5248.333333333331
-aF809.9999999999995
+F4883.260831586297
+aF1126.396168180759
 asg17
 (itiddlywiki
 Tiddler
@@ -4843,8 +4843,8 @@ g14
 I00
 sg15
 (lp1468
-F5371.666666666666
-aF871.6666666666663
+F5006.594164919632
+aF1188.0628348474258
 asg17
 (itiddlywiki
 Tiddler
@@ -4893,8 +4893,8 @@ g14
 I00
 sg15
 (lp1483
-F5372.000000000004
-aF735.0000000000001
+F5006.92749825297
+aF1051.3961681807596
 asg17
 (itiddlywiki
 Tiddler
@@ -4943,8 +4943,8 @@ g14
 I00
 sg15
 (lp1498
-F5498.333333333333
-aF811.6666666666663
+F5133.260831586299
+aF1128.0628348474258
 asg17
 (itiddlywiki
 Tiddler
@@ -4993,8 +4993,8 @@ g14
 I00
 sg15
 (lp1513
-F5000.333333333321
-aF1136.666666666667
+F4635.260831586287
+aF1453.0628348474268
 asg17
 (itiddlywiki
 Tiddler
@@ -5043,8 +5043,8 @@ g14
 I00
 sg15
 (lp1528
-F5125.333333333329
-aF1075.0000000000011
+F4760.260831586295
+aF1391.396168180761
 asg17
 (itiddlywiki
 Tiddler
@@ -5093,8 +5093,8 @@ g14
 I00
 sg15
 (lp1543
-F5127.0
-aF1205.0000000000018
+F4761.927498252966
+aF1521.3961681807616
 asg17
 (itiddlywiki
 Tiddler
@@ -5143,8 +5143,8 @@ g14
 I00
 sg15
 (lp1558
-F5250.666666666652
-aF1138.3333333333342
+F4885.594164919618
+aF1454.729501514094
 asg17
 (itiddlywiki
 Tiddler
@@ -5193,8 +5193,8 @@ g14
 I00
 sg15
 (lp1573
-F5373.333333333337
-aF1203.333333333334
+F5008.260831586303
+aF1519.7295015140937
 asg17
 (itiddlywiki
 Tiddler
@@ -5243,8 +5243,8 @@ g14
 I00
 sg15
 (lp1588
-F5371.999999999997
-aF1068.3333333333321
+F5006.927498252963
+aF1384.729501514092
 asg17
 (itiddlywiki
 Tiddler
@@ -5293,8 +5293,8 @@ g14
 I00
 sg15
 (lp1603
-F5496.666666666662
-aF1133.3333333333328
+F5131.594164919628
+aF1449.7295015140926
 asg17
 (itiddlywiki
 Tiddler
@@ -5338,10 +5338,610 @@ tp1613
 (dp1614
 tp1615
 Rp1616
+sbsa(dp1617
+g14
+I00
+sg15
+(lp1618
+F5471.299026030744
+aF1112.403112625204
+asg17
+(itiddlywiki
+Tiddler
+p1619
+(dp1620
+g21
+V<<if Math.abs($rprival - $rpally) >= 2>>\u000a	<<if $rprival > $rpally>>\u000a		<<n1r>>\u000a	<<else>>\u000a		<<n1a>>\u000a	<<endif>>\u000a<<else>>\u000a	<<n1c>>\u000a<<endif>>
+p1621
+sg23
+Vn1 1
+p1622
+sg25
+g26
+((I2015
+I4
+I19
+I16
+I56
+I37
+I6
+I109
+I1
+tp1623
+(dp1624
+tp1625
+Rp1626
+sg31
+(lp1627
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I53
+I7
+I6
+I109
+I1
+tp1628
+(dp1629
+tp1630
+Rp1631
+sbsa(dp1632
+g14
+I00
+sg15
+(lp1633
+F5683.972637141854
+aF890.6149181807596
+asg17
+(itiddlywiki
+Tiddler
+p1634
+(dp1635
+g21
+V<<msg "[I hear knocking on my door. It's %r. He's telling me to come with him. I follow him to a place nearby in the woods. There's another person there. They tell me of their plans to do a [bad thing].]">>\u000a<<continue "n1r 1">>
+p1636
+sg23
+Vn1r
+p1637
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I6
+I41
+I6
+I109
+I1
+tp1638
+(dp1639
+tp1640
+Rp1641
+sg31
+(lp1642
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I56
+I42
+I6
+I109
+I1
+tp1643
+(dp1644
+tp1645
+Rp1646
+sbsa(dp1647
+g14
+I00
+sg15
+(lp1648
+F5696.12541491963
+aF1370.6496404029813
+asg17
+(itiddlywiki
+Tiddler
+p1649
+(dp1650
+g21
+V<<msg "[%a comes over to me from the other room. He says he's overheard something about a secret meeting involving %r. I agree to go check out the meeting with him. We sneek up on the meeting location and overhear %r and the other person ploting against the camp. %a tells me we have to stop their plans.">>\u000a<<continue "n1a 1">>
+p1651
+sg23
+Vn1a
+p1652
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I17
+I14
+I6
+I109
+I1
+tp1653
+(dp1654
+tp1655
+Rp1656
+sg31
+(lp1657
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I56
+I55
+I6
+I109
+I1
+tp1658
+(dp1659
+tp1660
+Rp1661
+sbsa(dp1662
+g14
+I00
+sg15
+(lp1663
+F5683.972637141856
+aF1115.4413070696485
+asg17
+(itiddlywiki
+Tiddler
+p1664
+(dp1665
+g21
+V<<msg "[It's been a long day.]">>\u000a<<continue "m1">>
+p1666
+sg23
+Vn1c
+p1667
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I14
+I35
+I6
+I109
+I1
+tp1668
+(dp1669
+tp1670
+Rp1671
+sg31
+(lp1672
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I57
+I2
+I6
+I109
+I1
+tp1673
+(dp1674
+tp1675
+Rp1676
+sbsa(dp1677
+g14
+I00
+sg15
+(lp1678
+F6148.816387141856
+aF1112.4031126252037
+asg17
+(itiddlywiki
+Tiddler
+p1679
+(dp1680
+g21
+V<<msg "[After that, I go to sleep.]">>\u000a<<continue "m1 1">>
+p1681
+sg23
+Vm1
+p1682
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I50
+I17
+I6
+I109
+I1
+tp1683
+(dp1684
+tp1685
+Rp1686
+sg31
+(lp1687
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I58
+I49
+I6
+I109
+I1
+tp1688
+(dp1689
+tp1690
+Rp1691
+sbsa(dp1692
+g14
+I00
+sg15
+(lp1693
+F5817.653192697409
+aF890.6149181807598
+asg17
+(itiddlywiki
+Tiddler
+p1694
+(dp1695
+g21
+V<div id="passageBox">What should I do?\u000a[[Contribute to their schemes|n1ra]]\u000a[[Don't agree to help them|n1rb]]\u000a</div>
+p1696
+sg23
+Vn1r 1
+p1697
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I8
+I38
+I6
+I109
+I1
+tp1698
+(dp1699
+tp1700
+Rp1701
+sg31
+(lp1702
+sg33
+g26
+((I2015
+I4
+I19
+I17
+I5
+I28
+I6
+I109
+I1
+tp1703
+(dp1704
+tp1705
+Rp1706
+sbsa(dp1707
+g14
+I00
+sg15
+(lp1708
+F5993.212220475185
+aF799.2260292918711
+asg17
+(itiddlywiki
+Tiddler
+p1709
+(dp1710
+g21
+V<<addpoints "rival" 2>>\u000a<<setflag "dec1" 1>>\u000a<<msg "[I agree to help them. This sounds fun.]">>\u000a<<continue "m1">>
+p1711
+sg23
+Vn1ra
+p1712
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I12
+I26
+I6
+I109
+I1
+tp1713
+(dp1714
+tp1715
+Rp1716
+sg31
+(lp1717
+sg33
+g26
+((I2015
+I4
+I19
+I17
+I9
+I25
+I6
+I109
+I1
+tp1718
+(dp1719
+tp1720
+Rp1721
+sbsa(dp1722
+g14
+I00
+sg15
+(lp1723
+F5996.493470475188
+aF932.9065848474268
+asg17
+(itiddlywiki
+Tiddler
+p1724
+(dp1725
+g21
+V<<addpoints "rival" -1>>\u000a<<setflag "dec1" 2>>\u000a<<msg "[I cannot agree to help them. They tell me that if I snitch on them that I'm going to regret it. I leave go back to my cabin.]">>\u000a<<continue "m1">>
+p1726
+sg23
+Vn1rb
+p1727
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I13
+I48
+I6
+I109
+I1
+tp1728
+(dp1729
+tp1730
+Rp1731
+sg31
+(lp1732
+sg33
+g26
+((I2015
+I4
+I19
+I17
+I9
+I25
+I6
+I109
+I1
+tp1733
+(dp1734
+tp1735
+Rp1736
+sbsa(dp1737
+g14
+I00
+sg15
+(lp1738
+F5817.6531926974085
+aF1361.5350570696485
+asg17
+(itiddlywiki
+Tiddler
+p1739
+(dp1740
+g21
+V<div id="passageBox">What should I do?\u000a[[Agree to help stop them.|n1aa]]\u000a[[Stay out of it.|n1ab]]\u000a</div>
+p1741
+sg23
+Vn1a 1
+p1742
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I18
+I36
+I6
+I109
+I1
+tp1743
+(dp1744
+tp1745
+Rp1746
+sg31
+(lp1747
+sg33
+g26
+((I2015
+I4
+I19
+I17
+I16
+I53
+I6
+I109
+I1
+tp1748
+(dp1749
+tp1750
+Rp1751
+sbsa(dp1752
+g14
+I00
+sg15
+(lp1753
+F5987.792081586297
+aF1306.6045015140928
+asg17
+(itiddlywiki
+Tiddler
+p1754
+(dp1755
+g21
+V<<addpoints "ally" 2>>\u000a<<setflag "dec1" 3>>\u000a<<msg "[I cannot let this go on. I agree to help %a stop them. We wait for them to finish talking so that we can hear all the details.]">>\u000a<<continue "m1">>
+p1756
+sg23
+Vn1aa
+p1757
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I35
+I1
+I6
+I109
+I1
+tp1758
+(dp1759
+tp1760
+Rp1761
+sg31
+(lp1762
+sg33
+g26
+((I2015
+I4
+I19
+I17
+I18
+I38
+I6
+I109
+I1
+tp1763
+(dp1764
+tp1765
+Rp1766
+sbsa(dp1767
+g14
+I00
+sg15
+(lp1768
+F5984.340692697408
+aF1440.77116818076
+asg17
+(itiddlywiki
+Tiddler
+p1769
+(dp1770
+g21
+V<<addpoints "ally" -1>>\u000a<<setflag "dec1" 4>>\u000a<<msg "[I need to stay out of this. I'm not looking to get involved in any drama, I'm just here to train.]">>\u000a<<continue "m1">>
+p1771
+sg23
+Vn1ab
+p1772
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I35
+I29
+I6
+I109
+I1
+tp1773
+(dp1774
+tp1775
+Rp1776
+sg31
+(lp1777
+sg33
+g26
+((I2015
+I4
+I19
+I17
+I18
+I38
+I6
+I109
+I1
+tp1778
+(dp1779
+tp1780
+Rp1781
+sbsa(dp1782
+g14
+I00
+sg15
+(lp1783
+F6275.233825045099
+aF1116.2580232228725
+asg17
+(itiddlywiki
+Tiddler
+p1784
+(dp1785
+g21
+V<<msg "[
+p1786
+sg23
+Vm1 1
+p1787
+sg25
+g26
+((I2015
+I4
+I19
+I17
+I50
+I37
+I6
+I109
+I1
+tp1788
+(dp1789
+tp1790
+Rp1791
+sg31
+(lp1792
+sg33
+g26
+((I2015
+I4
+I19
+I17
+I50
+I23
+I6
+I109
+I1
+tp1793
+(dp1794
+tp1795
+Rp1796
 sbsasS'scale'
-p1617
-F0.32914285714285724
+p1797
+F0.504363676038359
 sS'snapping'
-p1618
+p1798
 I00
 ss.

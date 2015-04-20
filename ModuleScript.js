@@ -352,7 +352,6 @@ function resetpoints() {
 macros['setflag'] = {
    handler: function(place, macroName, params, parser) {
       flags[params[0]] = parseInt(params[1]);
-      alert(flags[params[0]]);
    }
 }
 
