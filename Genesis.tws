@@ -3360,12 +3360,12 @@ sg25
 g26
 ((I2015
 I4
+I20
 I18
-I17
-I19
-I25
-I5
-I108
+I31
+I45
+I0
+I110
 I1
 tp1023
 (dp1024
@@ -5401,7 +5401,7 @@ Tiddler
 p1634
 (dp1635
 g21
-V<<msg "[I hear knocking on my door. It's %r. He's telling me to come with him. I follow him to a place nearby in the woods. There's another person there. They tell me of their plans to do a [bad thing].]">>\u000a<<continue "n1r 1">>
+V<<msg "[I hear knocking on my door. It's %r. He's telling me to come with him. I follow him to a place nearby in the woods. There's another person there. They tell me of their plans to release hordes of demons on the camp by deactivating the pillars keeping the training portal closed. The pillars require sacrifices, and they plan on causing the deaths of the other campers. They want my help.]">>\u000a<<continue "n1r 1">>
 p1636
 sg23
 Vn1r
@@ -5410,12 +5410,12 @@ sg25
 g26
 ((I2015
 I4
-I19
-I17
-I6
-I41
-I6
-I109
+I20
+I18
+I29
+I30
+I0
+I110
 I1
 tp1638
 (dp1639
@@ -5451,7 +5451,7 @@ Tiddler
 p1649
 (dp1650
 g21
-V<<msg "[%a comes over to me from the other room. He says he's overheard something about a secret meeting involving %r. I agree to go check out the meeting with him. We sneek up on the meeting location and overhear %r and the other person ploting against the camp. %a tells me we have to stop their plans.">>\u000a<<continue "n1a 1">>
+V<<msg "[%a comes over to me from the other room. He says he's overheard something about a secret meeting involving %r. I agree to go check out the meeting with him. We sneek up on the meeting location and overhear %r and the other person ploting against the camp. They're going to release hordes of demons through the training portal, and kill other campers in the process. %a tells me we have to stop their plans.">>\u000a<<continue "n1a 1">>
 p1651
 sg23
 Vn1a
@@ -5460,12 +5460,12 @@ sg25
 g26
 ((I2015
 I4
-I19
-I17
-I17
-I14
-I6
-I109
+I20
+I18
+I30
+I11
+I0
+I110
 I1
 tp1653
 (dp1654
@@ -5501,7 +5501,7 @@ Tiddler
 p1664
 (dp1665
 g21
-V<<msg "[It's been a long day.]">>\u000a<<continue "m1">>
+V<<msg "[Before I go to bed, I go get some water. I notice %a isn't in his room. Hmm, odd.]">>\u000a<<continue "m1">>
 p1666
 sg23
 Vn1c
@@ -5510,12 +5510,12 @@ sg25
 g26
 ((I2015
 I4
-I19
-I17
-I14
-I35
-I6
-I109
+I20
+I18
+I7
+I13
+I0
+I110
 I1
 tp1668
 (dp1669
@@ -5893,15 +5893,15 @@ g14
 I00
 sg15
 (lp1783
-F6275.233825045099
-aF1116.2580232228725
+F6271.235612893282
+aF1114.2589171469638
 asg17
 (itiddlywiki
 Tiddler
 p1784
 (dp1785
 g21
-V<<msg "[
+V<<setbackground "camp_outer.png">>\u000a<<addcharacter "counselor_normal.png">>\u000a<<setspeaker "Counselor">>\u000a<<msg "Rise and shine you lazy mongrels. Today the real training starts">>\u000a<<continue "m1 2">>
 p1786
 sg23
 Vm1 1
@@ -5910,12 +5910,12 @@ sg25
 g26
 ((I2015
 I4
-I19
-I17
-I50
-I37
-I6
-I109
+I20
+I18
+I11
+I54
+I0
+I110
 I1
 tp1788
 (dp1789
@@ -5938,10 +5938,660 @@ tp1793
 (dp1794
 tp1795
 Rp1796
+sbsa(dp1797
+g14
+I00
+sg15
+(lp1798
+F6396.6930256172345
+aF1114.33964401471
+asg17
+(itiddlywiki
+Tiddler
+p1799
+(dp1800
+g21
+V<<setspeaker " ">>\u000a<<addcharacter "spacer.gif">>\u000a<<msg "[I get dressed quickly and follow all the other trainees leaving their cabins.]">>\u000a<<continue "m1 3">>
+p1801
+sg23
+Vm1 2
+p1802
+sg25
+g26
+((I2015
+I4
+I20
+I18
+I14
+I37
+I0
+I110
+I1
+tp1803
+(dp1804
+tp1805
+Rp1806
+sg31
+(lp1807
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I58
+I49
+I6
+I109
+I1
+tp1808
+(dp1809
+tp1810
+Rp1811
+sbsa(dp1812
+g14
+I00
+sg15
+(lp1813
+F6516.639390171747
+aF1116.338750090619
+asg17
+(itiddlywiki
+Tiddler
+p1814
+(dp1815
+g21
+V<<setbackground "arena.png">>\u000a<<addcharacter "counselor_normal.png">>\u000a<<setspeaker "Counselor">>\u000a<<msg "Welcome to the Arena. Here is where your elemental strengths will be tested.">>\u000a<<continue "m1 4">>
+p1816
+sg23
+Vm1 3
+p1817
+sg25
+g26
+((I2015
+I4
+I20
+I18
+I25
+I59
+I0
+I110
+I1
+tp1818
+(dp1819
+tp1820
+Rp1821
+sg31
+(lp1822
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I58
+I49
+I6
+I109
+I1
+tp1823
+(dp1824
+tp1825
+Rp1826
+sbsa(dp1827
+g14
+I00
+sg15
+(lp1828
+F6636.585754726259
+aF1114.3396440147092
+asg17
+(itiddlywiki
+Tiddler
+p1829
+(dp1830
+g21
+V<<addcharacter "portal-kun.gif">>\u000a<<msg "I will be sending creatures through this portal for you to fight against. As training progresses, the challenges will become greater and greater. In addition to the enemies being sent through, the environment will also be adjusted, either for or against your elemental alignment.">>\u000a<<continue "m1 5">>
+p1831
+sg23
+Vm1 4
+p1832
+sg25
+g26
+((I2015
+I4
+I20
+I18
+I43
+I0
+I0
+I110
+I1
+tp1833
+(dp1834
+tp1835
+Rp1836
+sg31
+(lp1837
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I58
+I49
+I6
+I109
+I1
+tp1838
+(dp1839
+tp1840
+Rp1841
+sbsa(dp1842
+g14
+I00
+sg15
+(lp1843
+F6758.531225356681
+aF1118.3378561665272
+asg17
+(itiddlywiki
+Tiddler
+p1844
+(dp1845
+g21
+V<<addcharacter "counselor_normal.png">>\u000a<<msg "Today's training will have no elemental alignment, since you are all incappable of harnessing the powers of the elements anyway.">>\u000a<<continue "m1 6">>
+p1846
+sg23
+Vm1 5
+p1847
+sg25
+g26
+((I2015
+I4
+I20
+I18
+I45
+I46
+I0
+I110
+I1
+tp1848
+(dp1849
+tp1850
+Rp1851
+sg31
+(lp1852
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I58
+I49
+I6
+I109
+I1
+tp1853
+(dp1854
+tp1855
+Rp1856
+sbsa(dp1857
+g14
+I00
+sg15
+(lp1858
+F6878.477589911195
+aF1116.338750090618
+asg17
+(itiddlywiki
+Tiddler
+p1859
+(dp1860
+g21
+V<<msg "You there, %n. You're going first.">>\u000a<<continue "m1 7">>
+p1861
+sg23
+Vm1 6
+p1862
+sg25
+g26
+((I2015
+I4
+I20
+I18
+I46
+I29
+I0
+I110
+I1
+tp1863
+(dp1864
+tp1865
+Rp1866
+sg31
+(lp1867
+sg33
+g26
+((I2015
+I4
+I19
+I16
+I58
+I49
+I6
+I109
+I1
+tp1868
+(dp1869
+tp1870
+Rp1871
+sbsa(dp1872
+g14
+I00
+sg15
+(lp1873
+F7000.869477831718
+aF1115.5011903569668
+asg17
+(itiddlywiki
+Tiddler
+p1874
+(dp1875
+g21
+V<<addcharacter "spacer.png">>\u000a<<setspeaker " ">>\u000a<<msg "As instructed, I enter the arena. Among the obstacles I find several weapons.">>\u000a<<continue "m1 8">>
+p1876
+sg23
+Vm1 7
+p1877
+sg25
+g26
+((I2015
+I4
+I20
+I18
+I57
+I4
+I0
+I110
+I1
+tp1878
+(dp1879
+tp1880
+Rp1881
+sg31
+(lp1882
+sg33
+g26
+((I2015
+I4
+I20
+I18
+I46
+I35
+I0
+I110
+I1
+tp1883
+(dp1884
+tp1885
+Rp1886
+sbsa(dp1887
+g14
+I00
+sg15
+(lp1888
+F7124.814054538043
+aF1119.4994025087838
+asg17
+(itiddlywiki
+Tiddler
+p1889
+(dp1890
+g21
+V<div id="passageBox">[[I pick up a sword.|m1a]]\u000a[[I pick up a mace.|m1b]]\u000a[[I pick up a shield.|m1c]]\u000a[[I pick up a gun.|m1d]]\u000a[[I wait.|m1e]]\u000a</div>
+p1891
+sg23
+Vm1 8
+p1892
+sg25
+g26
+((I2015
+I4
+I20
+I19
+I3
+I53
+I0
+I110
+I1
+tp1893
+(dp1894
+tp1895
+Rp1896
+sg31
+(lp1897
+sg33
+g26
+((I2015
+I4
+I20
+I18
+I49
+I48
+I0
+I110
+I1
+tp1898
+(dp1899
+tp1900
+Rp1901
+sbsa(dp1902
+g14
+I00
+sg15
+(lp1903
+F7276.733601369813
+aF747.6030977033931
+asg17
+(itiddlywiki
+Tiddler
+p1904
+(dp1905
+g21
+V<<addpoints "rival" 1>>\u000a<<set $weapon to "sword">>\u000a<<setspeaker "%r">>\u000a<<msg "Give 'em hell!">>\u000a<<continue "m1 9">>
+p1906
+sg23
+Vm1a
+p1907
+sg25
+g26
+((I2015
+I4
+I20
+I19
+I6
+I1
+I0
+I110
+I1
+tp1908
+(dp1909
+tp1910
+Rp1911
+sg31
+(lp1912
+sg33
+g26
+((I2015
+I4
+I20
+I18
+I54
+I34
+I0
+I110
+I1
+tp1913
+(dp1914
+tp1915
+Rp1916
+sbsa(dp1917
+g14
+I00
+sg15
+(lp1918
+F7276.79617605622
+aF1115.4386156705646
+asg17
+(itiddlywiki
+Tiddler
+p1919
+(dp1920
+g21
+V<<addpoints "ally" 1>>\u000a<<set $weapon to "shield">>\u000a<<setspeaker "%a">>\u000a<<msg "Good luck">>\u000a<<continue "m1 9">>
+p1921
+sg23
+Vm1c
+p1922
+sg25
+g26
+((I2015
+I4
+I20
+I19
+I15
+I54
+I0
+I110
+I1
+tp1923
+(dp1924
+tp1925
+Rp1926
+sg31
+(lp1927
+sg33
+g26
+((I2015
+I4
+I20
+I18
+I54
+I34
+I0
+I110
+I1
+tp1928
+(dp1929
+tp1930
+Rp1931
+sbsa(dp1932
+g14
+I00
+sg15
+(lp1933
+F7276.796176056219
+aF933.6451121356918
+asg17
+(itiddlywiki
+Tiddler
+p1934
+(dp1935
+g21
+V<<addpoints "counselor" 1>>\u000a<<addcharacter "counselor_normal.png">>\u000a<<set $weapon to "mace">>\u000a<<setspeaker "Counselor">>\u000a<<msg "Wise choice.">>\u000a<<continue "m1 9">>
+p1936
+sg23
+Vm1b
+p1937
+sg25
+g26
+((I2015
+I4
+I20
+I19
+I7
+I54
+I0
+I110
+I1
+tp1938
+(dp1939
+tp1940
+Rp1941
+sg31
+(lp1942
+sg33
+g26
+((I2015
+I4
+I20
+I18
+I54
+I35
+I0
+I110
+I1
+tp1943
+(dp1944
+tp1945
+Rp1946
+sbsa(dp1947
+g14
+I00
+sg15
+(lp1948
+F7276.733601369815
+aF1313.4752665583144
+asg17
+(itiddlywiki
+Tiddler
+p1949
+(dp1950
+g21
+V<<addpoints "counselor" -1>>\u000a<<set $weapon to "gun">>\u000a<<msg "I grab a gun and turn off the safety. At least I think I turned it off? I hide behind an obstacle and watch the portal.">>\u000a<<continue "m1 9">>
+p1951
+sg23
+Vm1d
+p1952
+sg25
+g26
+((I2015
+I4
+I20
+I19
+I23
+I10
+I0
+I110
+I1
+tp1953
+(dp1954
+tp1955
+Rp1956
+sg31
+(lp1957
+sg33
+g26
+((I2015
+I4
+I20
+I18
+I54
+I35
+I0
+I110
+I1
+tp1958
+(dp1959
+tp1960
+Rp1961
+sbsa(dp1962
+g14
+I00
+sg15
+(lp1963
+F7274.734495293899
+aF1487.2723457895522
+asg17
+(itiddlywiki
+Tiddler
+p1964
+(dp1965
+g21
+V<<addpoints "counselor" 2>>\u000a<<set $weapon to "none">>\u000a<<msg "No point choosing now. I decide that waiting to see what I'm up against is the best option.">>\u000a<<continue "m1 9">>
+p1966
+sg23
+Vm1e
+p1967
+sg25
+g26
+((I2015
+I4
+I20
+I19
+I25
+I23
+I0
+I110
+I1
+tp1968
+(dp1969
+tp1970
+Rp1971
+sg31
+(lp1972
+sg33
+g26
+((I2015
+I4
+I20
+I19
+I3
+I56
+I0
+I110
+I1
+tp1973
+(dp1974
+tp1975
+Rp1976
+sbsa(dp1977
+g14
+I01
+sg15
+(lp1978
+F7414.684435544784
+aF1113.5020842810586
+asg17
+(itiddlywiki
+Tiddler
+p1979
+(dp1980
+g21
+V<<setspeaker " ">>\u000a<<msg "There's a quick flash of light and the sound of thunder, and then a skeleton walks out of the portal.">>\u000a<<if $weapon is "sword">>\u000a<<continue "m1a 1">>\u000a<<else>><<if $weapon is "mace">>\u000a<<continue "m1b 1">>\u000a<<else>><<if $weapon is "shield">>\u000a<<continue "m1c 1">>\u000a<<else>><<if $weapon is "gun">>\u000a<<continue "m1d 1">>\u000a<<else>>\u000a<<continue "m1e 1">>\u000a<<endif>><<endif>><<endif>><<endif>>
+p1981
+sg23
+Vm1 9
+p1982
+sg25
+g26
+((I2015
+I4
+I20
+I19
+I30
+I28
+I0
+I110
+I1
+tp1983
+(dp1984
+tp1985
+Rp1986
+sg31
+(lp1987
+sg33
+g26
+((I2015
+I4
+I20
+I19
+I26
+I5
+I0
+I110
+I1
+tp1988
+(dp1989
+tp1990
+Rp1991
 sbsasS'scale'
-p1797
-F0.504363676038359
+p1992
+F0.5002235809550655
 sS'snapping'
-p1798
+p1993
 I00
 ss.

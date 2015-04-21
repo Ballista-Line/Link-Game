@@ -8,7 +8,7 @@ var rivalName = "Alastor";
 var allyName = "Ian"
 var audio = new Audio("");
 var volume = 0.2;
-var points = {"rival":0,"ally":0};
+var points = {"rival":0,"ally":0,"counselor":0};
 var flags = {"f1":0,"f2":0,"f3":0,"f4":0};
 
 // The following 3 functions are from w3schools.com
@@ -307,6 +307,7 @@ macros['loadgame'] = {
 
          addpoints("rival",game.points.rival);
          addpoints("ally",game.points.ally);
+         addpoints("counselor",game.points.counselor)
          
          state.display(game.passage,place);
       },1);
@@ -342,6 +343,8 @@ function resetpoints() {
    setVar("rprival",0);
    points.ally = 0;
    setVar("rpally",0);
+   points.counselor = 0;
+   setVar("rpcounselor",0);
    flags = {"f1":0,"f2":0,"f3":0,"f4":0};
    setVar("f1",0);
    setVar("f2",0);
