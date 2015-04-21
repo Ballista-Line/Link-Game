@@ -10,6 +10,8 @@ var audio = new Audio("");
 var volume = 0.2;
 var points = {"rival":0,"ally":0,"counselor":0};
 var flags = {"f1":0,"f2":0,"f3":0,"f4":0};
+var effectivePassage = "";
+var currChar = ""; // the current character according to 'addcharacter'
 
 // The following 3 functions are from w3schools.com
 function setCookie(cname, cvalue, exdays) {
@@ -152,9 +154,7 @@ var s;
 function type(place, str, i) {
    text = str.slice(i-1, i);
    if (i == str.length+1) {
-               // alert("SDF");
       if(isAuto()){
-         
          setTimeout(function(){
             if(getPassageTitle()==s){
                state.display(getNextPassage(),place)
@@ -257,11 +257,11 @@ macros['adjust_auto_speed'] = {
 }
 
 // Sets the next passage
-macros['setnext'] = {
-   handler: function(place, macroName, params, parser) {
-      setNextPassage(state.history[0].variables[params[0]]);// again the hack
-   }
-}
+// macros['setnext'] = {
+//    handler: function(place, macroName, params, parser) {
+//       setNextPassage(state.history[0].variables[params[0]]);// again the hack
+//    }
+// }
 
 macros['toggleauto'] = {
    handler: function(place, macroName, params, parser) {
@@ -287,43 +287,54 @@ macros['loadTitlescreen'] = {
    }
 }
 
+function loadGame(slot,place){
+      var game = getCookieObject(slot);
+         
+      setSpeaker(game.speaker);
+      addCharacter(game.char);
+
+      setBackgroundSrc(game.background);
+      setVar("background",game.background);
+      
+      showDialogue(game.showdialogue);
+      
+      setPlayerName(game.name);
+      
+      setVar("trainingElement",game.element);
+
+      resetpoints();
+
+      addpoints("rival",game.points.rival);
+      addpoints("ally",game.points.ally);
+      addpoints("counselor",game.points.counselor)
+      
+      state.display(game.passage,place);
+      
+}
+
 macros['loadgame'] = {
    handler: function(place, macroName, params, parser) {
-      setTimeout(function(){
-         var game = getCookieObject("saveSlot1");
-         
-         setSpeaker(game.speaker);
-
-         setBackgroundSrc(game.background);
-         setVar("background",game.background);
-         
-         showDialogue(game.showdialogue);
-         
-         setPlayerName(game.name);
-         
-         setVar("trainingElement",game.element);
-
-         resetpoints();
-
-         addpoints("rival",game.points.rival);
-         addpoints("ally",game.points.ally);
-         addpoints("counselor",game.points.counselor)
-         
-         state.display(game.passage,place);
-      },1);
+      setTimeout(function(){loadGame("saveSlot"+params[0],place);},1);
    }
 }
 
 macros['savegame'] = {
    handler: function(place, macroName, params, parser) {
-      saveGame("saveSlot1");
+      effectivePassage = getPassageTitle();
+      // alert(effectivePassage);
+      saveGame("saveSlotauto");
    }
+}
+
+function addCharacter(name){
+   $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+name+"' alt='"+name+"' />");
 }
 
 // Characters aren't being saved yet!
 macros['addcharacter'] = {
    handler: function(place, macroName, params, parser) {
-      $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+params[0]+"' alt='"+params[0]+"' />");
+      currChar = params[0];
+      addCharacter(params[0]);
    }
 }
 
@@ -376,16 +387,60 @@ macros['addpoints'] = {
 }
 
 function saveGame(slot) {
+   var date = new Date();
    var game = {
       "speaker": getSpeaker(),
+      "char": currChar,
       "background": getVar("background"),
-      "passage": getPassageTitle(),
+      "passage": effectivePassage,
       "name": getPlayerName(),
       "element": getPlayerElement(),
       "showdialogue": getVar("showdialogue"),
-      "points": points
+      "points": points,
+      "time": date.toString()
+   }
+   if(checkCookie(slot)&&slot!="saveSlotauto"){
+      if(!confirm("Overwrite existing data in "+slot+"?")){
+         return;
+      }
    }
    setCookie(slot,JSON.stringify(game),100);
+}
+
+macros['previewslot'] = {
+   handler: function(place, macroName, params, parser) {
+      var text = "Empty";
+      try{
+         text = getCookieObject("saveSlot"+params[0]).time;
+      }catch(e){}
+      new Wikifier(place, text);
+   }
+}
+
+macros['readysavepage'] = {
+   handler: function(place, macroName, params, parser) {
+      $(place).children("table").children("tr").children("td").children("#s1").click(function(){
+         saveGame("saveSlot1");
+         state.display("Save",place);
+      });
+      $(place).children("table").children("tr").children("td").children("#s2").click(function(){
+         saveGame("saveSlot2");
+         state.display("Save",place);
+      });
+   }
+}
+macros['readyloadpage'] = {
+   handler: function(place, macroName, params, parser) {
+      $(place).children("table").children("tr").children("td").children("#auto").click(function(){
+         loadGame("saveSlotauto",place);
+      });
+      $(place).children("table").children("tr").children("td").children("#s1").click(function(){
+         loadGame("saveSlot1",place);
+      });
+      $(place).children("table").children("tr").children("td").children("#s2").click(function(){
+         loadGame("saveSlot2",place);
+      });
+   }
 }
 
 /* Build the out-of-passage html elements. If you have a saved game, also
@@ -399,3 +454,4 @@ function initialize() {
 }
 
 initialize();
+

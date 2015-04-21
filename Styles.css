@@ -92,7 +92,7 @@
    padding: 10px;
 }
 #speaker {
-   z-index: 5;
+   z-index: -1;
    position: fixed;
    top: 380px;
    left: 300px;
