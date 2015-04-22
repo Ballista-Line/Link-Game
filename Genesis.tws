@@ -143,7 +143,7 @@ Tiddler
 p55
 (dp56
 g21
-V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.2;\u000avar points = {"rival":0,"ally":0,"counselor":0};\u000avar flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000avar effectivePassage = "";\u000avar currChar = ""; // the current character according to 'addcharacter'\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a      if(isAuto()){\u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000a// macros['setnext'] = {\u000a//    handler: function(place, macroName, params, parser) {\u000a//       setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a//    }\u000a// }\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlot1")) {\u000a         var saveData = getCookieObject("saveSlot1");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a   }\u000a}\u000a\u000afunction loadGame(slot,place){\u000a      var game = getCookieObject(slot);\u000a         \u000a      setSpeaker(game.speaker);\u000a      addCharacter(game.char);\u000a\u000a      setBackgroundSrc(game.background);\u000a      setVar("background",game.background);\u000a      \u000a      showDialogue(game.showdialogue);\u000a      \u000a      setPlayerName(game.name);\u000a      \u000a      setVar("trainingElement",game.element);\u000a\u000a      resetpoints();\u000a\u000a      addpoints("rival",game.points.rival);\u000a      addpoints("ally",game.points.ally);\u000a      addpoints("counselor",game.points.counselor)\u000a      \u000a      state.display(game.passage,place);\u000a      \u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){loadGame("saveSlot"+params[0],place);},1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      effectivePassage = getPassageTitle();\u000a      // alert(effectivePassage);\u000a      saveGame("saveSlotauto");\u000a   }\u000a}\u000a\u000afunction addCharacter(name){\u000a   $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+name+"' alt='"+name+"' />");\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      currChar = params[0];\u000a      addCharacter(params[0]);\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000a//resets points AND flags\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a   points.counselor = 0;\u000a   setVar("rpcounselor",0);\u000a   flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a   setVar("f1",0);\u000a   setVar("f2",0);\u000a   setVar("f3",0);\u000a   setVar("f4",0);\u000a}\u000a\u000amacros['setflag'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      flags[params[0]] = parseInt(params[1]);\u000a   }\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var date = new Date();\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "char": currChar,\u000a      "background": getVar("background"),\u000a      "passage": effectivePassage,\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points,\u000a      "time": date.toString()\u000a   }\u000a   if(checkCookie(slot)&&slot!="saveSlotauto"){\u000a      if(!confirm("Overwrite existing data in "+slot+"?")){\u000a         return;\u000a      }\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000amacros['previewslot'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var text = "Empty";\u000a      try{\u000a         text = getCookieObject("saveSlot"+params[0]).time;\u000a      }catch(e){}\u000a      new Wikifier(place, text);\u000a   }\u000a}\u000a\u000amacros['readysavepage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         saveGame("saveSlot1");\u000a         state.display("Save",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         saveGame("saveSlot2");\u000a         state.display("Save",place);\u000a      });\u000a   }\u000a}\u000amacros['readyloadpage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#auto").click(function(){\u000a         loadGame("saveSlotauto",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         loadGame("saveSlot1",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         loadGame("saveSlot2",place);\u000a      });\u000a   }\u000a}\u000a\u000a/* Build the out-of-passage html elements. If you have a saved game, also\u000a * enables the continue button.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a}\u000a\u000ainitialize();\u000a\u000a
+V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.2;\u000avar points = {"rival":0,"ally":0,"counselor":0};\u000avar flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000avar effectivePassage = "";\u000avar currChar = ""; // the current character according to 'addcharacter'\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a      if(isAuto()){\u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000a// macros['setnext'] = {\u000a//    handler: function(place, macroName, params, parser) {\u000a//       setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a//    }\u000a// }\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlotauto")) {\u000a         var saveData = getCookieObject("saveSlotauto");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a   }\u000a}\u000a\u000afunction loadGame(slot,place){\u000a      var game = getCookieObject(slot);\u000a         \u000a      setSpeaker(game.speaker);\u000a      addCharacter(game.char);\u000a\u000a      setBackgroundSrc(game.background);\u000a      setVar("background",game.background);\u000a      \u000a      showDialogue(game.showdialogue);\u000a      \u000a      setPlayerName(game.name);\u000a      \u000a      setVar("trainingElement",game.element);\u000a\u000a      resetpoints();\u000a\u000a      addpoints("rival",game.points.rival);\u000a      addpoints("ally",game.points.ally);\u000a      addpoints("counselor",game.points.counselor)\u000a      \u000a      state.display(game.passage,place);\u000a      \u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){loadGame("saveSlot"+params[0],place);},1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      effectivePassage = getPassageTitle();\u000a      // alert(effectivePassage);\u000a      saveGame("saveSlotauto");\u000a   }\u000a}\u000a\u000afunction addCharacter(name){\u000a   $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+name+"' alt='"+name+"' />");\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      currChar = params[0];\u000a      addCharacter(params[0]);\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000a//resets points AND flags\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a   points.counselor = 0;\u000a   setVar("rpcounselor",0);\u000a   flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a   setVar("f1",0);\u000a   setVar("f2",0);\u000a   setVar("f3",0);\u000a   setVar("f4",0);\u000a}\u000a\u000amacros['setflag'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      flags[params[0]] = parseInt(params[1]);\u000a   }\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var date = new Date();\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "char": currChar,\u000a      "background": getVar("background"),\u000a      "passage": effectivePassage,\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points,\u000a      "time": date.toString()\u000a   }\u000a   if(checkCookie(slot)&&slot!="saveSlotauto"){\u000a      if(!confirm("Overwrite existing data in "+slot+"?")){\u000a         return;\u000a      }\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000amacros['previewslot'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var text = "Empty";\u000a      try{\u000a         text = getCookieObject("saveSlot"+params[0]).time;\u000a      }catch(e){}\u000a      new Wikifier(place, text);\u000a   }\u000a}\u000a\u000amacros['readysavepage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         saveGame("saveSlot1");\u000a         state.display("Save",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         saveGame("saveSlot2");\u000a         state.display("Save",place);\u000a      });\u000a   }\u000a}\u000amacros['readyloadpage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#auto").click(function(){\u000a         loadGame("saveSlotauto",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         loadGame("saveSlot1",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         loadGame("saveSlot2",place);\u000a      });\u000a   }\u000a}\u000a\u000a/* Build the out-of-passage html elements. If you have a saved game, also\u000a * enables the continue button.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a}\u000a\u000ainitialize();\u000a\u000a
 p57
 sg23
 VModuleScript
@@ -152,12 +152,12 @@ sg25
 g26
 ((I2015
 I4
-I20
-I20
-I48
-I50
-I0
-I110
+I21
+I16
+I7
+I31
+I1
+I111
 I1
 tp59
 (dp60
@@ -204,12 +204,12 @@ sg25
 g26
 ((I2015
 I4
-I20
-I19
-I41
+I21
+I15
 I59
-I0
-I110
+I4
+I1
+I111
 I1
 tp75
 (dp76
@@ -254,12 +254,12 @@ sg25
 g26
 ((I2015
 I4
-I20
-I20
 I21
-I40
-I0
-I110
+I15
+I58
+I42
+I1
+I111
 I1
 tp90
 (dp91
@@ -1294,7 +1294,7 @@ I00
 sg15
 (lp403
 F233.0
-aF140.0
+aF141.66666666666666
 asg17
 (itiddlywiki
 Tiddler
@@ -1310,12 +1310,12 @@ sg25
 g26
 ((I2015
 I4
-I20
-I20
-I32
-I0
-I0
-I110
+I21
+I17
+I48
+I25
+I1
+I111
 I1
 tp408
 (dp409
@@ -1340,7 +1340,7 @@ tp415
 Rp416
 sbsa(dp417
 g14
-I00
+I01
 sg15
 (lp418
 F357.0
@@ -1360,12 +1360,12 @@ sg25
 g26
 ((I2015
 I4
+I21
 I17
-I20
-I43
-I8
-I4
-I107
+I48
+I28
+I1
+I111
 I1
 tp423
 (dp424
@@ -1401,7 +1401,7 @@ Tiddler
 p434
 (dp435
 g21
-V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!",\u000a"The fourth in a series!",\u000a"An amazing game!",\u000a"Meme-free!",\u000a"\u005c"10/10 pretty good\u005c" -IGN, probably",\u000a"Lies!",\u000a"Responsive developers!",\u000a"Hidden agendas!",\u000a"Too many endings!",\u000a"An A+ project!",\u000a"Refresh for a new message!",\u000a"Johnathan Pagnutti is a cool guy!",\u000a"I've spent too much time making splash text!",\u000a"Don't blink!",\u000a"Auto-saves your progress!",\u000a"Continue where you left off!",\u000a"Your decisions matter!",\u000a"\u005c"No false choices!\u005c"",\u000a"Inspired by Japanese visual novels!",\u000a"\u005c"Completely original!\u005c"",\u000a"I'm not stealing this effect from Minecraft!",\u000a"Este burrito es muy bueno, pero necesito salsa verde!",\u000a"Not for profit!",\u000a"Do not abet terrorism!",\u000a"Three different types of links!",\u000a"Over 30 nodes!"\u000a)>>
+V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!",\u000a"The fourth in a series!",\u000a"An amazing game!",\u000a"Meme-free!",\u000a"\u005c"10/10 It's okay...\u005c" -IGN, probably",\u000a"Lies!",\u000a"Responsive developers!",\u000a"Hidden agendas!",\u000a"Too many endings!",\u000a"An A+ project!",\u000a"Refresh for a new message!",\u000a"Johnathan Pagnutti is a cool guy!",\u000a"I've spent too much time making splash text!",\u000a"Don't blink!",\u000a"Auto-saves your progress!",\u000a"Continue where you left off!",\u000a"Your decisions matter!",\u000a"\u005c"No false choices!\u005c"",\u000a"Inspired by Japanese visual novels!",\u000a"\u005c"Completely original!\u005c"",\u000a"I'm not stealing this effect from Minecraft!",\u000a"Este burrito es muy bueno, pero necesito salsa verde!",\u000a"Not for profit!",\u000a"Do not abet terrorism!",\u000a"Three different types of links!",\u000a"Over 30 nodes!"\u000a)>>
 p436
 sg23
 VSplash
@@ -1410,12 +1410,12 @@ sg25
 g26
 ((I2015
 I4
-I19
-I17
-I38
-I19
-I6
-I109
+I21
+I16
+I47
+I4
+I1
+I111
 I1
 tp438
 (dp439
@@ -6260,12 +6260,12 @@ sg25
 g26
 ((I2015
 I4
-I20
-I19
-I3
-I53
-I0
-I110
+I21
+I17
+I30
+I12
+I1
+I111
 I1
 tp1893
 (dp1894
@@ -6344,7 +6344,7 @@ I00
 sg15
 (lp1918
 F7276.79617605622
-aF1115.4386156705646
+aF1113.7719490038978
 asg17
 (itiddlywiki
 Tiddler
@@ -6551,7 +6551,7 @@ Tiddler
 p1979
 (dp1980
 g21
-V<<setspeaker " ">>\u000a<<msg "There's a quick flash of light and the sound of thunder, and then a skeleton walks out of the portal.">>\u000a<<if $weapon is "sword">>\u000a<<continue "m1a 1">>\u000a<<else>><<if $weapon is "mace">>\u000a<<continue "m1b 1">>\u000a<<else>><<if $weapon is "shield">>\u000a<<continue "m1c 1">>\u000a<<else>><<if $weapon is "gun">>\u000a<<continue "m1d 1">>\u000a<<else>>\u000a<<continue "m1e 1">>\u000a<<endif>><<endif>><<endif>><<endif>>
+V<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<msg "There's a quick flash of light and the sound of thunder, and then a skeleton walks out of the portal.">>\u000a<<if $weapon is "sword">>\u000a<<continue "m1a 1">>\u000a<<else>><<if $weapon is "mace">>\u000a<<continue "m1b 1">>\u000a<<else>><<if $weapon is "shield">>\u000a<<continue "m1c 1">>\u000a<<else>><<if $weapon is "gun">>\u000a<<continue "m1d 1">>\u000a<<else>>\u000a<<continue "m1e 1">>\u000a<<endif>><<endif>><<endif>><<endif>>
 p1981
 sg23
 Vm1 9
@@ -6560,12 +6560,12 @@ sg25
 g26
 ((I2015
 I4
-I20
-I19
-I30
-I28
-I0
-I110
+I21
+I17
+I31
+I56
+I1
+I111
 I1
 tp1983
 (dp1984
@@ -6690,7 +6690,7 @@ tp2020
 Rp2021
 sbsasS'scale'
 p2022
-F0.5002235809550655
+F0.6000000000000001
 sS'snapping'
 p2023
 I00

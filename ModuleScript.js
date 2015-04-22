@@ -278,8 +278,8 @@ macros['setname'] = {
 
 macros['loadTitlescreen'] = {
    handler:  function(place, macroName, params, parser) {
-      if(checkCookie("saveSlot1")) {
-         var saveData = getCookieObject("saveSlot1");
+      if(checkCookie("saveSlotauto")) {
+         var saveData = getCookieObject("saveSlotauto");
          setVar("canContinue","true")
       }else{
          setVar("canContinue","false");
