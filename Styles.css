@@ -134,3 +134,22 @@
    top: 20px;
    left: 500px;
 }
+#eventSelection {
+   overflow: scroll;
+   z-index: -9;
+   line-height: 32px;
+}
+.eventBoxes {
+    margin:0;
+    padding: 0;
+    list-style-type: none;
+    display: table;
+    table-layout: fixed;
+    width:1024px;
+    height: 32px;
+}
+.eb {
+   width: 32px;
+   height: 32px;
+   position: absolute;
+}

@@ -443,6 +443,29 @@ macros['readyloadpage'] = {
    }
 }
 
+macros['readyeventselection'] = {
+   handler: function(place, macroName, params, parser) {
+      setBackgroundSrc("morning.png");
+      for(var r=0; r<32; r++){
+         for(var i=0; i<32; i++){
+            var x = i*32;
+            if(r%2==1){ x+=16; }
+            var y = r*32;
+            var name = "spacer.png"
+            if(r==16&&i==16){
+               name = "clock.png"
+            }
+            $(place).children("#eventSelection").append("<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' />");
+            
+         }
+      }
+      setTimeout(function(){
+         $(place).children("#eventSelection").scrollTop(270);
+         $(place).children("#eventSelection").scrollLeft(170);
+      },1);
+   }
+}
+
 /* Build the out-of-passage html elements. If you have a saved game, also
  * enables the continue button.
  */
