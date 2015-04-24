@@ -464,6 +464,20 @@ macros['advancetime'] = {
    }
 }
 
+function showCons(dest){
+
+}
+
+function goToEvent(dest){
+   if(dest.day >= parseInt(getVar("Day")) && dest.time[parseInt(getVar("Time"))]){
+      if(confirm("Are you sure you want to do this event?")){
+         state.display(dest.pass);
+      }
+   }else{
+      alert("This event is not currently available.");
+   }
+}
+
 macros['readyeventselection'] = {
    handler: function(place, macroName, params, parser) {
       for(var r=0; r<32; r++){
@@ -472,27 +486,31 @@ macros['readyeventselection'] = {
             if(r%2==1){ x+=16; }
             var y = r*32;
             var name = "spacer.png";
-            var dest = "";
             if(r==16&&i==16){
                name = "clock.png";
                dest = "DoNothing";
             }
             try{
                if(availableEvents[r][i]!=null){
-                  dest = availableEvents[r][i];
+                  var dest = availableEvents[r][i];
                   name = dest.img;
+                  var id = r+"_"+i;
                   var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' />";
                   if(parseInt(getVar("Time"))<4&&!dest.locked){
-                     var id = r+"_"+i;
                      str = "<a href='#' id='"+id+"'>" + str + "</a>";
                   }else if(dest.locked){
-                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/X.png' />'";
+                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/X.png' />";
                   }
                   $(place).children("#eventSelection").append(str);
-                  $("#"+id).click(function(){
-                     alert("test");
-                     state.display(dest.pass);
-                  });
+                  (function(e){
+                     $(place).children("#eventSelection").children("#"+id).click(function(){
+                        goToEvent(e);
+                     }).hover(function(){
+                        showCons(e,place,true);
+                     },function(){
+                        showCons(e,place,false);
+                     });
+                  })(dest);
                }else{
                   throw "no event";
                }
@@ -513,7 +531,7 @@ macros['readyeventselection'] = {
    }
 }
 
-function addEvent(x,y,pass,img,day,time,strong) {
+function addEvent(x,y,pass,img,day,time,strong,close,open) {
    if(!allEvents[y]){ allEvents[y] = []; }
    allEvents[y][x] = {};
    allEvents[y][x]["pass"] = pass;
@@ -522,13 +540,16 @@ function addEvent(x,y,pass,img,day,time,strong) {
    allEvents[y][x]["time"] = time;
    allEvents[y][x]["strong"] = strong;
    allEvents[y][x]["locked"] = false;
+   allEvents[y][x]["close"] = close;
+   allEvents[y][x]["open"] = open;
+
 }
 
 function buildAllEvents() {
-   addEvent(15,15,"scene_00_14","ball.png",100,[true,true,false,true],false);
-   addEvent(14,14,"n1","ball.png",100,[true,true,false,true],false);
-   addEvent(15,14,"m1","ball.png",100,[true,true,false,true],false);
-   addEvent(17,17,"scene_01","ball.png",100,[true,true,false,true],false);
+   addEvent(15,15,"scene_00_14","ball.png",100,[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
+   addEvent(14,14,"n1","ball.png",100,[true,true,false,true],false,[],[]);
+   addEvent(15,14,"m1","ball.png",100,[true,true,false,true],false,[],[]);
+   addEvent(17,17,"scene_01","ball.png",100,[true,true,false,true],false,[],[]);
    allEvents[17][17].locked = true;
    availableEvents = allEvents;
 }
