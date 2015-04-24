@@ -12,6 +12,8 @@ var points = {"rival":0,"ally":0,"counselor":0};
 var flags = {"f1":0,"f2":0,"f3":0,"f4":0};
 var effectivePassage = "";
 var currChar = ""; // the current character according to 'addcharacter'
+var allEvents = [[{pass:"Start",img:"ball.png"}]];
+var availableEvents = allEvents;
 
 // The following 3 functions are from w3schools.com
 function setCookie(cname, cvalue, exdays) {
@@ -284,6 +286,8 @@ macros['loadTitlescreen'] = {
       }else{
          setVar("canContinue","false");
       }
+      setVar("Day",0);
+      setVar("Time",0);
    }
 }
 
@@ -301,6 +305,9 @@ function loadGame(slot,place){
       setPlayerName(game.name);
       
       setVar("trainingElement",game.element);
+
+      setVar("Day",game.day);
+      setVar("Time",game.gameTime);
 
       resetpoints();
 
@@ -397,7 +404,9 @@ function saveGame(slot) {
       "element": getPlayerElement(),
       "showdialogue": getVar("showdialogue"),
       "points": points,
-      "time": date.toString()
+      "time": date.toString(),
+      "day": getVar("Day"),
+      "gameTime": getVar("Time")
    }
    if(checkCookie(slot)&&slot!="saveSlotauto"){
       if(!confirm("Overwrite existing data in "+slot+"?")){
@@ -443,19 +452,57 @@ macros['readyloadpage'] = {
    }
 }
 
+macros['advancetime'] = {
+   handler: function(place, macroName, params, parser) {
+      if(confirm("Are you sure you want to sit idly?")){
+         var t = parseInt(getVar("Time"))+1;
+         setVar("Time",t);
+         var d = parseInt(getVar("Day"))+1;
+         if(t>3){ d++; }
+         updateAvailableEvents(d,t);
+      }
+   }
+}
+
 macros['readyeventselection'] = {
    handler: function(place, macroName, params, parser) {
-      setBackgroundSrc("morning.png");
       for(var r=0; r<32; r++){
          for(var i=0; i<32; i++){
             var x = i*32;
             if(r%2==1){ x+=16; }
             var y = r*32;
-            var name = "spacer.png"
+            var name = "spacer.png";
+            var dest = "";
             if(r==16&&i==16){
-               name = "clock.png"
+               name = "clock.png";
+               dest = "DoNothing";
             }
-            $(place).children("#eventSelection").append("<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' />");
+            try{
+               if(availableEvents[r][i]!=null){
+                  dest = availableEvents[r][i];
+                  name = dest.img;
+                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' />";
+                  if(parseInt(getVar("Time"))<4&&!dest.locked){
+                     var id = r+"_"+i;
+                     str = "<a href='#' id='"+id+"'>" + str + "</a>";
+                  }else if(dest.locked){
+                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/X.png' />'";
+                  }
+                  $(place).children("#eventSelection").append(str);
+                  $("#"+id).click(function(){
+                     alert("test");
+                     state.display(dest.pass);
+                  });
+               }else{
+                  throw "no event";
+               }
+            }catch(e){
+               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' />";
+               if(name=="clock.png"&&parseInt(getVar("Time"))<4){
+                  str = "<a href='#' onclick='state.display(\"DoNothing\");'>" + str + "</a>";
+               }
+               $(place).children("#eventSelection").append(str);
+            }
             
          }
       }
@@ -466,14 +513,34 @@ macros['readyeventselection'] = {
    }
 }
 
-/* Build the out-of-passage html elements. If you have a saved game, also
- * enables the continue button.
+function addEvent(x,y,pass,img,day,time,strong) {
+   if(!allEvents[y]){ allEvents[y] = []; }
+   allEvents[y][x] = {};
+   allEvents[y][x]["pass"] = pass;
+   allEvents[y][x]["img"] = img;
+   allEvents[y][x]["day"] = day;
+   allEvents[y][x]["time"] = time;
+   allEvents[y][x]["strong"] = strong;
+   allEvents[y][x]["locked"] = false;
+}
+
+function buildAllEvents() {
+   addEvent(15,15,"scene_00_14","ball.png",100,[true,true,false,true],false);
+   addEvent(14,14,"n1","ball.png",100,[true,true,false,true],false);
+   addEvent(15,14,"m1","ball.png",100,[true,true,false,true],false);
+   addEvent(17,17,"scene_01","ball.png",100,[true,true,false,true],false);
+   allEvents[17][17].locked = true;
+   availableEvents = allEvents;
+}
+
+/* Build the out-of-passage html elements.
  */
 function initialize() {
    $("body").append("<img class='background' />");
    $("body").append("<div id='textBox'></div>");
    $("body").append("<div id='speaker' class='stroke'></div>");
    $("body").append("<div id='characters'></div>");
+   buildAllEvents();
 }
 
 initialize();
