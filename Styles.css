@@ -153,3 +153,19 @@
    height: 32px;
    position: absolute;
 }
+.ingamemenu {
+   margin-top: -100px;
+}
+#calendar {
+   background:url("http://www.ballistaline.com/link-game/images/calendar.png");
+   width: 100px;
+   height: 70px;
+   position: fixed;
+   top: 35px;
+   left: 305px;
+}
+#calInner {
+   position: relative;
+   top: -15px;
+   left: -5px;
+}

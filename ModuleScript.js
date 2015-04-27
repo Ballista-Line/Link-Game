@@ -34,6 +34,22 @@ function getCookie(cname) {
     return "";
 }
 
+//http://stackoverflow.com/questions/13627308/add-st-nd-rd-and-th-ordinal-suffix-to-a-number
+function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
+
 // Modified from the w3schools version
 function checkCookie(cname) {
     return (getCookie(cname) != "");
@@ -286,7 +302,7 @@ macros['loadTitlescreen'] = {
       }else{
          setVar("canContinue","false");
       }
-      setVar("Day",0);
+      setVar("Day",1);
       setVar("Time",0);
    }
 }
@@ -464,8 +480,29 @@ macros['advancetime'] = {
    }
 }
 
-function showCons(dest){
-
+function showCons(dest,place,vis){
+   var x;
+   for (x in dest.day) {
+      if(vis){
+         $("#dom"+dest.day[x]).attr("src","http://www.ballistaline.com/link-game/images/greenBox.png");
+      }else{
+         $("#dom"+dest.day[x]).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");
+      }
+   }
+   for (x in dest.close) {
+      if(vis){
+         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src","http://www.ballistaline.com/link-game/images/closeevent.png");
+      }else{
+         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");
+      }
+   }
+   for (x in dest.open) {
+      if(vis){
+         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src","http://www.ballistaline.com/link-game/images/openevent.png");
+      }else{
+         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");
+      }
+   }
 }
 
 function goToEvent(dest){
@@ -483,8 +520,7 @@ macros['readyeventselection'] = {
       for(var r=0; r<32; r++){
          for(var i=0; i<32; i++){
             var x = i*32;
-            if(r%2==1){ x+=16; }
-            var y = r*32;
+            var y = r*32+16*(i%2);
             var name = "spacer.png";
             if(r==16&&i==16){
                name = "clock.png";
@@ -495,12 +531,15 @@ macros['readyeventselection'] = {
                   var dest = availableEvents[r][i];
                   name = dest.img;
                   var id = r+"_"+i;
-                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' />";
+                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";
                   if(parseInt(getVar("Time"))<4&&!dest.locked){
                      str = "<a href='#' id='"+id+"'>" + str + "</a>";
                   }else if(dest.locked){
                      str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/X.png' />";
-                  }
+                  }   
+                  // if(!dest.locked){
+                  //    str = str + "<img id='img"+r+"_"+c+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";  
+                  // }
                   $(place).children("#eventSelection").append(str);
                   (function(e){
                      $(place).children("#eventSelection").children("#"+id).click(function(){
@@ -531,6 +570,39 @@ macros['readyeventselection'] = {
    }
 }
 
+function inGameDateStr() {
+   var str = "";
+   var d = parseInt(getVar("Day"));
+   str += ordinal_suffix_of(d) + " ";
+   switch(d%7){
+      case 1: str+="(Sun)"; break;
+      case 2: str+="(Mon)"; break;
+      case 3: str+="(Tue)"; break;
+      case 4: str+="(Wed)"; break;
+      case 5: str+="(Thu)"; break;
+      case 6: str+="(Fri)"; break;
+      case 0: str+="(Sat)"; break;
+   }
+   return str;
+}
+
+macros['buildcalendar'] = {
+   handler: function(place, macroName, params, parser) {
+      var cal = $(place).children("#calendar");
+      cal.children("#calInner").html(inGameDateStr());
+      var d = parseInt(getVar("Day"));
+      for(var row=0;row<6;row++){
+         for(var col=0;col<7;col++){
+            var id = row * 7 + col + 1;
+            var $img = $('<img src="http://www.ballistaline.com/link-game/images/spacer.png" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="dom'+id+'"/>').appendTo(cal);
+            if(id==d){
+               var $img = $('<img src="http://www.ballistaline.com/link-game/images/selectedDay.gif" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="_dom'+id+'"/>').appendTo(cal);
+            }
+         }
+      }
+   }
+}
+
 function addEvent(x,y,pass,img,day,time,strong,close,open) {
    if(!allEvents[y]){ allEvents[y] = []; }
    allEvents[y][x] = {};
@@ -546,10 +618,10 @@ function addEvent(x,y,pass,img,day,time,strong,close,open) {
 }
 
 function buildAllEvents() {
-   addEvent(15,15,"scene_00_14","ball.png",100,[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
-   addEvent(14,14,"n1","ball.png",100,[true,true,false,true],false,[],[]);
-   addEvent(15,14,"m1","ball.png",100,[true,true,false,true],false,[],[]);
-   addEvent(17,17,"scene_01","ball.png",100,[true,true,false,true],false,[],[]);
+   addEvent(15,15,"scene_00_14","ball.png",[1,2,3,4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
+   addEvent(14,14,"n1","ball.png",[3,4,5,6,7],[true,true,false,true],false,[],[]);
+   addEvent(15,14,"m1","ball.png",[17,18,19],[true,true,false,true],false,[],[]);
+   addEvent(17,17,"scene_01","ball.png",[12],[true,true,false,true],false,[],[]);
    allEvents[17][17].locked = true;
    availableEvents = allEvents;
 }
