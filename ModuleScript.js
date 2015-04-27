@@ -526,11 +526,11 @@ macros['readyeventselection'] = {
                name = "clock.png";
                dest = "DoNothing";
             }
+            var id = r+"_"+i;
             try{
                if(availableEvents[r][i]!=null){
                   var dest = availableEvents[r][i];
                   name = dest.img;
-                  var id = r+"_"+i;
                   var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";
                   if(parseInt(getVar("Time"))<4&&!dest.locked){
                      str = "<a href='#' id='"+id+"'>" + str + "</a>";
@@ -554,7 +554,7 @@ macros['readyeventselection'] = {
                   throw "no event";
                }
             }catch(e){
-               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' />";
+               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";
                if(name=="clock.png"&&parseInt(getVar("Time"))<4){
                   str = "<a href='#' onclick='state.display(\"DoNothing\");'>" + str + "</a>";
                }
@@ -620,9 +620,11 @@ function addEvent(x,y,pass,img,day,time,strong,close,open) {
 function buildAllEvents() {
    addEvent(15,15,"scene_00_14","ball.png",[1,2,3,4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
    addEvent(14,14,"n1","ball.png",[3,4,5,6,7],[true,true,false,true],false,[],[]);
-   addEvent(15,14,"m1","ball.png",[17,18,19],[true,true,false,true],false,[],[]);
+   addEvent(15,14,"m1","ball.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);
    addEvent(17,17,"scene_01","ball.png",[12],[true,true,false,true],false,[],[]);
    allEvents[17][17].locked = true;
+   addEvent(12,20,"scene_01","ball.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);
+   addEvent(12,21,"scene_01","ball.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);
    availableEvents = allEvents;
 }
 
