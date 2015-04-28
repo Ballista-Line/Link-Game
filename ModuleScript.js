@@ -50,6 +50,11 @@ function ordinal_suffix_of(i) {
     return i + "th";
 }
 
+//http://stackoverflow.com/questions/143847/best-way-to-find-an-item-in-a-javascript-array
+function include(arr,obj) {
+    return (arr.indexOf(obj) != -1);
+}
+
 // Modified from the w3schools version
 function checkCookie(cname) {
     return (getCookie(cname) != "");
@@ -503,10 +508,19 @@ function showCons(dest,place,vis){
          $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");
       }
    }
+   for (x in dest.time) {
+      if(vis){
+         if(dest.time[x]){
+            $("#tod"+(x+1)).show();
+         }
+      }else{
+         $("#tod"+(x+1)).hide();
+      }
+   }
 }
 
 function goToEvent(dest){
-   if(dest.day >= parseInt(getVar("Day")) && dest.time[parseInt(getVar("Time"))]){
+   if(include(dest.day,parseInt(getVar("Day"))) && dest.time[parseInt(getVar("Time"))]){
       if(confirm("Are you sure you want to do this event?")){
          state.display(dest.pass);
       }
@@ -517,6 +531,7 @@ function goToEvent(dest){
 
 macros['readyeventselection'] = {
    handler: function(place, macroName, params, parser) {
+      var d = parseInt(getVar("Day"));
       for(var r=0; r<32; r++){
          for(var i=0; i<32; i++){
             var x = i*32;
@@ -530,7 +545,11 @@ macros['readyeventselection'] = {
             try{
                if(availableEvents[r][i]!=null){
                   var dest = availableEvents[r][i];
-                  name = dest.img;
+                  if(include(dest.day,d)){
+                     name = dest.img;
+                  }else{
+                     name = "ball.png";
+                  }
                   var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";
                   if(parseInt(getVar("Time"))<4&&!dest.locked){
                      str = "<a href='#' id='"+id+"'>" + str + "</a>";
@@ -603,6 +622,18 @@ macros['buildcalendar'] = {
    }
 }
 
+macros['buildTOD'] = {
+   handler: function(place, macroName, params, parser) {
+      var t = parseInt(getVar("Time"));
+      switch(t){
+         case 0: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_morning.png')"); break;
+         case 1: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_noon1.png')"); break;
+         case 2: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_noon2.png')"); break;
+         case 3: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_evening.png')"); break;
+      }
+   }
+}
+
 function addEvent(x,y,pass,img,day,time,strong,close,open) {
    if(!allEvents[y]){ allEvents[y] = []; }
    allEvents[y][x] = {};
@@ -614,17 +645,16 @@ function addEvent(x,y,pass,img,day,time,strong,close,open) {
    allEvents[y][x]["locked"] = false;
    allEvents[y][x]["close"] = close;
    allEvents[y][x]["open"] = open;
-
 }
 
 function buildAllEvents() {
-   addEvent(15,15,"scene_00_14","ball.png",[1,2,3,4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
-   addEvent(14,14,"n1","ball.png",[3,4,5,6,7],[true,true,false,true],false,[],[]);
-   addEvent(15,14,"m1","ball.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);
-   addEvent(17,17,"scene_01","ball.png",[12],[true,true,false,true],false,[],[]);
+   addEvent(15,15,"scene_00_14","ex.png",[1,2,3,4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
+   addEvent(14,14,"n1","ex.png",[3,4,5,6,7],[true,true,false,true],false,[],[]);
+   addEvent(15,14,"m1","ex.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);
+   addEvent(17,17,"scene_01","ex.png",[12],[true,true,false,true],false,[],[]);
    allEvents[17][17].locked = true;
-   addEvent(12,20,"scene_01","ball.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);
-   addEvent(12,21,"scene_01","ball.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);
+   addEvent(12,20,"scene_01","ex.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);
+   addEvent(12,21,"scene_01","ex.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);
    availableEvents = allEvents;
 }
 
