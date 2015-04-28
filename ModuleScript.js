@@ -531,6 +531,7 @@ function goToEvent(dest){
 
 macros['readyeventselection'] = {
    handler: function(place, macroName, params, parser) {
+      $("#characters").html("");
       var d = parseInt(getVar("Day"));
       for(var r=0; r<32; r++){
          for(var i=0; i<32; i++){
@@ -648,13 +649,16 @@ function addEvent(x,y,pass,img,day,time,strong,close,open) {
 }
 
 function buildAllEvents() {
-   addEvent(15,15,"scene_00_14","ex.png",[1,2,3,4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
-   addEvent(14,14,"n1","ex.png",[3,4,5,6,7],[true,true,false,true],false,[],[]);
-   addEvent(15,14,"m1","ex.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);
-   addEvent(17,17,"scene_01","ex.png",[12],[true,true,false,true],false,[],[]);
+   addEvent(15,16,"scene_01 7","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);
+   addEvent(17,16,"m1 1","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);
+
+   addEvent(15,15,"sample text","ex.png",[4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
+   addEvent(14,14,"sample text","ex.png",[4,5,6,7],[true,true,false,true],false,[],[]);
+   addEvent(15,14,"sample text","ex.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);
+   addEvent(17,17,"sample text","ex.png",[12],[true,true,false,true],false,[],[]);
    allEvents[17][17].locked = true;
-   addEvent(12,20,"scene_01","ex.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);
-   addEvent(12,21,"scene_01","ex.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);
+   addEvent(12,20,"sample text","ex.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);
+   addEvent(12,21,"sample text","ex.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);
    availableEvents = allEvents;
 }
 
