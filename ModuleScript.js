@@ -7,7 +7,7 @@
 var rivalName = "Alastor";
 var allyName = "Ian"
 var audio = new Audio("");
-var volume = 0.2;
+var volume = 0.6;
 var points = {"rival":0,"ally":0,"counselor":0};
 var flags = {"f1":0,"f2":0,"f3":0,"f4":0};
 var effectivePassage = "";
@@ -296,7 +296,7 @@ macros['toggleauto'] = {
 //This is called at the beginning to set the player's name
 macros['setname'] = {
    handler:  function(place, macroName, params, parser) {
-      setPlayerName(prompt("What is your name?","Leeroy"));
+      setPlayerName(prompt("What is your name?","Julia"));
    }
 }
 
@@ -349,7 +349,7 @@ macros['loadgame'] = {
 
 macros['savegame'] = {
    handler: function(place, macroName, params, parser) {
-      effectivePassage = getPassageTitle();
+      // effectivePassage = getPassageTitle();
       // alert(effectivePassage);
       saveGame("saveSlotauto");
    }
@@ -547,13 +547,15 @@ macros['readyeventselection'] = {
             try{
                if(availableEvents[r][i]!=null){
                   var dest = availableEvents[r][i];
-                  if(include(dest.day,d)){
+                  if(dest.completed){
+                     name = dest.img.replace(".","_.");
+                  }else if(include(dest.day,d)){
                      name = dest.img;
                   }else{
                      name = "ball.png";
                   }
                   var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";
-                  if(parseInt(getVar("Time"))<4&&!dest.locked){
+                  if(parseInt(getVar("Time"))<4&&!(dest.locked||dest.completed)){
                      str = "<a href='#' id='"+id+"'>" + str + "</a>";
                   }else if(dest.locked){
                      str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"X.png' />";
@@ -607,6 +609,30 @@ function inGameDateStr() {
    return str;
 }
 
+macros['openevent'] = {
+   handler: function(place, macroName, params, parser) {
+      effectivePassage = getPassageTitle();
+   }
+}
+
+macros['closeevent'] = {
+   handler: function(place, macroName, params, parser) {
+      for(var r=0;r<32;r++){        // these 32s shouldn't be hardcoded
+         for(var c=0;c<32;c++){
+            try{
+               if(availableEvents[r][c].pass==effectivePassage){
+                  availableEvents[r][c].completed = true;
+                  var x;
+                  for(x in  availableEvents[r][c].open){
+                     alert(x.x+" "+x.y);
+                  }
+               }
+            }catch(e){}
+         }   
+      }
+   }
+}
+
 macros['buildcalendar'] = {
    handler: function(place, macroName, params, parser) {
       var cal = $(place).children("#calendar");
@@ -645,22 +671,16 @@ function addEvent(x,y,pass,img,day,time,strong,close,open) {
    allEvents[y][x]["time"] = time;
    allEvents[y][x]["strong"] = strong;
    allEvents[y][x]["locked"] = false;
+   allEvents[y][x]["completed"] = false;
+   allEvents[y][x]["visited"] = false;
    allEvents[y][x]["close"] = close;
    allEvents[y][x]["open"] = open;
 }
 
 function buildAllEvents() {
-   addEvent(15,16,"scene_01 7","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);
-   addEvent(17,16,"m1 1","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);
-
-   addEvent(15,15,"sample text","ex.png",[4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);
-   addEvent(14,14,"sample text","ex.png",[4,5,6,7],[true,true,false,true],false,[],[]);
-   addEvent(15,14,"sample text","ex.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);
-   addEvent(17,17,"sample text","ex.png",[12],[true,true,false,true],false,[],[]);
-   allEvents[17][17].locked = true;
-   addEvent(12,20,"sample text","ex.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);
-   addEvent(12,21,"sample text","ex.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);
-   availableEvents = allEvents;
+   addEvent(14,16,"Other00","other.png",[],[true,true,true,true],false,[],[{x:19,y:16}]);
+   availableEvents = allEvents.slice(0);
+   addEvent(19,16,"Nick00","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,true,true],false,[],[]);
 }
 
 /* Build the out-of-passage html elements.

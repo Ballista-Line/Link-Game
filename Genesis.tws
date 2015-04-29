@@ -132,7 +132,7 @@ tp51
 Rp52
 sbsa(dp53
 g14
-I00
+I01
 sg15
 (lp54
 F10.0
@@ -143,7 +143,7 @@ Tiddler
 p55
 (dp56
 g21
-V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.2;\u000avar points = {"rival":0,"ally":0,"counselor":0};\u000avar flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000avar effectivePassage = "";\u000avar currChar = ""; // the current character according to 'addcharacter'\u000avar allEvents = [[{pass:"Start",img:"ball.png"}]];\u000avar availableEvents = allEvents;\u000avar IMGURL = "http://www.ballistaline.com/link-game/images/"\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a//http://stackoverflow.com/questions/13627308/add-st-nd-rd-and-th-ordinal-suffix-to-a-number\u000afunction ordinal_suffix_of(i) {\u000a    var j = i % 10,\u000a        k = i % 100;\u000a    if (j == 1 && k != 11) {\u000a        return i + "st";\u000a    }\u000a    if (j == 2 && k != 12) {\u000a        return i + "nd";\u000a    }\u000a    if (j == 3 && k != 13) {\u000a        return i + "rd";\u000a    }\u000a    return i + "th";\u000a}\u000a\u000a//http://stackoverflow.com/questions/143847/best-way-to-find-an-item-in-a-javascript-array\u000afunction include(arr,obj) {\u000a    return (arr.indexOf(obj) != -1);\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a      if(isAuto()){\u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src",IMGURL+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000a// macros['setnext'] = {\u000a//    handler: function(place, macroName, params, parser) {\u000a//       setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a//    }\u000a// }\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlotauto")) {\u000a         var saveData = getCookieObject("saveSlotauto");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a      setVar("Day",1);\u000a      setVar("Time",0);\u000a   }\u000a}\u000a\u000afunction loadGame(slot,place){\u000a      var game = getCookieObject(slot);\u000a         \u000a      setSpeaker(game.speaker);\u000a      addCharacter(game.char);\u000a\u000a      setBackgroundSrc(game.background);\u000a      setVar("background",game.background);\u000a      \u000a      showDialogue(game.showdialogue);\u000a      \u000a      setPlayerName(game.name);\u000a      \u000a      setVar("trainingElement",game.element);\u000a\u000a      setVar("Day",game.day);\u000a      setVar("Time",game.gameTime);\u000a\u000a      resetpoints();\u000a\u000a      addpoints("rival",game.points.rival);\u000a      addpoints("ally",game.points.ally);\u000a      addpoints("counselor",game.points.counselor)\u000a      \u000a      state.display(game.passage,place);\u000a      \u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){loadGame("saveSlot"+params[0],place);},1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      effectivePassage = getPassageTitle();\u000a      // alert(effectivePassage);\u000a      saveGame("saveSlotauto");\u000a   }\u000a}\u000a\u000afunction addCharacter(name){\u000a   $("#characters").html("<img class='portrait' src='"+IMGURL+name+"' alt='"+name+"' />");\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      currChar = params[0];\u000a      addCharacter(params[0]);\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000a//resets points AND flags\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a   points.counselor = 0;\u000a   setVar("rpcounselor",0);\u000a   flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a   setVar("f1",0);\u000a   setVar("f2",0);\u000a   setVar("f3",0);\u000a   setVar("f4",0);\u000a}\u000a\u000amacros['setflag'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      flags[params[0]] = parseInt(params[1]);\u000a   }\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var date = new Date();\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "char": currChar,\u000a      "background": getVar("background"),\u000a      "passage": effectivePassage,\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points,\u000a      "time": date.toString(),\u000a      "day": getVar("Day"),\u000a      "gameTime": getVar("Time")\u000a   }\u000a   if(checkCookie(slot)&&slot!="saveSlotauto"){\u000a      if(!confirm("Overwrite existing data in "+slot+"?")){\u000a         return;\u000a      }\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000amacros['previewslot'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var text = "Empty";\u000a      try{\u000a         text = getCookieObject("saveSlot"+params[0]).time;\u000a      }catch(e){}\u000a      new Wikifier(place, text);\u000a   }\u000a}\u000a\u000amacros['readysavepage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         saveGame("saveSlot1");\u000a         state.display("Save",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         saveGame("saveSlot2");\u000a         state.display("Save",place);\u000a      });\u000a   }\u000a}\u000amacros['readyloadpage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#auto").click(function(){\u000a         loadGame("saveSlotauto",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         loadGame("saveSlot1",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         loadGame("saveSlot2",place);\u000a      });\u000a   }\u000a}\u000a\u000amacros['advancetime'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(confirm("Are you sure you want to sit idly?")){\u000a         var t = parseInt(getVar("Time"))+1;\u000a         setVar("Time",t);\u000a         var d = parseInt(getVar("Day"))+1;\u000a         if(t>3){ d++; }\u000a         updateAvailableEvents(d,t);\u000a      }\u000a   }\u000a}\u000a\u000afunction showCons(dest,place,vis){\u000a   var x;\u000a   for (x in dest.day) {\u000a      if(vis){\u000a         $("#dom"+dest.day[x]).attr("src",IMGURL+"greenBox.png");\u000a      }else{\u000a         $("#dom"+dest.day[x]).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.close) {\u000a      if(vis){\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"closeevent.png");\u000a      }else{\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.open) {\u000a      if(vis){\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"openevent.png");\u000a      }else{\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.time) {\u000a      if(vis){\u000a         if(dest.time[x]){\u000a            $("#tod"+(x+1)).show();\u000a         }\u000a      }else{\u000a         $("#tod"+(x+1)).hide();\u000a      }\u000a   }\u000a}\u000a\u000afunction goToEvent(dest){\u000a   if(include(dest.day,parseInt(getVar("Day"))) && dest.time[parseInt(getVar("Time"))]){\u000a      if(confirm("Are you sure you want to do this event?")){\u000a         state.display(dest.pass);\u000a      }\u000a   }else{\u000a      alert("This event is not currently available.");\u000a   }\u000a}\u000a\u000amacros['readyeventselection'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $("#characters").html("");\u000a      var d = parseInt(getVar("Day"));\u000a      for(var r=0; r<32; r++){\u000a         for(var i=0; i<32; i++){\u000a            var x = i*32;\u000a            var y = r*32+16*(i%2);\u000a            var name = "spacer.png";\u000a            if(r==16&&i==16){\u000a               name = "clock.png";\u000a               dest = "DoNothing";\u000a            }\u000a            var id = r+"_"+i;\u000a            try{\u000a               if(availableEvents[r][i]!=null){\u000a                  var dest = availableEvents[r][i];\u000a                  if(include(dest.day,d)){\u000a                     name = dest.img;\u000a                  }else{\u000a                     name = "ball.png";\u000a                  }\u000a                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";\u000a                  if(parseInt(getVar("Time"))<4&&!dest.locked){\u000a                     str = "<a href='#' id='"+id+"'>" + str + "</a>";\u000a                  }else if(dest.locked){\u000a                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"X.png' />";\u000a                  }   \u000a                  // if(!dest.locked){\u000a                  //    str = str + "<img id='img"+r+"_"+c+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='IMGURLspacer.png' />";  \u000a                  // }\u000a                  $(place).children("#eventSelection").append(str);\u000a                  (function(e){\u000a                     $(place).children("#eventSelection").children("#"+id).click(function(){\u000a                        goToEvent(e);\u000a                     }).hover(function(){\u000a                        showCons(e,place,true);\u000a                     },function(){\u000a                        showCons(e,place,false);\u000a                     });\u000a                  })(dest);\u000a               }else{\u000a                  throw "no event";\u000a               }\u000a            }catch(e){\u000a               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";\u000a               if(name=="clock.png"&&parseInt(getVar("Time"))<4){\u000a                  str = "<a href='#' onclick='state.display(\u005c"DoNothing\u005c");'>" + str + "</a>";\u000a               }\u000a               $(place).children("#eventSelection").append(str);\u000a            }\u000a            \u000a         }\u000a      }\u000a      setTimeout(function(){\u000a         $(place).children("#eventSelection").scrollTop(270);\u000a         $(place).children("#eventSelection").scrollLeft(170);\u000a      },1);\u000a   }\u000a}\u000a\u000afunction inGameDateStr() {\u000a   var str = "";\u000a   var d = parseInt(getVar("Day"));\u000a   str += ordinal_suffix_of(d) + " ";\u000a   switch(d%7){\u000a      case 1: str+="(Sun)"; break;\u000a      case 2: str+="(Mon)"; break;\u000a      case 3: str+="(Tue)"; break;\u000a      case 4: str+="(Wed)"; break;\u000a      case 5: str+="(Thu)"; break;\u000a      case 6: str+="(Fri)"; break;\u000a      case 0: str+="(Sat)"; break;\u000a   }\u000a   return str;\u000a}\u000a\u000amacros['buildcalendar'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var cal = $(place).children("#calendar");\u000a      cal.children("#calInner").html(inGameDateStr());\u000a      var d = parseInt(getVar("Day"));\u000a      for(var row=0;row<6;row++){\u000a         for(var col=0;col<7;col++){\u000a            var id = row * 7 + col + 1;\u000a            var $img = $('<img src="'+IMGURL+'spacer.png" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="dom'+id+'"/>').appendTo(cal);\u000a            if(id==d){\u000a               var $img = $('<img src="'+IMGURL+'selectedDay.gif" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="_dom'+id+'"/>').appendTo(cal);\u000a            }\u000a         }\u000a      }\u000a   }\u000a}\u000a\u000amacros['buildTOD'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var t = parseInt(getVar("Time"));\u000a      switch(t){\u000a         case 0: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_morning.png')"); break;\u000a         case 1: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon1.png')"); break;\u000a         case 2: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon2.png')"); break;\u000a         case 3: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_evening.png')"); break;\u000a      }\u000a   }\u000a}\u000a\u000afunction addEvent(x,y,pass,img,day,time,strong,close,open) {\u000a   if(!allEvents[y]){ allEvents[y] = []; }\u000a   allEvents[y][x] = {};\u000a   allEvents[y][x]["pass"] = pass;\u000a   allEvents[y][x]["img"] = img;\u000a   allEvents[y][x]["day"] = day;\u000a   allEvents[y][x]["time"] = time;\u000a   allEvents[y][x]["strong"] = strong;\u000a   allEvents[y][x]["locked"] = false;\u000a   allEvents[y][x]["close"] = close;\u000a   allEvents[y][x]["open"] = open;\u000a}\u000a\u000afunction buildAllEvents() {\u000a   addEvent(15,16,"scene_01 7","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);\u000a   addEvent(17,16,"m1 1","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);\u000a\u000a   addEvent(15,15,"sample text","ex.png",[4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);\u000a   addEvent(14,14,"sample text","ex.png",[4,5,6,7],[true,true,false,true],false,[],[]);\u000a   addEvent(15,14,"sample text","ex.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);\u000a   addEvent(17,17,"sample text","ex.png",[12],[true,true,false,true],false,[],[]);\u000a   allEvents[17][17].locked = true;\u000a   addEvent(12,20,"sample text","ex.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);\u000a   addEvent(12,21,"sample text","ex.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);\u000a   availableEvents = allEvents;\u000a}\u000a\u000a/* Build the out-of-passage html elements.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a   buildAllEvents();\u000a}\u000a\u000ainitialize();\u000a
+V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.6;\u000avar points = {"rival":0,"ally":0,"counselor":0};\u000avar flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000avar effectivePassage = "";\u000avar currChar = ""; // the current character according to 'addcharacter'\u000avar allEvents = [[{pass:"Start",img:"ball.png"}]];\u000avar availableEvents = allEvents;\u000avar IMGURL = "http://www.ballistaline.com/link-game/images/"\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a//http://stackoverflow.com/questions/13627308/add-st-nd-rd-and-th-ordinal-suffix-to-a-number\u000afunction ordinal_suffix_of(i) {\u000a    var j = i % 10,\u000a        k = i % 100;\u000a    if (j == 1 && k != 11) {\u000a        return i + "st";\u000a    }\u000a    if (j == 2 && k != 12) {\u000a        return i + "nd";\u000a    }\u000a    if (j == 3 && k != 13) {\u000a        return i + "rd";\u000a    }\u000a    return i + "th";\u000a}\u000a\u000a//http://stackoverflow.com/questions/143847/best-way-to-find-an-item-in-a-javascript-array\u000afunction include(arr,obj) {\u000a    return (arr.indexOf(obj) != -1);\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a      if(isAuto()){\u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src",IMGURL+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000a// macros['setnext'] = {\u000a//    handler: function(place, macroName, params, parser) {\u000a//       setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a//    }\u000a// }\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Julia"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlotauto")) {\u000a         var saveData = getCookieObject("saveSlotauto");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a      setVar("Day",1);\u000a      setVar("Time",0);\u000a   }\u000a}\u000a\u000afunction loadGame(slot,place){\u000a      var game = getCookieObject(slot);\u000a         \u000a      setSpeaker(game.speaker);\u000a      addCharacter(game.char);\u000a\u000a      setBackgroundSrc(game.background);\u000a      setVar("background",game.background);\u000a      \u000a      showDialogue(game.showdialogue);\u000a      \u000a      setPlayerName(game.name);\u000a      \u000a      setVar("trainingElement",game.element);\u000a\u000a      setVar("Day",game.day);\u000a      setVar("Time",game.gameTime);\u000a\u000a      resetpoints();\u000a\u000a      addpoints("rival",game.points.rival);\u000a      addpoints("ally",game.points.ally);\u000a      addpoints("counselor",game.points.counselor)\u000a      \u000a      state.display(game.passage,place);\u000a      \u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){loadGame("saveSlot"+params[0],place);},1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // effectivePassage = getPassageTitle();\u000a      // alert(effectivePassage);\u000a      saveGame("saveSlotauto");\u000a   }\u000a}\u000a\u000afunction addCharacter(name){\u000a   $("#characters").html("<img class='portrait' src='"+IMGURL+name+"' alt='"+name+"' />");\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      currChar = params[0];\u000a      addCharacter(params[0]);\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000a//resets points AND flags\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a   points.counselor = 0;\u000a   setVar("rpcounselor",0);\u000a   flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a   setVar("f1",0);\u000a   setVar("f2",0);\u000a   setVar("f3",0);\u000a   setVar("f4",0);\u000a}\u000a\u000amacros['setflag'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      flags[params[0]] = parseInt(params[1]);\u000a   }\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var date = new Date();\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "char": currChar,\u000a      "background": getVar("background"),\u000a      "passage": effectivePassage,\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points,\u000a      "time": date.toString(),\u000a      "day": getVar("Day"),\u000a      "gameTime": getVar("Time")\u000a   }\u000a   if(checkCookie(slot)&&slot!="saveSlotauto"){\u000a      if(!confirm("Overwrite existing data in "+slot+"?")){\u000a         return;\u000a      }\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000amacros['previewslot'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var text = "Empty";\u000a      try{\u000a         text = getCookieObject("saveSlot"+params[0]).time;\u000a      }catch(e){}\u000a      new Wikifier(place, text);\u000a   }\u000a}\u000a\u000amacros['readysavepage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         saveGame("saveSlot1");\u000a         state.display("Save",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         saveGame("saveSlot2");\u000a         state.display("Save",place);\u000a      });\u000a   }\u000a}\u000amacros['readyloadpage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#auto").click(function(){\u000a         loadGame("saveSlotauto",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         loadGame("saveSlot1",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         loadGame("saveSlot2",place);\u000a      });\u000a   }\u000a}\u000a\u000amacros['advancetime'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(confirm("Are you sure you want to sit idly?")){\u000a         var t = parseInt(getVar("Time"))+1;\u000a         setVar("Time",t);\u000a         var d = parseInt(getVar("Day"))+1;\u000a         if(t>3){ d++; }\u000a         updateAvailableEvents(d,t);\u000a      }\u000a   }\u000a}\u000a\u000afunction showCons(dest,place,vis){\u000a   var x;\u000a   for (x in dest.day) {\u000a      if(vis){\u000a         $("#dom"+dest.day[x]).attr("src",IMGURL+"greenBox.png");\u000a      }else{\u000a         $("#dom"+dest.day[x]).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.close) {\u000a      if(vis){\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"closeevent.png");\u000a      }else{\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.open) {\u000a      if(vis){\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"openevent.png");\u000a      }else{\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.time) {\u000a      if(vis){\u000a         if(dest.time[x]){\u000a            $("#tod"+(x+1)).show();\u000a         }\u000a      }else{\u000a         $("#tod"+(x+1)).hide();\u000a      }\u000a   }\u000a}\u000a\u000afunction goToEvent(dest){\u000a   if(include(dest.day,parseInt(getVar("Day"))) && dest.time[parseInt(getVar("Time"))]){\u000a      if(confirm("Are you sure you want to do this event?")){\u000a         state.display(dest.pass);\u000a      }\u000a   }else{\u000a      alert("This event is not currently available.");\u000a   }\u000a}\u000a\u000amacros['readyeventselection'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $("#characters").html("");\u000a      var d = parseInt(getVar("Day"));\u000a      for(var r=0; r<32; r++){\u000a         for(var i=0; i<32; i++){\u000a            var x = i*32;\u000a            var y = r*32+16*(i%2);\u000a            var name = "spacer.png";\u000a            if(r==16&&i==16){\u000a               name = "clock.png";\u000a               dest = "DoNothing";\u000a            }\u000a            var id = r+"_"+i;\u000a            try{\u000a               if(availableEvents[r][i]!=null){\u000a                  var dest = availableEvents[r][i];\u000a                  if(dest.completed){\u000a                     name = dest.img.replace(".","_.");\u000a                  }else if(include(dest.day,d)){\u000a                     name = dest.img;\u000a                  }else{\u000a                     name = "ball.png";\u000a                  }\u000a                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";\u000a                  if(parseInt(getVar("Time"))<4&&!(dest.locked||dest.completed)){\u000a                     str = "<a href='#' id='"+id+"'>" + str + "</a>";\u000a                  }else if(dest.locked){\u000a                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"X.png' />";\u000a                  }   \u000a                  // if(!dest.locked){\u000a                  //    str = str + "<img id='img"+r+"_"+c+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='IMGURLspacer.png' />";  \u000a                  // }\u000a                  $(place).children("#eventSelection").append(str);\u000a                  (function(e){\u000a                     $(place).children("#eventSelection").children("#"+id).click(function(){\u000a                        goToEvent(e);\u000a                     }).hover(function(){\u000a                        showCons(e,place,true);\u000a                     },function(){\u000a                        showCons(e,place,false);\u000a                     });\u000a                  })(dest);\u000a               }else{\u000a                  throw "no event";\u000a               }\u000a            }catch(e){\u000a               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";\u000a               if(name=="clock.png"&&parseInt(getVar("Time"))<4){\u000a                  str = "<a href='#' onclick='state.display(\u005c"DoNothing\u005c");'>" + str + "</a>";\u000a               }\u000a               $(place).children("#eventSelection").append(str);\u000a            }\u000a            \u000a         }\u000a      }\u000a      setTimeout(function(){\u000a         $(place).children("#eventSelection").scrollTop(270);\u000a         $(place).children("#eventSelection").scrollLeft(170);\u000a      },1);\u000a   }\u000a}\u000a\u000afunction inGameDateStr() {\u000a   var str = "";\u000a   var d = parseInt(getVar("Day"));\u000a   str += ordinal_suffix_of(d) + " ";\u000a   switch(d%7){\u000a      case 1: str+="(Sun)"; break;\u000a      case 2: str+="(Mon)"; break;\u000a      case 3: str+="(Tue)"; break;\u000a      case 4: str+="(Wed)"; break;\u000a      case 5: str+="(Thu)"; break;\u000a      case 6: str+="(Fri)"; break;\u000a      case 0: str+="(Sat)"; break;\u000a   }\u000a   return str;\u000a}\u000a\u000amacros['openevent'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      effectivePassage = getPassageTitle();\u000a   }\u000a}\u000a\u000amacros['closeevent'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      for(var r=0;r<32;r++){        // these 32s shouldn't be hardcoded\u000a         for(var c=0;c<32;c++){\u000a            try{\u000a               if(availableEvents[r][c].pass==effectivePassage){\u000a                  availableEvents[r][c].completed = true;\u000a                  var x;\u000a                  for(x in  availableEvents[r][c].open){\u000a                     alert(x.x+" "+x.y);\u000a                  }\u000a               }\u000a            }catch(e){}\u000a         }   \u000a      }\u000a   }\u000a}\u000a\u000amacros['buildcalendar'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var cal = $(place).children("#calendar");\u000a      cal.children("#calInner").html(inGameDateStr());\u000a      var d = parseInt(getVar("Day"));\u000a      for(var row=0;row<6;row++){\u000a         for(var col=0;col<7;col++){\u000a            var id = row * 7 + col + 1;\u000a            var $img = $('<img src="'+IMGURL+'spacer.png" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="dom'+id+'"/>').appendTo(cal);\u000a            if(id==d){\u000a               var $img = $('<img src="'+IMGURL+'selectedDay.gif" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="_dom'+id+'"/>').appendTo(cal);\u000a            }\u000a         }\u000a      }\u000a   }\u000a}\u000a\u000amacros['buildTOD'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var t = parseInt(getVar("Time"));\u000a      switch(t){\u000a         case 0: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_morning.png')"); break;\u000a         case 1: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon1.png')"); break;\u000a         case 2: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon2.png')"); break;\u000a         case 3: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_evening.png')"); break;\u000a      }\u000a   }\u000a}\u000a\u000afunction addEvent(x,y,pass,img,day,time,strong,close,open) {\u000a   if(!allEvents[y]){ allEvents[y] = []; }\u000a   allEvents[y][x] = {};\u000a   allEvents[y][x]["pass"] = pass;\u000a   allEvents[y][x]["img"] = img;\u000a   allEvents[y][x]["day"] = day;\u000a   allEvents[y][x]["time"] = time;\u000a   allEvents[y][x]["strong"] = strong;\u000a   allEvents[y][x]["locked"] = false;\u000a   allEvents[y][x]["completed"] = false;\u000a   allEvents[y][x]["visited"] = false;\u000a   allEvents[y][x]["close"] = close;\u000a   allEvents[y][x]["open"] = open;\u000a}\u000a\u000afunction buildAllEvents() {\u000a   addEvent(14,16,"Other00","other.png",[],[true,true,true,true],false,[],[{x:19,y:16}]);\u000a   availableEvents = allEvents.slice(0);\u000a   addEvent(19,16,"Nick00","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,true,true],false,[],[]);\u000a}\u000a\u000a/* Build the out-of-passage html elements.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a   buildAllEvents();\u000a}\u000a\u000ainitialize();\u000a
 p57
 sg23
 VModuleScript
@@ -152,12 +152,12 @@ sg25
 g26
 ((I2015
 I4
-I28
-I17
-I55
-I13
-I1
-I118
+I29
+I0
+I20
+I21
+I2
+I119
 I1
 tp59
 (dp60
@@ -195,7 +195,7 @@ Tiddler
 p71
 (dp72
 g21
-V<<loadTitlescreen>>\u000a<<setbackground "title.png">>\u000a<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen" class="stroke">\u005c\u000a	\u000a	[[New Game|Greeting00]]\u000a	<<if $canContinue is "true">>[[Continue|ContinueFromSave]]<<else>>Continue<<endif>>\u000a	[[Load]]\u000a	[[Settings]]<span style="font-size:50%;">\u000a	<a href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Submit an Issue</a> | <a href="http://www.roblox.com/games/3053085/Darkened-Dawn" target="_blank">TDSI</a> | <<print document.lastModified>></span>\u000a</div>\u000a<div id="splash" class="stroke"><<Splash>></div>\u000a<<playsound "intro.mp3">>
+V<<loadTitlescreen>>\u000a<<setbackground "DawningDaysTitle.png">>\u000a<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<div id="title_screen" class="stroke">\u005c\u000a	[[EventSelection]]\u000a	[[New Game|Other00]]\u000a	<<if $canContinue is "true">>[[Continue|ContinueFromSave]]<<else>>Continue<<endif>>\u000a	[[Load]]\u000a	[[Settings]]<span style="font-size:50%;">\u000a	<a href="https://github.com/Ballista-Line/Link-Game" target="_blank">GitHub</a> | <a href="https://github.com/Ballista-Line/Link-Game/issues" target="_blank">Submit an Issue</a> | <a href="http://www.roblox.com/games/3053085/Darkened-Dawn" target="_blank">TDSI</a> | <<print document.lastModified>></span>\u000a</div>\u000a<div id="splash" class="stroke"><<Splash>></div>\u000a<<playsound "Canon.m4a">>
 p73
 sg23
 VStart
@@ -205,9 +205,9 @@ g26
 ((I2015
 I4
 I28
-I15
-I35
-I47
+I22
+I38
+I6
 I1
 I118
 I1
@@ -591,29 +591,29 @@ g14
 I00
 sg15
 (lp192
-F1970.0
-aF430.0
+F1830.0
+aF2250.0
 asg17
 (itiddlywiki
 Tiddler
 p193
 (dp194
 g21
-V<<setname>>\u000a<<newgame>>\u000a<<setbackground "cosmos.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "Jaiden King">>\u000a<<playsound "Farewell.mp3">>\u000a<<msg "Warning: this game contains a lot of [placeholder text].">>\u000a<<continue "Greeting00 1">>
+V<<setname>>\u000a<<newgame>>\u000a<<openevent>>\u000a<<setbackground "beachcliff.png">>\u000a<<playsound "SwanLake.m4a">>\u000a<<setspeaker " ">>\u000a<<showdialogue true>>\u000a<<msg "...">>\u000a<<continue "Other00 1">>
 p195
 sg23
-VGreeting00
+VOther00
 p196
 sg25
 g26
 ((I2015
 I4
-I18
-I18
-I40
-I36
-I5
-I108
+I28
+I22
+I43
+I24
+I1
+I118
 I1
 tp197
 (dp198
@@ -899,7 +899,7 @@ Tiddler
 p283
 (dp284
 g21
-V<<nobr>>\u000a\u000a\u000a<div class="background" id="eventSelection">\u000a</div>\u000a<<showdialogue false>>\u000a\u000a<<calendar>>\u000a<<TimeOfDay>>\u000a\u000a<<if $Time is 0>>\u000a<<setbackground "morning.png">>\u000a<<else>><<if $Time is 1 or $Time is 2>>\u000a<<setbackground "midday.png">>\u000a<<else>>\u000a<<setbackground "evening.png">>\u000a<<endif>><<endif>>\u000a\u000a<<readyeventselection>>\u000a\u000a<<if $Time is 4>>\u000a<<timedgoto "GoHome" 500ms>>\u000a<<endif>>\u000a\u000a<<endnobr>>
+V<<nobr>>\u000a<<playsound "Barber.m4a">>\u000a<div class="background" id="eventSelection">\u000a</div>\u000a<<showdialogue false>>\u000a\u000a<<calendar>>\u000a<<TimeOfDay>>\u000a\u000a<<if $Time is 0>>\u000a<<setbackground "morning.png">>\u000a<<else>><<if $Time is 1 or $Time is 2>>\u000a<<setbackground "midday.png">>\u000a<<else>>\u000a<<setbackground "evening.png">>\u000a<<endif>><<endif>>\u000a\u000a<<readyeventselection>>\u000a\u000a<<if $Time > 3>>\u000a<<timedgoto "GoHome" 500ms>>\u000a<<endif>>\u000a\u000a<<endnobr>>
 p285
 sg23
 VEventSelection
@@ -908,12 +908,12 @@ sg25
 g26
 ((I2015
 I4
-I27
-I18
-I10
-I3
+I29
 I0
-I117
+I11
+I39
+I2
+I119
 I1
 tp287
 (dp288
@@ -941,7 +941,7 @@ g14
 I00
 sg15
 (lp297
-F3230.0
+F1970.0
 aF2250.0
 asg17
 (itiddlywiki
@@ -991,15 +991,15 @@ g14
 I00
 sg15
 (lp312
-F990.0
-aF2390.0
+F570.0
+aF2670.0
 asg17
 (itiddlywiki
 Tiddler
 p313
 (dp314
 g21
-V<<setbackground "camp_outer.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "%n">>\u000a<<playsound "">>\u000a<<msg "I suppose it's time I head back to my cabin.">>\u000a<<continue "GoHome 1">>
+V<<setbackground "classroom_eve.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "%n">>\u000a<<playsound "">>\u000a<<msg "It's about time I head back home.">>\u000a<<continue "GoHome 1">>
 p315
 sg23
 VGoHome
@@ -1008,12 +1008,12 @@ sg25
 g26
 ((I2015
 I4
+I28
 I23
-I16
-I0
-I2
-I3
-I113
+I39
+I23
+I1
+I118
 I1
 tp317
 (dp318
@@ -1041,15 +1041,15 @@ g14
 I00
 sg15
 (lp327
-F1130.0
-aF2390.0
+F710.0
+aF2670.0
 asg17
 (itiddlywiki
 Tiddler
 p328
 (dp329
 g21
-V<<setbackground "cabin_inner.png">>\u000a<<set $s to either("Today was a tough day.","Wow, I got a lot accomplished today.","Man, I'm tired.")>> \u000a<<msg $s>>\u000a<<continue "Menu">>
+V<<setbackground "home_inside.png">>\u000a<<setspeaker "%n">>\u000a<<msg "I'm home.">>\u000a<<continue "GoHome 2">>
 p330
 sg23
 VGoHome 1
@@ -1058,12 +1058,12 @@ sg25
 g26
 ((I2015
 I4
+I28
 I23
-I16
-I35
-I43
-I3
-I113
+I40
+I38
+I1
+I118
 I1
 tp332
 (dp333
@@ -1099,7 +1099,7 @@ Tiddler
 p343
 (dp344
 g21
-V<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen" class="stroke">\u005c\u000a	[[Sleep]]\u000a	[[Save]]\u000a	[[Load]]\u000a	[[Settings]]\u000a</div>
+V<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<setbackground "bedroom.png">>\u000a<div id="title_screen" class="stroke">\u005c\u000a	[[Sleep]]\u000a	[[Save]]\u000a	[[Load]]\u000a	[[Settings]]\u000a</div>
 p345
 sg23
 VMenu
@@ -1108,12 +1108,12 @@ sg25
 g26
 ((I2015
 I4
-I26
+I28
+I23
+I58
 I16
-I44
-I7
-I6
-I116
+I1
+I118
 I1
 tp347
 (dp348
@@ -1149,7 +1149,7 @@ Tiddler
 p358
 (dp359
 g21
-V<<set $Time to 0>>\u000a<<set $Day to $Day + 1>>\u000a<<setbackground "night.png">>\u000a<<showdialogue true>>\u000a<<setspeaker " ">>\u000a<<msg "...">>\u000a<<continue "EventSelection">>
+V<<set $Time to 0>>\u000a<<set $Day to $Day + 1>>\u000a<<setbackground "home_night1.png">>\u000a<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<<timedgoto "Sleep 1" 1s>>
 p360
 sg23
 VSleep
@@ -1158,12 +1158,12 @@ sg25
 g26
 ((I2015
 I4
-I27
-I17
-I43
-I38
-I0
-I117
+I28
+I23
+I26
+I59
+I1
+I118
 I1
 tp362
 (dp363
@@ -1349,7 +1349,7 @@ Tiddler
 p418
 (dp419
 g21
-V<<set $Time to $Time + 1>>\u000a<<goto "EventSelection">>
+V<<closeevent>>\u000a<<set $Time to $Time + 1>>\u000a<<goto "EventSelection">>
 p420
 sg23
 VEventEnd
@@ -1359,9 +1359,9 @@ g26
 ((I2015
 I4
 I28
-I17
-I57
 I23
+I2
+I51
 I1
 I118
 I1
@@ -1386,10 +1386,1060 @@ tp427
 (dp428
 tp429
 Rp430
+sbsa(dp431
+g14
+I00
+sg15
+(lp432
+F3930.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p433
+(dp434
+g21
+V<<msg "Ahh, I love this park. The view of the ocean from here is amazing...">>\u000a<<continue "Other00 2">>
+p435
+sg23
+VOther00 1
+p436
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I44
+I59
+I1
+I118
+I1
+tp437
+(dp438
+tp439
+Rp440
+sg31
+(lp441
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp442
+(dp443
+tp444
+Rp445
+sbsa(dp446
+g14
+I00
+sg15
+(lp447
+F4070.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p448
+(dp449
+g21
+V<<msg "But...">>\u000a<<continue "Other00 3">>
+p450
+sg23
+VOther00 2
+p451
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I45
+I36
+I1
+I118
+I1
+tp452
+(dp453
+tp454
+Rp455
+sg31
+(lp456
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp457
+(dp458
+tp459
+Rp460
+sbsa(dp461
+g14
+I00
+sg15
+(lp462
+F4210.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p463
+(dp464
+g21
+V<<msg "I get kind of lonely always coming here by myself.">>\u000a<<continue "Other00 4">>
+p465
+sg23
+VOther00 3
+p466
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I46
+I47
+I1
+I118
+I1
+tp467
+(dp468
+tp469
+Rp470
+sg31
+(lp471
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp472
+(dp473
+tp474
+Rp475
+sbsa(dp476
+g14
+I00
+sg15
+(lp477
+F4350.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p478
+(dp479
+g21
+V<<setbackground "spacer.png">>\u000a<<msg "...">>\u000a<<continue "Other00 5">>
+p480
+sg23
+VOther00 4
+p481
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I47
+I37
+I1
+I118
+I1
+tp482
+(dp483
+tp484
+Rp485
+sg31
+(lp486
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp487
+(dp488
+tp489
+Rp490
+sbsa(dp491
+g14
+I00
+sg15
+(lp492
+F4490.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p493
+(dp494
+g21
+V<<setbackground "school_outer.png">>\u000a<<addcharacter "magnum_normal.png">>\u000a<<setspeaker "Magnum">>\u000a<<msg "Hey, %n, what's up.">>\u000a<<continue "Other00 6">>
+p495
+sg23
+VOther00 5
+p496
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I50
+I15
+I1
+I118
+I1
+tp497
+(dp498
+tp499
+Rp500
+sg31
+(lp501
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp502
+(dp503
+tp504
+Rp505
+sbsa(dp506
+g14
+I00
+sg15
+(lp507
+F4630.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p508
+(dp509
+g21
+V<<setspeaker "%n">>\u000a<<msg "Oh, hey Magnum, how's it going?">>\u000a<<continue "Other00 7">>
+p510
+sg23
+VOther00 6
+p511
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I51
+I38
+I1
+I118
+I1
+tp512
+(dp513
+tp514
+Rp515
+sg31
+(lp516
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp517
+(dp518
+tp519
+Rp520
+sbsa(dp521
+g14
+I00
+sg15
+(lp522
+F4770.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p523
+(dp524
+g21
+V<<setspeaker " ">>\u000a<<msg "I hug Magnum in greeting.">>\u000a<<continue "Other00 8">>
+p525
+sg23
+VOther00 7
+p526
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I52
+I12
+I1
+I118
+I1
+tp527
+(dp528
+tp529
+Rp530
+sg31
+(lp531
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp532
+(dp533
+tp534
+Rp535
+sbsa(dp536
+g14
+I00
+sg15
+(lp537
+F4910.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p538
+(dp539
+g21
+V<<setspeaker "Magnum">>\u000a<<msg "Say, you know, %n, we've been friends for quite a while now.">>\u000a<<continue "Other00 9">>
+p540
+sg23
+VOther00 8
+p541
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I53
+I23
+I1
+I118
+I1
+tp542
+(dp543
+tp544
+Rp545
+sg31
+(lp546
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp547
+(dp548
+tp549
+Rp550
+sbsa(dp551
+g14
+I00
+sg15
+(lp552
+F5050.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p553
+(dp554
+g21
+V<<msg "And prom is comining up soon...">>\u000a<<continue "Other00 10">>
+p555
+sg23
+VOther00 9
+p556
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I54
+I8
+I1
+I118
+I1
+tp557
+(dp558
+tp559
+Rp560
+sg31
+(lp561
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp562
+(dp563
+tp564
+Rp565
+sbsa(dp566
+g14
+I00
+sg15
+(lp567
+F5190.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p568
+(dp569
+g21
+V<<msg "Don't you think we should, you know...">>\u000a<<continue "Other00 11">>
+p570
+sg23
+VOther00 10
+p571
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I55
+I6
+I1
+I118
+I1
+tp572
+(dp573
+tp574
+Rp575
+sg31
+(lp576
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp577
+(dp578
+tp579
+Rp580
+sbsa(dp581
+g14
+I00
+sg15
+(lp582
+F5330.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p583
+(dp584
+g21
+V<<msg "Try to find some boyfriends to take to prom?">>\u000a<<continue "Other00 12">>
+p585
+sg23
+VOther00 11
+p586
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I55
+I44
+I1
+I118
+I1
+tp587
+(dp588
+tp589
+Rp590
+sg31
+(lp591
+sg33
+g26
+((I2015
+I4
+I28
+I22
+I55
+I11
+I1
+I118
+I1
+tp592
+(dp593
+tp594
+Rp595
+sbsa(dp596
+g14
+I00
+sg15
+(lp597
+F5470.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p598
+(dp599
+g21
+V<<setspeaker "%n">>\u000a<<msg "You know what, I think that's a pretty good idea.">>\u000a<<continue "Other00 13">>
+p600
+sg23
+VOther00 12
+p601
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I56
+I52
+I1
+I118
+I1
+tp602
+(dp603
+tp604
+Rp605
+sg31
+(lp606
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp607
+(dp608
+tp609
+Rp610
+sbsa(dp611
+g14
+I00
+sg15
+(lp612
+F5610.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p613
+(dp614
+g21
+V<<msg "Yeah. Prom is coming up in about a month. Let's both try our hardest to get a date to prom.">>\u000a<<continue "Other00 14">>
+p615
+sg23
+VOther00 13
+p616
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I57
+I47
+I1
+I118
+I1
+tp617
+(dp618
+tp619
+Rp620
+sg31
+(lp621
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp622
+(dp623
+tp624
+Rp625
+sbsa(dp626
+g14
+I00
+sg15
+(lp627
+F5750.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p628
+(dp629
+g21
+V<<setspeaker "Magnum">>\u000a<<msg "Fantastic. I'll try my best, and good luck to you.">>\u000a<<continue "Other00 15">>
+p630
+sg23
+VOther00 14
+p631
+sg25
+g26
+((I2015
+I4
+I28
+I22
+I59
+I11
+I1
+I118
+I1
+tp632
+(dp633
+tp634
+Rp635
+sg31
+(lp636
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp637
+(dp638
+tp639
+Rp640
+sbsa(dp641
+g14
+I00
+sg15
+(lp642
+F5890.0
+aF150.0
+asg17
+(itiddlywiki
+Tiddler
+p643
+(dp644
+g21
+V<<addcharacter "spacer.png">>\u000a<<setspeaker " ">>\u000a<<msg "This sounds fun. I've never been to prom before...">>\u000a<<set $Day to 1>>\u000a<<set $Time to 4>>\u000a<<continue "EventEnd">>
+p645
+sg23
+VOther00 15
+p646
+sg25
+g26
+((I2015
+I4
+I28
+I23
+I56
+I57
+I1
+I118
+I1
+tp647
+(dp648
+tp649
+Rp650
+sg31
+(lp651
+sg33
+g26
+((I2015
+I4
+I16
+I15
+I49
+I43
+I3
+I106
+I1
+tp652
+(dp653
+tp654
+Rp655
+sbsa(dp656
+g14
+I00
+sg15
+(lp657
+F710.0
+aF1830.0
+asg17
+(itiddlywiki
+Tiddler
+p658
+(dp659
+g21
+V<<setbackground "home_night2.png">>\u000a<<timedgoto "Sleep 2" 2s>>
+p660
+sg23
+VSleep 1
+p661
+sg25
+g26
+((I2015
+I4
+I28
+I23
+I31
+I32
+I1
+I118
+I1
+tp662
+(dp663
+tp664
+Rp665
+sg31
+(lp666
+sg33
+g26
+((I2015
+I4
+I28
+I23
+I27
+I3
+I1
+I118
+I1
+tp667
+(dp668
+tp669
+Rp670
+sbsa(dp671
+g14
+I00
+sg15
+(lp672
+F850.0
+aF1830.0
+asg17
+(itiddlywiki
+Tiddler
+p673
+(dp674
+g21
+V<<setbackground "spacer.png">>\u000a<<showdialogue true>>\u000a<<setspeaker " ">>\u000a<<msg "...">>\u000a<<continue "LeaveHouse">>
+p675
+sg23
+VSleep 2
+p676
+sg25
+g26
+((I2015
+I4
+I28
+I23
+I28
+I31
+I1
+I118
+I1
+tp677
+(dp678
+tp679
+Rp680
+sg31
+(lp681
+sg33
+g26
+((I2015
+I4
+I28
+I23
+I27
+I42
+I1
+I118
+I1
+tp682
+(dp683
+tp684
+Rp685
+sbsa(dp686
+g14
+I00
+sg15
+(lp687
+F990.0
+aF1830.0
+asg17
+(itiddlywiki
+Tiddler
+p688
+(dp689
+g21
+V<<setbackground "home_outside.png">>\u000a<<showdialogue false>>\u000a<<timedgoto "Morning" 2000ms>>
+p690
+sg23
+VLeaveHouse
+p691
+sg25
+g26
+((I2015
+I4
+I28
+I23
+I49
+I42
+I1
+I118
+I1
+tp692
+(dp693
+tp694
+Rp695
+sg31
+(lp696
+sg33
+g26
+((I2015
+I4
+I28
+I23
+I28
+I36
+I1
+I118
+I1
+tp697
+(dp698
+tp699
+Rp700
+sbsa(dp701
+g14
+I00
+sg15
+(lp702
+F1130.0
+aF1830.0
+asg17
+(itiddlywiki
+Tiddler
+p703
+(dp704
+g21
+V<<goto "EventSelection">>
+p705
+sg23
+VMorning
+p706
+sg25
+g26
+((I2015
+I4
+I28
+I23
+I30
+I32
+I1
+I118
+I1
+tp707
+(dp708
+tp709
+Rp710
+sg31
+(lp711
+sg33
+g26
+((I2015
+I4
+I28
+I23
+I30
+I12
+I1
+I118
+I1
+tp712
+(dp713
+tp714
+Rp715
+sbsa(dp716
+g14
+I00
+sg15
+(lp717
+F850.0
+aF2670.0
+asg17
+(itiddlywiki
+Tiddler
+p718
+(dp719
+g21
+V<<addcharacter "chris_normal.png">>\u000a<<setspeaker "Chris">>\u000a<<msg "Welcome home, sis.">>\u000a<<continue "GoHome 3">>
+p720
+sg23
+VGoHome 2
+p721
+sg25
+g26
+((I2015
+I4
+I28
+I23
+I42
+I13
+I1
+I118
+I1
+tp722
+(dp723
+tp724
+Rp725
+sg31
+(lp726
+sg33
+g26
+((I2015
+I4
+I28
+I23
+I40
+I41
+I1
+I118
+I1
+tp727
+(dp728
+tp729
+Rp730
+sbsa(dp731
+g14
+I00
+sg15
+(lp732
+F990.0
+aF2670.0
+asg17
+(itiddlywiki
+Tiddler
+p733
+(dp734
+g21
+V<<set $s to either("It looks like you've had a tough day.","You seem like you've accomplished a lot today.","You look tired. Did something happen?")>> \u000a<<msg $s>>\u000a<<continue "Menu">>
+p735
+sg23
+VGoHome 3
+p736
+sg25
+g26
+((I2015
+I4
+I28
+I23
+I43
+I25
+I1
+I118
+I1
+tp737
+(dp738
+tp739
+Rp740
+sg31
+(lp741
+sg33
+g26
+((I2015
+I4
+I28
+I23
+I42
+I16
+I1
+I118
+I1
+tp742
+(dp743
+tp744
+Rp745
 sbsasS'scale'
-p431
-F0.4000000000000001
+p746
+F0.5194675540765391
 sS'snapping'
-p432
+p747
 I01
 ss.
