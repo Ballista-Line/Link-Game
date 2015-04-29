@@ -14,6 +14,7 @@ var effectivePassage = "";
 var currChar = ""; // the current character according to 'addcharacter'
 var allEvents = [[{pass:"Start",img:"ball.png"}]];
 var availableEvents = allEvents;
+var IMGURL = "http://www.ballistaline.com/link-game/images/"
 
 // The following 3 functions are from w3schools.com
 function setCookie(cname, cvalue, exdays) {
@@ -209,7 +210,7 @@ macros['type'] = {
 };
 
 function setBackgroundSrc(src) {
-   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);
+   $(".background").attr("src",IMGURL+src);
 }
 
 // Sets the $background_URL variable.
@@ -355,7 +356,7 @@ macros['savegame'] = {
 }
 
 function addCharacter(name){
-   $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+name+"' alt='"+name+"' />");
+   $("#characters").html("<img class='portrait' src='"+IMGURL+name+"' alt='"+name+"' />");
 }
 
 // Characters aren't being saved yet!
@@ -489,23 +490,23 @@ function showCons(dest,place,vis){
    var x;
    for (x in dest.day) {
       if(vis){
-         $("#dom"+dest.day[x]).attr("src","http://www.ballistaline.com/link-game/images/greenBox.png");
+         $("#dom"+dest.day[x]).attr("src",IMGURL+"greenBox.png");
       }else{
-         $("#dom"+dest.day[x]).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");
+         $("#dom"+dest.day[x]).attr("src",IMGURL+"spacer.png");
       }
    }
    for (x in dest.close) {
       if(vis){
-         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src","http://www.ballistaline.com/link-game/images/closeevent.png");
+         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"closeevent.png");
       }else{
-         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");
+         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"spacer.png");
       }
    }
    for (x in dest.open) {
       if(vis){
-         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src","http://www.ballistaline.com/link-game/images/openevent.png");
+         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"openevent.png");
       }else{
-         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");
+         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"spacer.png");
       }
    }
    for (x in dest.time) {
@@ -551,14 +552,14 @@ macros['readyeventselection'] = {
                   }else{
                      name = "ball.png";
                   }
-                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";
+                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";
                   if(parseInt(getVar("Time"))<4&&!dest.locked){
                      str = "<a href='#' id='"+id+"'>" + str + "</a>";
                   }else if(dest.locked){
-                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/X.png' />";
+                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"X.png' />";
                   }   
                   // if(!dest.locked){
-                  //    str = str + "<img id='img"+r+"_"+c+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";  
+                  //    str = str + "<img id='img"+r+"_"+c+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='IMGURLspacer.png' />";  
                   // }
                   $(place).children("#eventSelection").append(str);
                   (function(e){
@@ -574,7 +575,7 @@ macros['readyeventselection'] = {
                   throw "no event";
                }
             }catch(e){
-               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";
+               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";
                if(name=="clock.png"&&parseInt(getVar("Time"))<4){
                   str = "<a href='#' onclick='state.display(\"DoNothing\");'>" + str + "</a>";
                }
@@ -614,9 +615,9 @@ macros['buildcalendar'] = {
       for(var row=0;row<6;row++){
          for(var col=0;col<7;col++){
             var id = row * 7 + col + 1;
-            var $img = $('<img src="http://www.ballistaline.com/link-game/images/spacer.png" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="dom'+id+'"/>').appendTo(cal);
+            var $img = $('<img src="'+IMGURL+'spacer.png" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="dom'+id+'"/>').appendTo(cal);
             if(id==d){
-               var $img = $('<img src="http://www.ballistaline.com/link-game/images/selectedDay.gif" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="_dom'+id+'"/>').appendTo(cal);
+               var $img = $('<img src="'+IMGURL+'selectedDay.gif" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="_dom'+id+'"/>').appendTo(cal);
             }
          }
       }
@@ -627,10 +628,10 @@ macros['buildTOD'] = {
    handler: function(place, macroName, params, parser) {
       var t = parseInt(getVar("Time"));
       switch(t){
-         case 0: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_morning.png')"); break;
-         case 1: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_noon1.png')"); break;
-         case 2: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_noon2.png')"); break;
-         case 3: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_evening.png')"); break;
+         case 0: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_morning.png')"); break;
+         case 1: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon1.png')"); break;
+         case 2: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon2.png')"); break;
+         case 3: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_evening.png')"); break;
       }
    }
 }
@@ -673,4 +674,3 @@ function initialize() {
 }
 
 initialize();
-

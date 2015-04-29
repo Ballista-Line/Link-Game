@@ -86,7 +86,7 @@ I00
 sg15
 (lp39
 I10
-aI291
+aI290
 asg17
 (itiddlywiki
 Tiddler
@@ -135,15 +135,15 @@ g14
 I00
 sg15
 (lp54
-F12.666666666666666
-aF421.3333333333333
+F10.0
+aF1130.0
 asg17
 (itiddlywiki
 Tiddler
 p55
 (dp56
 g21
-V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.2;\u000avar points = {"rival":0,"ally":0,"counselor":0};\u000avar flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000avar effectivePassage = "";\u000avar currChar = ""; // the current character according to 'addcharacter'\u000avar allEvents = [[{pass:"Start",img:"ball.png"}]];\u000avar availableEvents = allEvents;\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a//http://stackoverflow.com/questions/13627308/add-st-nd-rd-and-th-ordinal-suffix-to-a-number\u000afunction ordinal_suffix_of(i) {\u000a    var j = i % 10,\u000a        k = i % 100;\u000a    if (j == 1 && k != 11) {\u000a        return i + "st";\u000a    }\u000a    if (j == 2 && k != 12) {\u000a        return i + "nd";\u000a    }\u000a    if (j == 3 && k != 13) {\u000a        return i + "rd";\u000a    }\u000a    return i + "th";\u000a}\u000a\u000a//http://stackoverflow.com/questions/143847/best-way-to-find-an-item-in-a-javascript-array\u000afunction include(arr,obj) {\u000a    return (arr.indexOf(obj) != -1);\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a      if(isAuto()){\u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src","http://www.ballistaline.com/link-game/images/"+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000a// macros['setnext'] = {\u000a//    handler: function(place, macroName, params, parser) {\u000a//       setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a//    }\u000a// }\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlotauto")) {\u000a         var saveData = getCookieObject("saveSlotauto");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a      setVar("Day",1);\u000a      setVar("Time",0);\u000a   }\u000a}\u000a\u000afunction loadGame(slot,place){\u000a      var game = getCookieObject(slot);\u000a         \u000a      setSpeaker(game.speaker);\u000a      addCharacter(game.char);\u000a\u000a      setBackgroundSrc(game.background);\u000a      setVar("background",game.background);\u000a      \u000a      showDialogue(game.showdialogue);\u000a      \u000a      setPlayerName(game.name);\u000a      \u000a      setVar("trainingElement",game.element);\u000a\u000a      setVar("Day",game.day);\u000a      setVar("Time",game.gameTime);\u000a\u000a      resetpoints();\u000a\u000a      addpoints("rival",game.points.rival);\u000a      addpoints("ally",game.points.ally);\u000a      addpoints("counselor",game.points.counselor)\u000a      \u000a      state.display(game.passage,place);\u000a      \u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){loadGame("saveSlot"+params[0],place);},1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      effectivePassage = getPassageTitle();\u000a      // alert(effectivePassage);\u000a      saveGame("saveSlotauto");\u000a   }\u000a}\u000a\u000afunction addCharacter(name){\u000a   $("#characters").html("<img class='portrait' src='http://www.ballistaline.com/link-game/images/"+name+"' alt='"+name+"' />");\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      currChar = params[0];\u000a      addCharacter(params[0]);\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000a//resets points AND flags\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a   points.counselor = 0;\u000a   setVar("rpcounselor",0);\u000a   flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a   setVar("f1",0);\u000a   setVar("f2",0);\u000a   setVar("f3",0);\u000a   setVar("f4",0);\u000a}\u000a\u000amacros['setflag'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      flags[params[0]] = parseInt(params[1]);\u000a   }\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var date = new Date();\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "char": currChar,\u000a      "background": getVar("background"),\u000a      "passage": effectivePassage,\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points,\u000a      "time": date.toString(),\u000a      "day": getVar("Day"),\u000a      "gameTime": getVar("Time")\u000a   }\u000a   if(checkCookie(slot)&&slot!="saveSlotauto"){\u000a      if(!confirm("Overwrite existing data in "+slot+"?")){\u000a         return;\u000a      }\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000amacros['previewslot'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var text = "Empty";\u000a      try{\u000a         text = getCookieObject("saveSlot"+params[0]).time;\u000a      }catch(e){}\u000a      new Wikifier(place, text);\u000a   }\u000a}\u000a\u000amacros['readysavepage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         saveGame("saveSlot1");\u000a         state.display("Save",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         saveGame("saveSlot2");\u000a         state.display("Save",place);\u000a      });\u000a   }\u000a}\u000amacros['readyloadpage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#auto").click(function(){\u000a         loadGame("saveSlotauto",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         loadGame("saveSlot1",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         loadGame("saveSlot2",place);\u000a      });\u000a   }\u000a}\u000a\u000amacros['advancetime'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(confirm("Are you sure you want to sit idly?")){\u000a         var t = parseInt(getVar("Time"))+1;\u000a         setVar("Time",t);\u000a         var d = parseInt(getVar("Day"))+1;\u000a         if(t>3){ d++; }\u000a         updateAvailableEvents(d,t);\u000a      }\u000a   }\u000a}\u000a\u000afunction showCons(dest,place,vis){\u000a   var x;\u000a   for (x in dest.day) {\u000a      if(vis){\u000a         $("#dom"+dest.day[x]).attr("src","http://www.ballistaline.com/link-game/images/greenBox.png");\u000a      }else{\u000a         $("#dom"+dest.day[x]).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.close) {\u000a      if(vis){\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src","http://www.ballistaline.com/link-game/images/closeevent.png");\u000a      }else{\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.open) {\u000a      if(vis){\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src","http://www.ballistaline.com/link-game/images/openevent.png");\u000a      }else{\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src","http://www.ballistaline.com/link-game/images/spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.time) {\u000a      if(vis){\u000a         if(dest.time[x]){\u000a            $("#tod"+(x+1)).show();\u000a         }\u000a      }else{\u000a         $("#tod"+(x+1)).hide();\u000a      }\u000a   }\u000a}\u000a\u000afunction goToEvent(dest){\u000a   if(include(dest.day,parseInt(getVar("Day"))) && dest.time[parseInt(getVar("Time"))]){\u000a      if(confirm("Are you sure you want to do this event?")){\u000a         state.display(dest.pass);\u000a      }\u000a   }else{\u000a      alert("This event is not currently available.");\u000a   }\u000a}\u000a\u000amacros['readyeventselection'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $("#characters").html("");\u000a      var d = parseInt(getVar("Day"));\u000a      for(var r=0; r<32; r++){\u000a         for(var i=0; i<32; i++){\u000a            var x = i*32;\u000a            var y = r*32+16*(i%2);\u000a            var name = "spacer.png";\u000a            if(r==16&&i==16){\u000a               name = "clock.png";\u000a               dest = "DoNothing";\u000a            }\u000a            var id = r+"_"+i;\u000a            try{\u000a               if(availableEvents[r][i]!=null){\u000a                  var dest = availableEvents[r][i];\u000a                  if(include(dest.day,d)){\u000a                     name = dest.img;\u000a                  }else{\u000a                     name = "ball.png";\u000a                  }\u000a                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";\u000a                  if(parseInt(getVar("Time"))<4&&!dest.locked){\u000a                     str = "<a href='#' id='"+id+"'>" + str + "</a>";\u000a                  }else if(dest.locked){\u000a                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/X.png' />";\u000a                  }   \u000a                  // if(!dest.locked){\u000a                  //    str = str + "<img id='img"+r+"_"+c+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";  \u000a                  // }\u000a                  $(place).children("#eventSelection").append(str);\u000a                  (function(e){\u000a                     $(place).children("#eventSelection").children("#"+id).click(function(){\u000a                        goToEvent(e);\u000a                     }).hover(function(){\u000a                        showCons(e,place,true);\u000a                     },function(){\u000a                        showCons(e,place,false);\u000a                     });\u000a                  })(dest);\u000a               }else{\u000a                  throw "no event";\u000a               }\u000a            }catch(e){\u000a               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/"+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='http://www.ballistaline.com/link-game/images/spacer.png' />";\u000a               if(name=="clock.png"&&parseInt(getVar("Time"))<4){\u000a                  str = "<a href='#' onclick='state.display(\u005c"DoNothing\u005c");'>" + str + "</a>";\u000a               }\u000a               $(place).children("#eventSelection").append(str);\u000a            }\u000a            \u000a         }\u000a      }\u000a      setTimeout(function(){\u000a         $(place).children("#eventSelection").scrollTop(270);\u000a         $(place).children("#eventSelection").scrollLeft(170);\u000a      },1);\u000a   }\u000a}\u000a\u000afunction inGameDateStr() {\u000a   var str = "";\u000a   var d = parseInt(getVar("Day"));\u000a   str += ordinal_suffix_of(d) + " ";\u000a   switch(d%7){\u000a      case 1: str+="(Sun)"; break;\u000a      case 2: str+="(Mon)"; break;\u000a      case 3: str+="(Tue)"; break;\u000a      case 4: str+="(Wed)"; break;\u000a      case 5: str+="(Thu)"; break;\u000a      case 6: str+="(Fri)"; break;\u000a      case 0: str+="(Sat)"; break;\u000a   }\u000a   return str;\u000a}\u000a\u000amacros['buildcalendar'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var cal = $(place).children("#calendar");\u000a      cal.children("#calInner").html(inGameDateStr());\u000a      var d = parseInt(getVar("Day"));\u000a      for(var row=0;row<6;row++){\u000a         for(var col=0;col<7;col++){\u000a            var id = row * 7 + col + 1;\u000a            var $img = $('<img src="http://www.ballistaline.com/link-game/images/spacer.png" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="dom'+id+'"/>').appendTo(cal);\u000a            if(id==d){\u000a               var $img = $('<img src="http://www.ballistaline.com/link-game/images/selectedDay.gif" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="_dom'+id+'"/>').appendTo(cal);\u000a            }\u000a         }\u000a      }\u000a   }\u000a}\u000a\u000amacros['buildTOD'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var t = parseInt(getVar("Time"));\u000a      switch(t){\u000a         case 0: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_morning.png')"); break;\u000a         case 1: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_noon1.png')"); break;\u000a         case 2: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_noon2.png')"); break;\u000a         case 3: $(place).children("#timeofday").css("background","url('http://www.ballistaline.com/link-game/images/time_evening.png')"); break;\u000a      }\u000a   }\u000a}\u000a\u000afunction addEvent(x,y,pass,img,day,time,strong,close,open) {\u000a   if(!allEvents[y]){ allEvents[y] = []; }\u000a   allEvents[y][x] = {};\u000a   allEvents[y][x]["pass"] = pass;\u000a   allEvents[y][x]["img"] = img;\u000a   allEvents[y][x]["day"] = day;\u000a   allEvents[y][x]["time"] = time;\u000a   allEvents[y][x]["strong"] = strong;\u000a   allEvents[y][x]["locked"] = false;\u000a   allEvents[y][x]["close"] = close;\u000a   allEvents[y][x]["open"] = open;\u000a}\u000a\u000afunction buildAllEvents() {\u000a   addEvent(15,16,"scene_01 7","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);\u000a   addEvent(17,16,"m1 1","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);\u000a\u000a   addEvent(15,15,"sample text","ex.png",[4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);\u000a   addEvent(14,14,"sample text","ex.png",[4,5,6,7],[true,true,false,true],false,[],[]);\u000a   addEvent(15,14,"sample text","ex.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);\u000a   addEvent(17,17,"sample text","ex.png",[12],[true,true,false,true],false,[],[]);\u000a   allEvents[17][17].locked = true;\u000a   addEvent(12,20,"sample text","ex.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);\u000a   addEvent(12,21,"sample text","ex.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);\u000a   availableEvents = allEvents;\u000a}\u000a\u000a/* Build the out-of-passage html elements.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a   buildAllEvents();\u000a}\u000a\u000ainitialize();\u000a\u000a
+V// ModuleScript.js Tue.Apr.14.2015 Jaiden King\u000a// This script houses many of the features that makes this game feel\u000a// like a visual novel.\u000a// \u000a// ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE\u000a\u000avar rivalName = "Alastor";\u000avar allyName = "Ian"\u000avar audio = new Audio("");\u000avar volume = 0.2;\u000avar points = {"rival":0,"ally":0,"counselor":0};\u000avar flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000avar effectivePassage = "";\u000avar currChar = ""; // the current character according to 'addcharacter'\u000avar allEvents = [[{pass:"Start",img:"ball.png"}]];\u000avar availableEvents = allEvents;\u000avar IMGURL = "http://www.ballistaline.com/link-game/images/"\u000a\u000a// The following 3 functions are from w3schools.com\u000afunction setCookie(cname, cvalue, exdays) {\u000a    var d = new Date();\u000a    d.setTime(d.getTime() + (exdays*24*60*60*1000));\u000a    var expires = "expires="+d.toUTCString();\u000a    document.cookie = cname + "=" + cvalue + "; " + expires;\u000a}\u000a\u000afunction getCookie(cname) {\u000a    var name = cname + "=";\u000a    var ca = document.cookie.split(';');\u000a    for(var i=0; i<ca.length; i++) {\u000a        var c = ca[i];\u000a        while (c.charAt(0)==' ') c = c.substring(1);\u000a        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);\u000a    }\u000a    return "";\u000a}\u000a\u000a//http://stackoverflow.com/questions/13627308/add-st-nd-rd-and-th-ordinal-suffix-to-a-number\u000afunction ordinal_suffix_of(i) {\u000a    var j = i % 10,\u000a        k = i % 100;\u000a    if (j == 1 && k != 11) {\u000a        return i + "st";\u000a    }\u000a    if (j == 2 && k != 12) {\u000a        return i + "nd";\u000a    }\u000a    if (j == 3 && k != 13) {\u000a        return i + "rd";\u000a    }\u000a    return i + "th";\u000a}\u000a\u000a//http://stackoverflow.com/questions/143847/best-way-to-find-an-item-in-a-javascript-array\u000afunction include(arr,obj) {\u000a    return (arr.indexOf(obj) != -1);\u000a}\u000a\u000a// Modified from the w3schools version\u000afunction checkCookie(cname) {\u000a    return (getCookie(cname) != "");\u000a}\u000a\u000afunction deleteCookie(cname){\u000a   setCookie(cname, "", -10);\u000a}\u000a\u000afunction getCookieObject(cname){\u000a   return JSON.parse(getCookie(cname));\u000a}\u000a\u000afunction setCookieObject(cname, obj, exdays) {\u000a   setCookie(cname, JSON.stringify(obj), exdays);\u000a}\u000a\u000afunction setTextSpeed(speed) {\u000a   if(speed < 0){ speed = 0; }\u000a   else if(speed > 149) { speed = 149; }\u000a   state.history[0].variables["textSpeed"] = speed;\u000a}\u000a\u000afunction getTextSpeed() {\u000a   return state.history[0].variables["textSpeed"];\u000a}\u000a\u000afunction setAutoInterval(time) {\u000a   if(time < 0){ time = 0; }\u000a   else if(time > 5000) { time = 5000; }\u000a   state.history[0].variables["autoInterval"] = time;\u000a}\u000a\u000afunction getAutoInterval() {\u000a   return state.history[0].variables["autoInterval"];\u000a}\u000a\u000afunction getPassageTitle() {\u000a   return state.history[0].passage.title;\u000a}\u000a\u000afunction getNextPassage() {\u000a   return state.history[0].variables["nextPassage"];\u000a}\u000a\u000afunction setNextPassage(name) {\u000a   state.history[0].variables["nextPassage"] = name;\u000a}\u000a\u000afunction getPlayerName() {\u000a   return state.history[0].variables["PlayerName"];\u000a}\u000a\u000afunction setPlayerName(name) {\u000a   state.history[0].variables["PlayerName"] = name;\u000a}\u000a\u000afunction getSpeaker() {\u000a   return state.history[0].variables["Speaker"];\u000a}\u000a\u000afunction setSpeaker(name) {\u000a   state.history[0].variables["Speaker"] = filter(name);\u000a   $("#speaker").html(getSpeaker());\u000a}\u000a\u000afunction setVar(name, value) {\u000a   state.history[0].variables[name] = value;\u000a}\u000a\u000afunction getVar(name) {\u000a   return state.history[0].variables[name];\u000a}\u000a\u000afunction getPlayerElement() {\u000a   return state.history[0].variables["trainingElement"];\u000a}\u000a\u000afunction getOppositeElement(e) {\u000a   switch(e){\u000a      case "Fire": return "Water";\u000a      case "Water": return "Fire";\u000a      case "Earth": return "Air";\u000a      case "Air": return "Earth";\u000a      case "Light": return "Darkness";\u000a      case "Darkness": return "Light";\u000a   }\u000a}\u000a\u000afunction isAuto() {\u000a   return state.history[0].variables["autoAdvance"];\u000a}\u000a\u000afunction setAuto(val) {\u000a   state.history[0].variables["autoAdvance"] = val;\u000a}\u000a\u000afunction toggleAuto() {\u000a   setAuto(!isAuto());\u000a}\u000a\u000a// Filters out flags from a string and replaces them with appropriate values\u000afunction filter(string) {\u000a   return string.replace(new RegExp("%n",'g'),getPlayerName())\u000a                .replace(new RegExp("%e",'g'),getPlayerElement())\u000a                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))\u000a                .replace(new RegExp("%r",'g'),rivalName)\u000a                .replace(new RegExp("%a",'g'),allyName);\u000a}\u000a\u000a// This is the name of the passage when typing begins.\u000avar s;\u000a// Prints a single letter at a time onto the screen, "recursively". If\u000a// the text is set to "auto advance" then it will automatically advance\u000a// to the next dialogue, under standard conditions.\u000a// place: I'm not sure, but it might be the html element into which we\u000a//        are printing.\u000a// str: The string to print\u000a// i: The current letter to print.\u000afunction type(place, str, i) {\u000a   text = str.slice(i-1, i);\u000a   if (i == str.length+1) {\u000a      if(isAuto()){\u000a         setTimeout(function(){\u000a            if(getPassageTitle()==s){\u000a               state.display(getNextPassage(),place)\u000a            }\u000a         },getAutoInterval());\u000a      }\u000a      return;\u000a   }\u000a   new Wikifier(place, text);\u000a   //type(place,str,i+1);\u000a   setTimeout(function(){type(place,str,i+1);},getTextSpeed());\u000a}\u000a\u000amacros['type'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      s=getPassageTitle();\u000a      type(place,\u000a         filter(state.history[0].variables[params[0]]),//this is a hack. Idk why \u000a                                               //the value isn't being\u000a                                               //passed.\u000a         1);\u000a   },\u000a   init: function() {\u000a      // Sets the default text speed\u000a      setTextSpeed(30);\u000a      setAutoInterval(3000);\u000a      setAuto(false);\u000a   },\u000a};\u000a\u000afunction setBackgroundSrc(src) {\u000a   $(".background").attr("src",IMGURL+src);\u000a}\u000a\u000a// Sets the $background_URL variable.\u000amacros['setbackground'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      // state.history[0].variables["background_URL"] = params[0];\u000a      setVar("background",params[0]);\u000a      setBackgroundSrc(params[0]);\u000a   }\u000a}\u000a\u000a// Sets the name of the current speaker.\u000amacros['setspeaker'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setSpeaker(filter(params[0]));\u000a   }\u000a}\u000a\u000afunction showDialogue(state) {\u000a   if(state){ $("#textBox").show(); setVar("showdialogue",true); }\u000a   else{      $("#textBox").hide(); setVar("showdialogue",false); }\u000a}\u000a\u000amacros['showdialogue'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(params[0]=="true"){ showDialogue(true); }\u000a      else{                  showDialogue(false); }\u000a   }\u000a}\u000a\u000a// Sets the slider/guage to represent the current text speed. Used on\u000a// the settings page.\u000afunction updateTextSpeedSlider(place) {\u000a   $(place).children("#text_meter_outer")\u000a      .children("#text_meter_inner").width(Math.max(300-getTextSpeed()*2,0));\u000a}\u000afunction updateAutoDelaySlider(place) {\u000a   $(place).children("#auto_meter_outer")\u000a      .children("#auto_meter_inner").width(Math.max(getAutoInterval()/5000*300,0));\u000a}\u000a\u000amacros['adjust_text_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#text_up").click(function(){\u000a         setTextSpeed(getTextSpeed()-5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      $(place).children("#text_down").click(function(){\u000a         setTextSpeed(getTextSpeed()+5);\u000a         updateTextSpeedSlider(place);\u000a      })\u000a      updateTextSpeedSlider(place);\u000a   }\u000a}\u000a\u000amacros['adjust_auto_speed'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("#auto_up").click(function(){\u000a         setAutoInterval(getAutoInterval()+250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      $(place).children("#auto_down").click(function(){\u000a         setAutoInterval(getAutoInterval()-250);\u000a         updateAutoDelaySlider(place);\u000a      })\u000a      updateAutoDelaySlider(place);\u000a   }\u000a}\u000a\u000a// Sets the next passage\u000a// macros['setnext'] = {\u000a//    handler: function(place, macroName, params, parser) {\u000a//       setNextPassage(state.history[0].variables[params[0]]);// again the hack\u000a//    }\u000a// }\u000a\u000amacros['toggleauto'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      toggleAuto();\u000a   }\u000a}\u000a\u000a//This is called at the beginning to set the player's name\u000amacros['setname'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      setPlayerName(prompt("What is your name?","Leeroy"));\u000a   }\u000a}\u000a\u000amacros['loadTitlescreen'] = {\u000a   handler:  function(place, macroName, params, parser) {\u000a      if(checkCookie("saveSlotauto")) {\u000a         var saveData = getCookieObject("saveSlotauto");\u000a         setVar("canContinue","true")\u000a      }else{\u000a         setVar("canContinue","false");\u000a      }\u000a      setVar("Day",1);\u000a      setVar("Time",0);\u000a   }\u000a}\u000a\u000afunction loadGame(slot,place){\u000a      var game = getCookieObject(slot);\u000a         \u000a      setSpeaker(game.speaker);\u000a      addCharacter(game.char);\u000a\u000a      setBackgroundSrc(game.background);\u000a      setVar("background",game.background);\u000a      \u000a      showDialogue(game.showdialogue);\u000a      \u000a      setPlayerName(game.name);\u000a      \u000a      setVar("trainingElement",game.element);\u000a\u000a      setVar("Day",game.day);\u000a      setVar("Time",game.gameTime);\u000a\u000a      resetpoints();\u000a\u000a      addpoints("rival",game.points.rival);\u000a      addpoints("ally",game.points.ally);\u000a      addpoints("counselor",game.points.counselor)\u000a      \u000a      state.display(game.passage,place);\u000a      \u000a}\u000a\u000amacros['loadgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      setTimeout(function(){loadGame("saveSlot"+params[0],place);},1);\u000a   }\u000a}\u000a\u000amacros['savegame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      effectivePassage = getPassageTitle();\u000a      // alert(effectivePassage);\u000a      saveGame("saveSlotauto");\u000a   }\u000a}\u000a\u000afunction addCharacter(name){\u000a   $("#characters").html("<img class='portrait' src='"+IMGURL+name+"' alt='"+name+"' />");\u000a}\u000a\u000a// Characters aren't being saved yet!\u000amacros['addcharacter'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      currChar = params[0];\u000a      addCharacter(params[0]);\u000a   }\u000a}\u000a\u000amacros['playsound'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      audio.pause();\u000a      audio = new Audio("http://www.ballistaline.com/link-game/sound/"+params[0]);\u000a      audio.loop = true;\u000a      audio.volume = volume;\u000a      audio.play();\u000a   }\u000a}\u000a\u000a//resets points AND flags\u000afunction resetpoints() {\u000a   points.rival = 0;\u000a   setVar("rprival",0);\u000a   points.ally = 0;\u000a   setVar("rpally",0);\u000a   points.counselor = 0;\u000a   setVar("rpcounselor",0);\u000a   flags = {"f1":0,"f2":0,"f3":0,"f4":0};\u000a   setVar("f1",0);\u000a   setVar("f2",0);\u000a   setVar("f3",0);\u000a   setVar("f4",0);\u000a}\u000a\u000amacros['setflag'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      flags[params[0]] = parseInt(params[1]);\u000a   }\u000a}\u000a\u000amacros['newgame'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      resetpoints();\u000a   }\u000a}\u000a\u000afunction addpoints(name,amount){\u000a   points[name] += parseInt(amount);\u000a   setVar("rp"+name,points[name]);\u000a}\u000a\u000amacros['addpoints'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      addpoints(params[0],params[1]);\u000a   }\u000a}\u000a\u000afunction saveGame(slot) {\u000a   var date = new Date();\u000a   var game = {\u000a      "speaker": getSpeaker(),\u000a      "char": currChar,\u000a      "background": getVar("background"),\u000a      "passage": effectivePassage,\u000a      "name": getPlayerName(),\u000a      "element": getPlayerElement(),\u000a      "showdialogue": getVar("showdialogue"),\u000a      "points": points,\u000a      "time": date.toString(),\u000a      "day": getVar("Day"),\u000a      "gameTime": getVar("Time")\u000a   }\u000a   if(checkCookie(slot)&&slot!="saveSlotauto"){\u000a      if(!confirm("Overwrite existing data in "+slot+"?")){\u000a         return;\u000a      }\u000a   }\u000a   setCookie(slot,JSON.stringify(game),100);\u000a}\u000a\u000amacros['previewslot'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var text = "Empty";\u000a      try{\u000a         text = getCookieObject("saveSlot"+params[0]).time;\u000a      }catch(e){}\u000a      new Wikifier(place, text);\u000a   }\u000a}\u000a\u000amacros['readysavepage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         saveGame("saveSlot1");\u000a         state.display("Save",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         saveGame("saveSlot2");\u000a         state.display("Save",place);\u000a      });\u000a   }\u000a}\u000amacros['readyloadpage'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $(place).children("table").children("tr").children("td").children("#auto").click(function(){\u000a         loadGame("saveSlotauto",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s1").click(function(){\u000a         loadGame("saveSlot1",place);\u000a      });\u000a      $(place).children("table").children("tr").children("td").children("#s2").click(function(){\u000a         loadGame("saveSlot2",place);\u000a      });\u000a   }\u000a}\u000a\u000amacros['advancetime'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      if(confirm("Are you sure you want to sit idly?")){\u000a         var t = parseInt(getVar("Time"))+1;\u000a         setVar("Time",t);\u000a         var d = parseInt(getVar("Day"))+1;\u000a         if(t>3){ d++; }\u000a         updateAvailableEvents(d,t);\u000a      }\u000a   }\u000a}\u000a\u000afunction showCons(dest,place,vis){\u000a   var x;\u000a   for (x in dest.day) {\u000a      if(vis){\u000a         $("#dom"+dest.day[x]).attr("src",IMGURL+"greenBox.png");\u000a      }else{\u000a         $("#dom"+dest.day[x]).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.close) {\u000a      if(vis){\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"closeevent.png");\u000a      }else{\u000a         $("#img"+dest.close[x].y+"_"+dest.close[x].x).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.open) {\u000a      if(vis){\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"openevent.png");\u000a      }else{\u000a         $("#img"+dest.open[x].y+"_"+dest.open[x].x).attr("src",IMGURL+"spacer.png");\u000a      }\u000a   }\u000a   for (x in dest.time) {\u000a      if(vis){\u000a         if(dest.time[x]){\u000a            $("#tod"+(x+1)).show();\u000a         }\u000a      }else{\u000a         $("#tod"+(x+1)).hide();\u000a      }\u000a   }\u000a}\u000a\u000afunction goToEvent(dest){\u000a   if(include(dest.day,parseInt(getVar("Day"))) && dest.time[parseInt(getVar("Time"))]){\u000a      if(confirm("Are you sure you want to do this event?")){\u000a         state.display(dest.pass);\u000a      }\u000a   }else{\u000a      alert("This event is not currently available.");\u000a   }\u000a}\u000a\u000amacros['readyeventselection'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      $("#characters").html("");\u000a      var d = parseInt(getVar("Day"));\u000a      for(var r=0; r<32; r++){\u000a         for(var i=0; i<32; i++){\u000a            var x = i*32;\u000a            var y = r*32+16*(i%2);\u000a            var name = "spacer.png";\u000a            if(r==16&&i==16){\u000a               name = "clock.png";\u000a               dest = "DoNothing";\u000a            }\u000a            var id = r+"_"+i;\u000a            try{\u000a               if(availableEvents[r][i]!=null){\u000a                  var dest = availableEvents[r][i];\u000a                  if(include(dest.day,d)){\u000a                     name = dest.img;\u000a                  }else{\u000a                     name = "ball.png";\u000a                  }\u000a                  var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";\u000a                  if(parseInt(getVar("Time"))<4&&!dest.locked){\u000a                     str = "<a href='#' id='"+id+"'>" + str + "</a>";\u000a                  }else if(dest.locked){\u000a                     str = str + "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"X.png' />";\u000a                  }   \u000a                  // if(!dest.locked){\u000a                  //    str = str + "<img id='img"+r+"_"+c+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='IMGURLspacer.png' />";  \u000a                  // }\u000a                  $(place).children("#eventSelection").append(str);\u000a                  (function(e){\u000a                     $(place).children("#eventSelection").children("#"+id).click(function(){\u000a                        goToEvent(e);\u000a                     }).hover(function(){\u000a                        showCons(e,place,true);\u000a                     },function(){\u000a                        showCons(e,place,false);\u000a                     });\u000a                  })(dest);\u000a               }else{\u000a                  throw "no event";\u000a               }\u000a            }catch(e){\u000a               var str = "<img class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+name+"' /><img id='img"+id+"' class='eb' style='top:"+y+"px;left:"+x+"px;' src='"+IMGURL+"spacer.png' />";\u000a               if(name=="clock.png"&&parseInt(getVar("Time"))<4){\u000a                  str = "<a href='#' onclick='state.display(\u005c"DoNothing\u005c");'>" + str + "</a>";\u000a               }\u000a               $(place).children("#eventSelection").append(str);\u000a            }\u000a            \u000a         }\u000a      }\u000a      setTimeout(function(){\u000a         $(place).children("#eventSelection").scrollTop(270);\u000a         $(place).children("#eventSelection").scrollLeft(170);\u000a      },1);\u000a   }\u000a}\u000a\u000afunction inGameDateStr() {\u000a   var str = "";\u000a   var d = parseInt(getVar("Day"));\u000a   str += ordinal_suffix_of(d) + " ";\u000a   switch(d%7){\u000a      case 1: str+="(Sun)"; break;\u000a      case 2: str+="(Mon)"; break;\u000a      case 3: str+="(Tue)"; break;\u000a      case 4: str+="(Wed)"; break;\u000a      case 5: str+="(Thu)"; break;\u000a      case 6: str+="(Fri)"; break;\u000a      case 0: str+="(Sat)"; break;\u000a   }\u000a   return str;\u000a}\u000a\u000amacros['buildcalendar'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var cal = $(place).children("#calendar");\u000a      cal.children("#calInner").html(inGameDateStr());\u000a      var d = parseInt(getVar("Day"));\u000a      for(var row=0;row<6;row++){\u000a         for(var col=0;col<7;col++){\u000a            var id = row * 7 + col + 1;\u000a            var $img = $('<img src="'+IMGURL+'spacer.png" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="dom'+id+'"/>').appendTo(cal);\u000a            if(id==d){\u000a               var $img = $('<img src="'+IMGURL+'selectedDay.gif" style="width:12px;height:10px;position:fixed;top:'+(40+row*10)+'px;left:'+(313+col*12)+'px;" id="_dom'+id+'"/>').appendTo(cal);\u000a            }\u000a         }\u000a      }\u000a   }\u000a}\u000a\u000amacros['buildTOD'] = {\u000a   handler: function(place, macroName, params, parser) {\u000a      var t = parseInt(getVar("Time"));\u000a      switch(t){\u000a         case 0: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_morning.png')"); break;\u000a         case 1: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon1.png')"); break;\u000a         case 2: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_noon2.png')"); break;\u000a         case 3: $(place).children("#timeofday").css("background","url('"+IMGURL+"time_evening.png')"); break;\u000a      }\u000a   }\u000a}\u000a\u000afunction addEvent(x,y,pass,img,day,time,strong,close,open) {\u000a   if(!allEvents[y]){ allEvents[y] = []; }\u000a   allEvents[y][x] = {};\u000a   allEvents[y][x]["pass"] = pass;\u000a   allEvents[y][x]["img"] = img;\u000a   allEvents[y][x]["day"] = day;\u000a   allEvents[y][x]["time"] = time;\u000a   allEvents[y][x]["strong"] = strong;\u000a   allEvents[y][x]["locked"] = false;\u000a   allEvents[y][x]["close"] = close;\u000a   allEvents[y][x]["open"] = open;\u000a}\u000a\u000afunction buildAllEvents() {\u000a   addEvent(15,16,"scene_01 7","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);\u000a   addEvent(17,16,"m1 1","ex.png",[1,2,3,4,5],[true,true,true,true],false,[],[]);\u000a\u000a   addEvent(15,15,"sample text","ex.png",[4,5],[false,true,false,true],false,[{x:14,y:14}],[{x:17,y:17}]);\u000a   addEvent(14,14,"sample text","ex.png",[4,5,6,7],[true,true,false,true],false,[],[]);\u000a   addEvent(15,14,"sample text","ex.png",[17,18,19],[true,true,false,true],false,[{x:14,y:14}],[]);\u000a   addEvent(17,17,"sample text","ex.png",[12],[true,true,false,true],false,[],[]);\u000a   allEvents[17][17].locked = true;\u000a   addEvent(12,20,"sample text","ex.png",[12],[true,true,true,false],false,[{x:12,y:21}],[{x:13,y:20}]);\u000a   addEvent(12,21,"sample text","ex.png",[12],[false,false,false,true],false,[{x:12,y:20}],[{x:13,y:20}]);\u000a   availableEvents = allEvents;\u000a}\u000a\u000a/* Build the out-of-passage html elements.\u000a */\u000afunction initialize() {\u000a   $("body").append("<img class='background' />");\u000a   $("body").append("<div id='textBox'></div>");\u000a   $("body").append("<div id='speaker' class='stroke'></div>");\u000a   $("body").append("<div id='characters'></div>");\u000a   buildAllEvents();\u000a}\u000a\u000ainitialize();\u000a
 p57
 sg23
 VModuleScript
@@ -153,9 +153,9 @@ g26
 ((I2015
 I4
 I28
-I15
-I33
-I49
+I17
+I55
+I13
 I1
 I118
 I1
@@ -184,11 +184,11 @@ tp67
 Rp68
 sbsa(dp69
 g14
-I01
+I00
 sg15
 (lp70
-F8.0
-aF15.0
+F10.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
@@ -237,8 +237,8 @@ g14
 I00
 sg15
 (lp85
-F12.0
-aF549.0
+F10.0
+aF710.0
 asg17
 (itiddlywiki
 Tiddler
@@ -289,8 +289,8 @@ g14
 I00
 sg15
 (lp101
-F233.0
-aF12.0
+F290.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
@@ -339,8 +339,8 @@ g14
 I00
 sg15
 (lp116
-F11.0
-aF675.0
+F10.0
+aF430.0
 asg17
 (itiddlywiki
 Tiddler
@@ -389,8 +389,8 @@ g14
 I00
 sg15
 (lp131
-F140.0
-aF675.0
+F10.0
+aF1270.0
 asg17
 (itiddlywiki
 Tiddler
@@ -441,29 +441,29 @@ g14
 I00
 sg15
 (lp147
-F2333.64688473617
-aF449.45990969095004
+F430.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
 p148
 (dp149
 g21
-V<<setbackground "fireCity.png">>\u000a<<msg "However, many humans used their powers for evil, starting wars and abusing their powers. In the modern day, humanity is divided amongst factions, each dominated by one element. As a member of the noble class, you were granted the opprotunity to attend a training camp.">>\u000a<<continue "scene_00_00">>
+V<<set $str to parameter(0)>>\u000a<div id="passageBox"><<type str>></div>
 p150
 sg23
-Vintro01
+Vmsg
 p151
 sg25
 g26
 ((I2015
 I4
-I18
-I0
-I56
-I37
-I5
-I108
+I17
+I20
+I45
+I44
+I4
+I107
 I1
 tp152
 (dp153
@@ -476,9 +476,9 @@ g26
 ((I2015
 I4
 I14
-I22
-I52
-I56
+I23
+I16
+I34
 I1
 I104
 I1
@@ -491,29 +491,29 @@ g14
 I00
 sg15
 (lp162
-F482.0
-aF12.0
+F710.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
 p163
 (dp164
 g21
-V<<set $str to parameter(0)>>\u000a<div id="passageBox"><<type str>></div>
+V<<set $nextPassage to parameter(0)>>\u000a<div id="continueButton">[[Next|parameter(0)]]</div>\u000a<div id="menuButtons" class="stroke">[[Menu|InGameMenu]] [[Auto]] [[Settings]] </div>\u000a<<savegame>>
 p165
 sg23
-Vmsg
+Vcontinue
 p166
 sg25
 g26
 ((I2015
 I4
-I17
-I20
-I45
-I44
-I4
-I107
+I26
+I16
+I46
+I29
+I6
+I116
 I1
 tp167
 (dp168
@@ -527,8 +527,8 @@ g26
 I4
 I14
 I23
-I16
-I34
+I22
+I58
 I1
 I104
 I1
@@ -541,29 +541,29 @@ g14
 I00
 sg15
 (lp177
-F731.0
-aF12.0
+F1270.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
 p178
 (dp179
 g21
-V<<set $nextPassage to parameter(0)>>\u000a<div id="continueButton">[[Next|parameter(0)]]</div>\u000a<div id="menuButtons" class="stroke">[[Menu|InGameMenu]] [[Auto]] [[Settings]] </div>\u000a<<savegame>>
+V<<toggleauto>>\u000a<<goto previous()>>
 p180
 sg23
-Vcontinue
+VAuto
 p181
 sg25
 g26
 ((I2015
 I4
-I26
 I16
-I46
-I29
-I6
-I116
+I0
+I27
+I18
+I3
+I106
 I1
 tp182
 (dp183
@@ -575,12 +575,12 @@ sg33
 g26
 ((I2015
 I4
-I14
-I23
-I22
-I58
-I1
-I104
+I16
+I0
+I26
+I55
+I3
+I106
 I1
 tp187
 (dp188
@@ -591,29 +591,29 @@ g14
 I00
 sg15
 (lp192
-F1237.4418949340547
-aF28.49642430363417
+F1970.0
+aF430.0
 asg17
 (itiddlywiki
 Tiddler
 p193
 (dp194
 g21
-V<<toggleauto>>\u000a<<goto previous()>>
+V<<setname>>\u000a<<newgame>>\u000a<<setbackground "cosmos.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "Jaiden King">>\u000a<<playsound "Farewell.mp3">>\u000a<<msg "Warning: this game contains a lot of [placeholder text].">>\u000a<<continue "Greeting00 1">>
 p195
 sg23
-VAuto
+VGreeting00
 p196
 sg25
 g26
 ((I2015
 I4
-I16
-I0
-I27
 I18
-I3
-I106
+I18
+I40
+I36
+I5
+I108
 I1
 tp197
 (dp198
@@ -626,9 +626,9 @@ g26
 ((I2015
 I4
 I16
-I0
-I26
-I55
+I15
+I49
+I43
 I3
 I106
 I1
@@ -641,29 +641,29 @@ g14
 I00
 sg15
 (lp207
-F2066.1468847361703
-aF448.45990969095027
+F150.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
 p208
 (dp209
 g21
-V<<setname>>\u000a<<newgame>>\u000a<<setbackground "cosmos.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "Jaiden King">>\u000a<<playsound "Farewell.mp3">>\u000a<<msg "Warning: this game contains a lot of [placeholder text].">>\u000a<<continue "Greeting00 1">>
+VYour game is loading...\u000a(If you see this, your game could not be loaded.)\u000a<<loadgame "auto">>
 p210
 sg23
-VGreeting00
+VContinueFromSave
 p211
 sg25
 g26
 ((I2015
 I4
-I18
-I18
-I40
-I36
-I5
-I108
+I21
+I17
+I48
+I25
+I1
+I111
 I1
 tp212
 (dp213
@@ -675,12 +675,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I15
-I49
-I43
-I3
-I106
+I17
+I20
+I8
+I0
+I4
+I107
 I1
 tp217
 (dp218
@@ -691,29 +691,29 @@ g14
 I00
 sg15
 (lp222
-F5068.114699671503
-aF392.7855948807707
+F430.0
+aF150.0
 asg17
 (itiddlywiki
 Tiddler
 p223
 (dp224
 g21
-V<<setbackground "elements.png">>\u000a<<setspeaker " ">>\u000a<div id="passageBox">Which element do you choose to study?\u000a[[Fire|intro_03_fire]]\u000a[[Water|intro_03_water]]\u000a[[Earth|intro_03_earth]]\u000a[[More options...|intro02_more]]\u000a</div>
+VThere was an error loading your game. You will be redirected back to the main screen.\u000a[[Go back now|Start]]\u000a<<timedgoto "Start" 5>>
 p225
 sg23
-Vintro02
+VError
 p226
 sg25
 g26
 ((I2015
 I4
-I18
-I18
-I51
-I25
-I5
-I108
+I21
+I17
+I48
+I28
+I1
+I111
 I1
 tp227
 (dp228
@@ -725,12 +725,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
-I7
-I2
-I3
-I106
+I17
+I20
+I42
+I6
+I4
+I107
 I1
 tp232
 (dp233
@@ -741,29 +741,29 @@ g14
 I00
 sg15
 (lp237
-F5067.114699671503
-aF522.7855948807706
+F150.0
+aF290.0
 asg17
 (itiddlywiki
 Tiddler
 p238
 (dp239
 g21
-V<div id="passageBox">Which element do you choose to study?\u000a[[Air|intro_03_air]]\u000a[[Light|intro_03_light]]\u000a[[Darkness|intro_03_dark]]\u000a[[Less options...|intro02]]\u000a</div>
+V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!",\u000a"The fourth in a series!",\u000a"An amazing game!",\u000a"Meme-free!",\u000a"\u005c"10/10 It's okay...\u005c" -IGN, probably",\u000a"Lies!",\u000a"Responsive developers!",\u000a"Hidden agendas!",\u000a"Too many endings!",\u000a"An A+ project!",\u000a"Refresh for a new message!",\u000a"Johnathan Pagnutti is a cool guy!",\u000a"I've spent too much time making splash text!",\u000a"Don't blink!",\u000a"Auto-saves your progress!",\u000a"Continue where you left off!",\u000a"Your decisions matter!",\u000a"\u005c"No false choices!\u005c"",\u000a"Inspired by Japanese visual novels!",\u000a"\u005c"Completely original!\u005c"",\u000a"I'm not stealing this effect from Minecraft!",\u000a"Este burrito es muy bueno, pero necesito salsa verde!",\u000a"Not for profit!",\u000a"Do not abet terrorism!",\u000a"Three different types of links!",\u000a"Over 30 nodes!"\u000a)>>
 p240
 sg23
-Vintro02_more
+VSplash
 p241
 sg25
 g26
 ((I2015
 I4
+I21
 I16
-I16
-I16
-I38
-I3
-I106
+I47
+I4
+I1
+I111
 I1
 tp242
 (dp243
@@ -775,12 +775,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
-I7
-I2
-I3
-I106
+I17
+I21
+I6
+I38
+I4
+I107
 I1
 tp247
 (dp248
@@ -791,29 +791,29 @@ g14
 I00
 sg15
 (lp252
-F5356.614699671503
-aF459.5355948807707
+F850.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
 p253
 (dp254
 g21
-V<<setspeaker "%n">>\u000a<<setbackground "camp_outer.png">>\u000a<<msg "%e. I am %n of the %e faction, sir.">>\u000a<<continue "scene_01 3">>
+V<div id="settings">[[Back|previous()]]\u000a\u000a<<nobr>>\u000a<table>\u000a<tr><td><input type="button" id="s1" value="Autosave" /></td><td><<previewslot "auto">></td></tr>\u000a<tr><td><input type="button" id="s1" value="Slot 1" /></td><td><<previewslot 1>></td></tr>\u000a<tr><td><input type="button" id="s2" value="Slot 2" /></td><td><<previewslot 2>></td></tr>\u000a</table>\u000a</div>\u000a<<endnobr>>\u000a<<readyloadpage>>
 p255
 sg23
-Vintro_03
+VLoad
 p256
 sg25
 g26
 ((I2015
 I4
-I18
-I19
-I11
-I1
-I5
-I108
+I20
+I20
+I38
+I29
+I0
+I110
 I1
 tp257
 (dp258
@@ -825,12 +825,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
-I7
-I2
-I3
-I106
+I20
+I19
+I34
+I28
+I0
+I110
 I1
 tp262
 (dp263
@@ -841,29 +841,29 @@ g14
 I00
 sg15
 (lp267
-F5220.114699671503
-aF211.78559488077113
+F990.0
+aF10.0
 asg17
 (itiddlywiki
 Tiddler
 p268
 (dp269
 g21
-V<<set $trainingElement to "Fire">>\u000a<<goto "intro_03">>
+V<div id="settings">[[Back|previous()]]\u000a\u000a<<nobr>>\u000a<table>\u000a<tr><td>Autosave</td><td><<previewslot "auto">></td></tr>\u000a<tr><td><input type="button" id="s1" value="Slot 1" /></td><td><<previewslot 1>></td></tr>\u000a<tr><td><input type="button" id="s2" value="Slot 2" /></td><td><<previewslot 2>></td></tr>\u000a</table>\u000a</div>\u000a<<endnobr>>\u000a<<readysavepage>>
 p270
 sg23
-Vintro_03_fire
+VSave
 p271
 sg25
 g26
 ((I2015
 I4
-I16
-I16
 I20
-I55
-I3
-I106
+I20
+I38
+I38
+I0
+I110
 I1
 tp272
 (dp273
@@ -875,12 +875,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
-I7
-I2
-I3
-I106
+I20
+I19
+I34
+I28
+I0
+I110
 I1
 tp277
 (dp278
@@ -891,29 +891,29 @@ g14
 I00
 sg15
 (lp282
-F5222.114699671503
-aF338.78559488077127
+F570.0
+aF2530.0
 asg17
 (itiddlywiki
 Tiddler
 p283
 (dp284
 g21
-V<<set $trainingElement to "Water">>\u000a<<goto "intro_03">>
+V<<nobr>>\u000a\u000a\u000a<div class="background" id="eventSelection">\u000a</div>\u000a<<showdialogue false>>\u000a\u000a<<calendar>>\u000a<<TimeOfDay>>\u000a\u000a<<if $Time is 0>>\u000a<<setbackground "morning.png">>\u000a<<else>><<if $Time is 1 or $Time is 2>>\u000a<<setbackground "midday.png">>\u000a<<else>>\u000a<<setbackground "evening.png">>\u000a<<endif>><<endif>>\u000a\u000a<<readyeventselection>>\u000a\u000a<<if $Time is 4>>\u000a<<timedgoto "GoHome" 500ms>>\u000a<<endif>>\u000a\u000a<<endnobr>>
 p285
 sg23
-Vintro_03_water
+VEventSelection
 p286
 sg25
 g26
 ((I2015
 I4
-I16
-I16
-I20
-I59
+I27
+I18
+I10
 I3
-I106
+I0
+I117
 I1
 tp287
 (dp288
@@ -925,12 +925,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
+I23
+I12
 I7
-I2
+I43
 I3
-I106
+I113
 I1
 tp292
 (dp293
@@ -941,29 +941,29 @@ g14
 I00
 sg15
 (lp297
-F5223.114699671503
-aF463.7855948807707
+F3230.0
+aF2250.0
 asg17
 (itiddlywiki
 Tiddler
 p298
 (dp299
 g21
-V<<set $trainingElement to "Earth">>\u000a<<goto "intro_03">>
+V<<advancetime>>\u000a<<goto "EventSelection">>
 p300
 sg23
-Vintro_03_earth
+VDoNothing
 p301
 sg25
 g26
 ((I2015
 I4
-I16
-I16
-I21
+I23
+I15
+I50
+I40
 I3
-I3
-I106
+I113
 I1
 tp302
 (dp303
@@ -975,12 +975,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
-I7
-I2
+I23
+I15
+I49
+I27
 I3
-I106
+I113
 I1
 tp307
 (dp308
@@ -991,29 +991,29 @@ g14
 I00
 sg15
 (lp312
-F5223.114699671503
-aF590.7855948807706
+F990.0
+aF2390.0
 asg17
 (itiddlywiki
 Tiddler
 p313
 (dp314
 g21
-V<<set $trainingElement to "Air">>\u000a<<goto "intro_03">>
+V<<setbackground "camp_outer.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "%n">>\u000a<<playsound "">>\u000a<<msg "I suppose it's time I head back to my cabin.">>\u000a<<continue "GoHome 1">>
 p315
 sg23
-Vintro_03_air
+VGoHome
 p316
 sg25
 g26
 ((I2015
 I4
+I23
 I16
-I16
-I21
-I7
+I0
+I2
 I3
-I106
+I113
 I1
 tp317
 (dp318
@@ -1025,12 +1025,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
-I7
-I2
+I23
+I15
+I55
+I38
 I3
-I106
+I113
 I1
 tp322
 (dp323
@@ -1041,29 +1041,29 @@ g14
 I00
 sg15
 (lp327
-F5224.114699671503
-aF713.7855948807704
+F1130.0
+aF2390.0
 asg17
 (itiddlywiki
 Tiddler
 p328
 (dp329
 g21
-V<<set $trainingElement to "Light">>\u000a<<goto "intro_03">>
+V<<setbackground "cabin_inner.png">>\u000a<<set $s to either("Today was a tough day.","Wow, I got a lot accomplished today.","Man, I'm tired.")>> \u000a<<msg $s>>\u000a<<continue "Menu">>
 p330
 sg23
-Vintro_03_light
+VGoHome 1
 p331
 sg25
 g26
 ((I2015
 I4
+I23
 I16
-I16
-I21
-I11
+I35
+I43
 I3
-I106
+I113
 I1
 tp332
 (dp333
@@ -1075,12 +1075,12 @@ sg33
 g26
 ((I2015
 I4
+I23
 I16
-I16
-I7
-I2
+I28
+I30
 I3
-I106
+I113
 I1
 tp337
 (dp338
@@ -1091,29 +1091,29 @@ g14
 I00
 sg15
 (lp342
-F5225.114699671503
-aF839.7855948807704
+F570.0
+aF1970.0
 asg17
 (itiddlywiki
 Tiddler
 p343
 (dp344
 g21
-V<<set $trainingElement to "Darkness">>\u000a<<goto "intro_03">>
+V<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen" class="stroke">\u005c\u000a	[[Sleep]]\u000a	[[Save]]\u000a	[[Load]]\u000a	[[Settings]]\u000a</div>
 p345
 sg23
-Vintro_03_dark
+VMenu
 p346
 sg25
 g26
 ((I2015
 I4
+I26
 I16
-I16
-I21
-I18
-I3
-I106
+I44
+I7
+I6
+I116
 I1
 tp347
 (dp348
@@ -1125,12 +1125,12 @@ sg33
 g26
 ((I2015
 I4
+I23
 I16
-I16
-I7
-I2
+I36
+I30
 I3
-I106
+I113
 I1
 tp352
 (dp353
@@ -1141,29 +1141,29 @@ g14
 I00
 sg15
 (lp357
-F2706.8135514028368
-aF446.95990969095004
+F570.0
+aF1830.0
 asg17
 (itiddlywiki
 Tiddler
 p358
 (dp359
 g21
-V<<msg "One of the more excited trainees looks towards you and tilts his head down slightly.">>\u000a<<continue "scene_00_02">>
+V<<set $Time to 0>>\u000a<<set $Day to $Day + 1>>\u000a<<setbackground "night.png">>\u000a<<showdialogue true>>\u000a<<setspeaker " ">>\u000a<<msg "...">>\u000a<<continue "EventSelection">>
 p360
 sg23
-Vscene_00_01
+VSleep
 p361
 sg25
 g26
 ((I2015
 I4
-I18
+I27
+I17
+I43
+I38
 I0
-I50
-I16
-I5
-I108
+I117
 I1
 tp362
 (dp363
@@ -1175,12 +1175,12 @@ sg33
 g26
 ((I2015
 I4
-I16
-I16
 I23
-I49
+I16
+I38
+I18
 I3
-I106
+I113
 I1
 tp367
 (dp368
@@ -1191,27 +1191,27 @@ g14
 I00
 sg15
 (lp372
-F2829.8135514028354
-aF446.95990969095004
+F570.0
+aF1690.0
 asg17
 (itiddlywiki
 Tiddler
 p373
 (dp374
 g21
-V<<setspeaker "???">>\u000a<<addcharacter "bully_normal.png">>\u000a<<msg "You ready for this?">>\u000a<<continue "scene_00_03">>\u000a<<playsound "Briefing.mp3">>
+V<div id="settings">[[Back|previous()]]\u000a\u000a	[[Return to Morning|RetryDay]]\u000a	<<if $cansave is true>>[[Save]]\u000a	<<endif>>[[Load]]\u000a	[[Title Screen|Start]]\u000a</div>
 p375
 sg23
-Vscene_00_02
+VInGameMenu
 p376
 sg25
 g26
 ((I2015
 I4
 I26
-I15
-I50
-I18
+I17
+I0
+I24
 I6
 I116
 I1
@@ -1225,12 +1225,12 @@ sg33
 g26
 ((I2015
 I4
+I26
 I16
-I16
-I23
-I49
-I3
-I106
+I46
+I32
+I6
+I116
 I1
 tp382
 (dp383
@@ -1241,29 +1241,29 @@ g14
 I00
 sg15
 (lp387
-F468.14213050762504
-aF592.1185996167346
+F570.0
+aF2390.0
 asg17
 (itiddlywiki
 Tiddler
 p388
 (dp389
 g21
-VTODO: Add a skip-text button which goes to a passage which sets a variable and goes back to the previous passage in which the text will be fully typed.\u000aTODO: add a slider to the settings screen for audio volume.
+V<div id="calendar"><span id="calInner" class="stroke"></span></div>\u000a<<buildcalendar>>
 p390
 sg23
-VUntitled Annotation 1
+Vcalendar
 p391
 sg25
 g26
 ((I2015
 I4
-I18
-I17
 I26
-I55
-I5
-I108
+I17
+I32
+I31
+I6
+I116
 I1
 tp392
 (dp393
@@ -1271,5858 +1271,6 @@ tp394
 Rp395
 sg31
 (lp396
-Vannotation
-p397
-asg33
-g26
-((I2015
-I4
-I17
-I19
-I49
-I50
-I4
-I107
-I1
-tp398
-(dp399
-tp400
-Rp401
-sbsa(dp402
-g14
-I00
-sg15
-(lp403
-F233.0
-aF141.66666666666666
-asg17
-(itiddlywiki
-Tiddler
-p404
-(dp405
-g21
-VYour game is loading...\u000a(If you see this, your game could not be loaded.)\u000a<<loadgame "auto">>
-p406
-sg23
-VContinueFromSave
-p407
-sg25
-g26
-((I2015
-I4
-I21
-I17
-I48
-I25
-I1
-I111
-I1
-tp408
-(dp409
-tp410
-Rp411
-sg31
-(lp412
-sg33
-g26
-((I2015
-I4
-I17
-I20
-I8
-I0
-I4
-I107
-I1
-tp413
-(dp414
-tp415
-Rp416
-sbsa(dp417
-g14
-I00
-sg15
-(lp418
-F357.0
-aF140.0
-asg17
-(itiddlywiki
-Tiddler
-p419
-(dp420
-g21
-VThere was an error loading your game. You will be redirected back to the main screen.\u000a[[Go back now|Start]]\u000a<<timedgoto "Start" 5>>
-p421
-sg23
-VError
-p422
-sg25
-g26
-((I2015
-I4
-I21
-I17
-I48
-I28
-I1
-I111
-I1
-tp423
-(dp424
-tp425
-Rp426
-sg31
-(lp427
-sg33
-g26
-((I2015
-I4
-I17
-I20
-I42
-I6
-I4
-I107
-I1
-tp428
-(dp429
-tp430
-Rp431
-sbsa(dp432
-g14
-I00
-sg15
-(lp433
-F233.0
-aF267.0
-asg17
-(itiddlywiki
-Tiddler
-p434
-(dp435
-g21
-V<<print either(\u000a"Open source!",\u000a"A product of UCSC undergrads!",\u000a"The fourth in a series!",\u000a"An amazing game!",\u000a"Meme-free!",\u000a"\u005c"10/10 It's okay...\u005c" -IGN, probably",\u000a"Lies!",\u000a"Responsive developers!",\u000a"Hidden agendas!",\u000a"Too many endings!",\u000a"An A+ project!",\u000a"Refresh for a new message!",\u000a"Johnathan Pagnutti is a cool guy!",\u000a"I've spent too much time making splash text!",\u000a"Don't blink!",\u000a"Auto-saves your progress!",\u000a"Continue where you left off!",\u000a"Your decisions matter!",\u000a"\u005c"No false choices!\u005c"",\u000a"Inspired by Japanese visual novels!",\u000a"\u005c"Completely original!\u005c"",\u000a"I'm not stealing this effect from Minecraft!",\u000a"Este burrito es muy bueno, pero necesito salsa verde!",\u000a"Not for profit!",\u000a"Do not abet terrorism!",\u000a"Three different types of links!",\u000a"Over 30 nodes!"\u000a)>>
-p436
-sg23
-VSplash
-p437
-sg25
-g26
-((I2015
-I4
-I21
-I16
-I47
-I4
-I1
-I111
-I1
-tp438
-(dp439
-tp440
-Rp441
-sg31
-(lp442
-sg33
-g26
-((I2015
-I4
-I17
-I21
-I6
-I38
-I4
-I107
-I1
-tp443
-(dp444
-tp445
-Rp446
-sbsa(dp447
-g14
-I00
-sg15
-(lp448
-F2584.1468847361703
-aF445.7932430242835
-asg17
-(itiddlywiki
-Tiddler
-p449
-(dp450
-g21
-V<<setbackground "bus.png">>\u000a<<msg "You listen to the gravel on the road as the bus wheels roll over it. You are almost to the camp now. You see some of the other trainees getting excited. Others are nervous.">>\u000a<<continue "scene_00_01">>
-p451
-sg23
-Vscene_00_00
-p452
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I45
-I16
-I5
-I108
-I1
-tp453
-(dp454
-tp455
-Rp456
-sg31
-(lp457
-sg33
-g26
-((I2015
-I4
-I18
-I0
-I28
-I17
-I5
-I108
-I1
-tp458
-(dp459
-tp460
-Rp461
-sbsa(dp462
-g14
-I00
-sg15
-(lp463
-F2951.813551402835
-aF446.95990969095004
-asg17
-(itiddlywiki
-Tiddler
-p464
-(dp465
-g21
-V<<setspeaker " ">>\u000a<div id="passageBox">You ready for this?\u000a[[Of course.|scene_00_03a]]\u000a[[I think so.|scene_00_03b]]\u000a[[Ready for what?|scene_00_03c]]\u000a</div>
-p466
-sg23
-Vscene_00_03
-p467
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I2
-I35
-I5
-I108
-I1
-tp468
-(dp469
-tp470
-Rp471
-sg31
-(lp472
-sg33
-g26
-((I2015
-I4
-I16
-I16
-I23
-I49
-I3
-I106
-I1
-tp473
-(dp474
-tp475
-Rp476
-sbsa(dp477
-g14
-I00
-sg15
-(lp478
-F3080.8135514028368
-aF578.7932430242835
-asg17
-(itiddlywiki
-Tiddler
-p479
-(dp480
-g21
-V<<setspeaker "%n">>\u000a<<msg "Ready for what exactly?">>\u000a<<continue "scene_00_04c">>\u000a<<addpoints "rival" -2>>
-p481
-sg23
-Vscene_00_03c
-p482
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I13
-I31
-I5
-I108
-I1
-tp483
-(dp484
-tp485
-Rp486
-sg31
-(lp487
-sg33
-g26
-((I2015
-I4
-I18
-I0
-I48
-I39
-I5
-I108
-I1
-tp488
-(dp489
-tp490
-Rp491
-sbsa(dp492
-g14
-I00
-sg15
-(lp493
-F3078.2160914359674
-aF448.3603330298053
-asg17
-(itiddlywiki
-Tiddler
-p494
-(dp495
-g21
-V<<setspeaker "%n">>\u000a<<msg "I think I'm ready. I've been waiting to train here forever, but I'm sure it's going to be a challenge.">>\u000a<<continue "scene_00_04b">>\u000a<<addpoints "rival" -1>>
-p496
-sg23
-Vscene_00_03b
-p497
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I7
-I41
-I5
-I108
-I1
-tp498
-(dp499
-tp500
-Rp501
-sg31
-(lp502
-sg33
-g26
-((I2015
-I4
-I18
-I0
-I48
-I39
-I5
-I108
-I1
-tp503
-(dp504
-tp505
-Rp506
-sbsa(dp507
-g14
-I00
-sg15
-(lp508
-F3084.4802180695033
-aF319.7932430242841
-asg17
-(itiddlywiki
-Tiddler
-p509
-(dp510
-g21
-V<<setspeaker "%n">>\u000a<<msg "Of course I'm ready. I've been waiting my whole life to train here.">>\u000a<<continue "scene_00_04a">>\u000a<<addpoints "rival" 1>>
-p511
-sg23
-Vscene_00_03a
-p512
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I2
-I2
-I5
-I108
-I1
-tp513
-(dp514
-tp515
-Rp516
-sg31
-(lp517
-sg33
-g26
-((I2015
-I4
-I18
-I0
-I48
-I39
-I5
-I108
-I1
-tp518
-(dp519
-tp520
-Rp521
-sbsa(dp522
-g14
-I00
-sg15
-(lp523
-F3206.2934888223094
-aF319.7997771674832
-asg17
-(itiddlywiki
-Tiddler
-p524
-(dp525
-g21
-V<<setspeaker "???">>\u000a<<msg "That's what I like to hear. From what I've seen the %e faction makes some powerful elementalists. You must be one of them.">>\u000a<<continue "scene_00_05a">>
-p526
-sg23
-Vscene_00_04a
-p527
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I11
-I28
-I5
-I108
-I1
-tp528
-(dp529
-tp530
-Rp531
-sg31
-(lp532
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I8
-I56
-I5
-I108
-I1
-tp533
-(dp534
-tp535
-Rp536
-sbsa(dp537
-g14
-I00
-sg15
-(lp538
-F3329.5237483474343
-aF322.66559715643945
-asg17
-(itiddlywiki
-Tiddler
-p539
-(dp540
-g21
-V<<setspeaker "%n">>\u000a<<msg "That's right. When I'm done here, I'll be the most powerful elementalist in the world.">>\u000a<<continue "scene_00_06a">>
-p541
-sg23
-Vscene_00_05a
-p542
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I13
-I40
-I5
-I108
-I1
-tp543
-(dp544
-tp545
-Rp546
-sg31
-(lp547
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I11
-I33
-I5
-I108
-I1
-tp548
-(dp549
-tp550
-Rp551
-sbsa(dp552
-g14
-I00
-sg15
-(lp553
-F3449.1134777786883
-aF321.6578666208239
-asg17
-(itiddlywiki
-Tiddler
-p554
-(dp555
-g21
-V<<setspeaker "???">>\u000a<<msg "That's the spirit. I think we'll get along just fine. What's your name?">>\u000a<<continue "scene_00_07a">>
-p556
-sg23
-Vscene_00_06a
-p557
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I17
-I53
-I5
-I108
-I1
-tp558
-(dp559
-tp560
-Rp561
-sg31
-(lp562
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I11
-I33
-I5
-I108
-I1
-tp563
-(dp564
-tp565
-Rp566
-sbsa(dp567
-g14
-I00
-sg15
-(lp568
-F3570.13611720442
-aF322.08304607968654
-asg17
-(itiddlywiki
-Tiddler
-p569
-(dp570
-g21
-V<<setspeaker "%n">>\u000a<<msg "%n.">>\u000a<<continue "scene_00_08a">>
-p571
-sg23
-Vscene_00_07a
-p572
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I18
-I33
-I5
-I108
-I1
-tp573
-(dp574
-tp575
-Rp576
-sg31
-(lp577
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I11
-I33
-I5
-I108
-I1
-tp578
-(dp579
-tp580
-Rp581
-sbsa(dp582
-g14
-I00
-sg15
-(lp583
-F3691.1587566301523
-aF322.5082255385494
-asg17
-(itiddlywiki
-Tiddler
-p584
-(dp585
-g21
-V<<setspeaker "%r">>\u000a<<msg "%n. My name's %r. I look forward to training with you.">>\u000a<<continue "scene_00_09a">>
-p586
-sg23
-Vscene_00_08a
-p587
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I41
-I28
-I5
-I108
-I1
-tp588
-(dp589
-tp590
-Rp591
-sg31
-(lp592
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I11
-I33
-I5
-I108
-I1
-tp593
-(dp594
-tp595
-Rp596
-sbsa(dp597
-g14
-I00
-sg15
-(lp598
-F3811.5370006942057
-aF320.13439892341904
-asg17
-(itiddlywiki
-Tiddler
-p599
-(dp600
-g21
-V<<setspeaker " ">>\u000a<<msg "He extends his open hand towards you.">>\u000a<<continue "scene_00_10a">>
-p601
-sg23
-Vscene_00_09a
-p602
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I22
-I50
-I5
-I108
-I1
-tp603
-(dp604
-tp605
-Rp606
-sg31
-(lp607
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I11
-I33
-I5
-I108
-I1
-tp608
-(dp609
-tp610
-Rp611
-sbsa(dp612
-g14
-I00
-sg15
-(lp613
-F3935.4480075044385
-aF318.42318964677617
-asg17
-(itiddlywiki
-Tiddler
-p614
-(dp615
-g21
-V<<setspeaker " ">>\u000a<div id="passageBox">\u005c\u000a[[Shake his hand.|scene_00_10a_a]]\u000a[[Don't shake his hand.|scene_00_10a_b]]\u000a</div>
-p616
-sg23
-Vscene_00_10a
-p617
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I24
-I59
-I5
-I108
-I1
-tp618
-(dp619
-tp620
-Rp621
-sg31
-(lp622
-sg33
-g26
-((I2015
-I4
-I16
-I16
-I23
-I49
-I3
-I106
-I1
-tp623
-(dp624
-tp625
-Rp626
-sbsa(dp627
-g14
-I00
-sg15
-(lp628
-F4060.9660454208743
-aF317.359136637389
-asg17
-(itiddlywiki
-Tiddler
-p629
-(dp630
-g21
-V<<msg "You look at his hand, you don't know what to think of this guy. Before you can make up your mind, %r puts his hand down and glares at you.">>\u000a<<continue "scene_00_11a_b">>\u000a<<addpoints "rival" -1>>
-p631
-sg23
-Vscene_00_10a_b
-p632
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I3
-I39
-I5
-I108
-I1
-tp633
-(dp634
-tp635
-Rp636
-sg31
-(lp637
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I25
-I12
-I5
-I108
-I1
-tp638
-(dp639
-tp640
-Rp641
-sbsa(dp642
-g14
-I00
-sg15
-(lp643
-F4059.1079559675354
-aF192.6959671177873
-asg17
-(itiddlywiki
-Tiddler
-p644
-(dp645
-g21
-V<<msg "You grab his hand and give it a good firm shake.">>\u000a<<continue "scene_00_11a_a">>\u000a<<addpoints "rival" 1>>
-p646
-sg23
-Vscene_00_10a_a
-p647
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I2
-I53
-I5
-I108
-I1
-tp648
-(dp649
-tp650
-Rp651
-sg31
-(lp652
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I25
-I12
-I5
-I108
-I1
-tp653
-(dp654
-tp655
-Rp656
-sbsa(dp657
-g14
-I00
-sg15
-(lp658
-F4179.2393750730025
-aF192.2707876589244
-asg17
-(itiddlywiki
-Tiddler
-p659
-(dp660
-g21
-V<<setspeaker "%n">>\u000a<<msg "Likewise, %r. Good luck.">>\u000a<<continue "scene_00_12a_a">>
-p661
-sg23
-Vscene_00_11a_a
-p662
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I29
-I38
-I5
-I108
-I1
-tp663
-(dp664
-tp665
-Rp666
-sg31
-(lp667
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I27
-I33
-I5
-I108
-I1
-tp668
-(dp669
-tp670
-Rp671
-sbsa(dp672
-g14
-I00
-sg15
-(lp673
-F4299.603814609172
-aF193.7036976534023
-asg17
-(itiddlywiki
-Tiddler
-p674
-(dp675
-g21
-V<<setspeaker " ">>\u000a<<msg "%r grins a bit deviously.">>\u000a<<continue "scene_00_13a_a">>
-p676
-sg23
-Vscene_00_12a_a
-p677
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I31
-I48
-I5
-I108
-I1
-tp678
-(dp679
-tp680
-Rp681
-sg31
-(lp682
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I30
-I49
-I5
-I108
-I1
-tp683
-(dp684
-tp685
-Rp686
-sbsa(dp687
-g14
-I00
-sg15
-(lp688
-F4423.492274023856
-aF194.90358721717953
-asg17
-(itiddlywiki
-Tiddler
-p689
-(dp690
-g21
-V<<setspeaker "%r">>\u000a<<msg "Yeah, good luck.">>\u000a<<continue "scene_00_14">>
-p691
-sg23
-Vscene_00_13a_a
-p692
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I33
-I14
-I5
-I108
-I1
-tp693
-(dp694
-tp695
-Rp696
-sg31
-(lp697
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I32
-I4
-I5
-I108
-I1
-tp698
-(dp699
-tp700
-Rp701
-sbsa(dp702
-g14
-I00
-sg15
-(lp703
-F4563.245380256098
-aF449.99339790084235
-asg17
-(itiddlywiki
-Tiddler
-p704
-(dp705
-g21
-V<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<setbackground "camp_outer.png">>\u000a<<msg "The bus finally comes to a stop. Once the dust clears, you see a gated fence and small collection of buildings beyond the fence. A man is standing at the gate.">>\u000a<<continue "scene_01">>
-p706
-sg23
-Vscene_00_14
-p707
-sg25
-g26
-((I2015
-I4
-I26
-I15
-I52
-I52
-I6
-I116
-I1
-tp708
-(dp709
-tp710
-Rp711
-sg31
-(lp712
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I33
-I45
-I5
-I108
-I1
-tp713
-(dp714
-tp715
-Rp716
-sbsa(dp717
-g14
-I00
-sg15
-(lp718
-F4183.771125487141
-aF318.366867173005
-asg17
-(itiddlywiki
-Tiddler
-p719
-(dp720
-g21
-V<<setspeaker "%r">>\u000a<<msg "Good luck out there. You'll need it.">>\u000a<<continue "scene_00_14">>
-p721
-sg23
-Vscene_00_11a_b
-p722
-sg25
-g26
-((I2015
-I4
-I18
-I1
-I53
-I5
-I5
-I108
-I1
-tp723
-(dp724
-tp725
-Rp726
-sg31
-(lp727
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I52
-I13
-I5
-I108
-I1
-tp728
-(dp729
-tp730
-Rp731
-sbsa(dp732
-g14
-I00
-sg15
-(lp733
-F3200.794869275098
-aF446.67056678647754
-asg17
-(itiddlywiki
-Tiddler
-p734
-(dp735
-g21
-V<<setspeaker "%r">>\u000a<<msg "You're right, it is going to be a challenge. I'll make sure of that. %r. Remember my name. I'm going straight to the top, and I'll crush anyone who gets in my way.">>\u000a<<continue "scene_00_05b">>
-p736
-sg23
-Vscene_00_04b
-p737
-sg25
-g26
-((I2015
-I4
-I18
-I2
-I3
-I24
-I5
-I108
-I1
-tp738
-(dp739
-tp740
-Rp741
-sg31
-(lp742
-sg33
-g26
-((I2015
-I4
-I18
-I1
-I59
-I24
-I5
-I108
-I1
-tp743
-(dp744
-tp745
-Rp746
-sbsa(dp747
-g14
-I00
-sg15
-(lp748
-F3326.6579283584774
-aF445.8958566815631
-asg17
-(itiddlywiki
-Tiddler
-p749
-(dp750
-g21
-V<<setspeaker "%n">>\u000a<<msg "Don't get ahead of yourself. %n is the name everyone will be cheering.">>\u000a<<continue "scene_00_06b">>
-p751
-sg23
-Vscene_00_05b
-p752
-sg25
-g26
-((I2015
-I4
-I18
-I2
-I6
-I52
-I5
-I108
-I1
-tp753
-(dp754
-tp755
-Rp756
-sg31
-(lp757
-sg33
-g26
-((I2015
-I4
-I18
-I2
-I3
-I30
-I5
-I108
-I1
-tp758
-(dp759
-tp760
-Rp761
-sbsa(dp762
-g14
-I00
-sg15
-(lp763
-F3447.2553883253477
-aF445.2376567919993
-asg17
-(itiddlywiki
-Tiddler
-p764
-(dp765
-g21
-V<<setspeaker " ">>\u000a<<msg "%r tenses his expression, not sure what to think about you. He thinks for a momement before speaking again.">>\u000a<<continue "scene_00_07b">>
-p766
-sg23
-Vscene_00_06b
-p767
-sg25
-g26
-((I2015
-I4
-I18
-I2
-I9
-I59
-I5
-I108
-I1
-tp768
-(dp769
-tp770
-Rp771
-sg31
-(lp772
-sg33
-g26
-((I2015
-I4
-I18
-I2
-I6
-I55
-I5
-I108
-I1
-tp773
-(dp774
-tp775
-Rp776
-sbsa(dp777
-g14
-I00
-sg15
-(lp778
-F3571.685537414248
-aF445.8958566815631
-asg17
-(itiddlywiki
-Tiddler
-p779
-(dp780
-g21
-V<<setspeaker "%r">>\u000a<<msg "Watch yourself, %n. We wouldn't want anyone stepping on any toes, now would we?">>\u000a<<continue "scene_00_08b">>
-p781
-sg23
-Vscene_00_07b
-p782
-sg25
-g26
-((I2015
-I4
-I18
-I2
-I11
-I11
-I5
-I108
-I1
-tp783
-(dp784
-tp785
-Rp786
-sg31
-(lp787
-sg33
-g26
-((I2015
-I4
-I18
-I2
-I9
-I47
-I5
-I108
-I1
-tp788
-(dp789
-tp790
-Rp791
-sbsa(dp792
-g14
-I00
-sg15
-(lp793
-F3692.0499769504167
-aF445.89585668156286
-asg17
-(itiddlywiki
-Tiddler
-p794
-(dp795
-g21
-V<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<msg "%r sinks back into his seat. His excitement is gone, replaced by contemplation. You go back to minding your own business, wondering what camp is going to be like once you arrive.">>\u000a<<continue "scene_00_14">>
-p796
-sg23
-Vscene_00_08b
-p797
-sg25
-g26
-((I2015
-I4
-I26
-I15
-I52
-I35
-I6
-I116
-I1
-tp798
-(dp799
-tp800
-Rp801
-sg31
-(lp802
-sg33
-g26
-((I2015
-I4
-I18
-I2
-I11
-I22
-I5
-I108
-I1
-tp803
-(dp804
-tp805
-Rp806
-sbsa(dp807
-g14
-I00
-sg15
-(lp808
-F3202.6468847361703
-aF578.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p809
-(dp810
-g21
-V<<setspeaker "???">>\u000a<<msg "What? You mean you don't know where we're going?">>\u000a<<continue "scene_00_05c">>
-p811
-sg23
-Vscene_00_04c
-p812
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I13
-I25
-I5
-I108
-I1
-tp813
-(dp814
-tp815
-Rp816
-sg31
-(lp817
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I9
-I13
-I5
-I108
-I1
-tp818
-(dp819
-tp820
-Rp821
-sbsa(dp822
-g14
-I00
-sg15
-(lp823
-F3324.6468847361703
-aF577.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p824
-(dp825
-g21
-V<<setspeaker "%n">>\u000a<<msg "Well, I was told that this is some sort of training camp? My faction leaders sent me here. I'm just going along with what they say.">>\u000a<<continue "scene_00_06c">>
-p826
-sg23
-Vscene_00_05c
-p827
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I16
-I13
-I5
-I108
-I1
-tp828
-(dp829
-tp830
-Rp831
-sg31
-(lp832
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I13
-I37
-I5
-I108
-I1
-tp833
-(dp834
-tp835
-Rp836
-sbsa(dp837
-g14
-I00
-sg15
-(lp838
-F3446.6468847361703
-aF578.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p839
-(dp840
-g21
-V<<setspeaker "???">>\u000a<<msg "You seem weak. You better not get in my way.">>\u000a<<continue "scene_00_07c">>
-p841
-sg23
-Vscene_00_06c
-p842
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I18
-I31
-I5
-I108
-I1
-tp843
-(dp844
-tp845
-Rp846
-sg31
-(lp847
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I16
-I39
-I5
-I108
-I1
-tp848
-(dp849
-tp850
-Rp851
-sbsa(dp852
-g14
-I00
-sg15
-(lp853
-F3570.6468847361703
-aF577.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p854
-(dp855
-g21
-V<<setspeaker " ">>\u000a<<msg "This guy seems mad. He's leaning in aggressively. How am I going to respond?">>\u000a<<continue "scene_00_08c">>
-p856
-sg23
-Vscene_00_07c
-p857
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I23
-I33
-I5
-I108
-I1
-tp858
-(dp859
-tp860
-Rp861
-sg31
-(lp862
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I20
-I12
-I5
-I108
-I1
-tp863
-(dp864
-tp865
-Rp866
-sbsa(dp867
-g14
-I00
-sg15
-(lp868
-F3692.6468847361703
-aF577.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p869
-(dp870
-g21
-V<div id="passageBox">\u005c\u000a[[Apologize for my weakness.|scene_00_08c_a]]\u000a[[Take an aggressive posture.|scene_00_08c_b]]\u000a[[Smack him in the face.|scene_00_08c_c]]\u000a</div>
-p871
-sg23
-Vscene_00_08c
-p872
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I34
-I34
-I5
-I108
-I1
-tp873
-(dp874
-tp875
-Rp876
-sg31
-(lp877
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I22
-I39
-I5
-I108
-I1
-tp878
-(dp879
-tp880
-Rp881
-sbsa(dp882
-g14
-I00
-sg15
-(lp883
-F3818.646884736171
-aF700.95990969095
-asg17
-(itiddlywiki
-Tiddler
-p884
-(dp885
-g21
-V<<msg "I straighten up and match his aggressive posture. I wasn't looking for a fight, but it's getting pretty tense.">>\u000a<<continue "scene_00_09c_b">>
-p886
-sg23
-Vscene_00_08c_b
-p887
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I49
-I14
-I5
-I108
-I1
-tp888
-(dp889
-tp890
-Rp891
-sg31
-(lp892
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I34
-I38
-I5
-I108
-I1
-tp893
-(dp894
-tp895
-Rp896
-sbsa(dp897
-g14
-I00
-sg15
-(lp898
-F3818.646884736171
-aF824.95990969095
-asg17
-(itiddlywiki
-Tiddler
-p899
-(dp900
-g21
-V<<msg "I smack him right accross the face. He throws a punch right back and we start fighting">>\u000a<<continue "scene_00_09c_c1">>
-p901
-sg23
-Vscene_00_08c_c
-p902
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I56
-I22
-I5
-I108
-I1
-tp903
-(dp904
-tp905
-Rp906
-sg31
-(lp907
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I34
-I38
-I5
-I108
-I1
-tp908
-(dp909
-tp910
-Rp911
-sbsa(dp912
-g14
-I00
-sg15
-(lp913
-F3818.646884736171
-aF576.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p914
-(dp915
-g21
-V<<setspeaker "%n">>\u000a<<msg "I'm sorry I appear weak to you. I'm not trying to get in anyone's way.">>\u000a<<addpoints "rival" 1>>\u000a<<continue "scene_00_08c_a1">>
-p916
-sg23
-Vscene_00_08c_a
-p917
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I37
-I49
-I5
-I108
-I1
-tp918
-(dp919
-tp920
-Rp921
-sg31
-(lp922
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I34
-I38
-I5
-I108
-I1
-tp923
-(dp924
-tp925
-Rp926
-sbsa(dp927
-g14
-I00
-sg15
-(lp928
-F3942.646884736171
-aF575.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p929
-(dp930
-g21
-V<<setspeaker "???">>\u000a<<msg "Yeah, that's right. You better stay out of my way. You better hope you know what you've gotten yourself into.">>\u000a<<continue "scene_00_08c_a2">>
-p931
-sg23
-Vscene_00_08c_a1
-p932
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I39
-I15
-I5
-I108
-I1
-tp933
-(dp934
-tp935
-Rp936
-sg31
-(lp937
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I37
-I53
-I5
-I108
-I1
-tp938
-(dp939
-tp940
-Rp941
-sbsa(dp942
-g14
-I00
-sg15
-(lp943
-F4065.646884736171
-aF574.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p944
-(dp945
-g21
-V<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<msg "He calms down a little bit and sits back down in his seat. I'm a little shaken up from this encounter, but as long as I don't upset him again I think I'll be ok.">>\u000a<<continue "scene_00_14">>
-p946
-sg23
-Vscene_00_08c_a2
-p947
-sg25
-g26
-((I2015
-I4
-I26
-I15
-I52
-I39
-I6
-I116
-I1
-tp948
-(dp949
-tp950
-Rp951
-sg31
-(lp952
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I39
-I19
-I5
-I108
-I1
-tp953
-(dp954
-tp955
-Rp956
-sbsa(dp957
-g14
-I00
-sg15
-(lp958
-F3941.6468847361703
-aF699.9599096909502
-asg17
-(itiddlywiki
-Tiddler
-p959
-(dp960
-g21
-V<<setspeaker "Bus Driver">>\u000a<<msg "Break it up you two.">>\u000a<<continue "scene_00_10c_b">>
-p961
-sg23
-Vscene_00_09c_b
-p962
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I50
-I29
-I5
-I108
-I1
-tp963
-(dp964
-tp965
-Rp966
-sg31
-(lp967
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I49
-I19
-I5
-I108
-I1
-tp968
-(dp969
-tp970
-Rp971
-sbsa(dp972
-g14
-I00
-sg15
-(lp973
-F4063.313551402838
-aF701.6265763576156
-asg17
-(itiddlywiki
-Tiddler
-p974
-(dp975
-g21
-V<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<msg "We both sit back down into our seats. He glares at me for a moment before turning away and looking out a window. I sit and wait for the bus to arrive at camp.">>\u000a<<continue "scene_00_14">>
-p976
-sg23
-Vscene_00_10c_b
-p977
-sg25
-g26
-((I2015
-I4
-I26
-I15
-I52
-I44
-I6
-I116
-I1
-tp978
-(dp979
-tp980
-Rp981
-sg31
-(lp982
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I50
-I37
-I5
-I108
-I1
-tp983
-(dp984
-tp985
-Rp986
-sbsa(dp987
-g14
-I00
-sg15
-(lp988
-F3941.646884736171
-aF826.6265763576163
-asg17
-(itiddlywiki
-Tiddler
-p989
-(dp990
-g21
-V<<setspeaker "Bus Driver">>\u000a<<msg "Hey, break it up.">>\u000a<<continue "scene_00_09c_c2">>
-p991
-sg23
-Vscene_00_09c_c1
-p992
-sg25
-g26
-((I2015
-I4
-I18
-I16
-I58
-I22
-I5
-I108
-I1
-tp993
-(dp994
-tp995
-Rp996
-sg31
-(lp997
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I56
-I33
-I5
-I108
-I1
-tp998
-(dp999
-tp1000
-Rp1001
-sbsa(dp1002
-g14
-I00
-sg15
-(lp1003
-F4061.646884736171
-aF826.6265763576163
-asg17
-(itiddlywiki
-Tiddler
-p1004
-(dp1005
-g21
-V<<setspeaker " ">>\u000a<<msg "The driver slams on the breaks, throwing us all forward. The driver then grabs both of us and kicks us out of the bus, leaving us on the side of the road.">>\u000a<<continue "BadEnd">>
-p1006
-sg23
-Vscene_00_09c_c2
-p1007
-sg25
-g26
-((I2015
-I4
-I18
-I17
-I9
-I51
-I5
-I108
-I1
-tp1008
-(dp1009
-tp1010
-Rp1011
-sg31
-(lp1012
-sg33
-g26
-((I2015
-I4
-I18
-I16
-I58
-I25
-I5
-I108
-I1
-tp1013
-(dp1014
-tp1015
-Rp1016
-sbsa(dp1017
-g14
-I00
-sg15
-(lp1018
-F1571.6085616007213
-aF36.32975763696743
-asg17
-(itiddlywiki
-Tiddler
-p1019
-(dp1020
-g21
-V<<setspeaker " ">>\u000a<<setbackground "badend.png">>\u000a<<msg "You have been expelled from the camp.">>\u000a<<continue "Start">>
-p1021
-sg23
-VBadEnd
-p1022
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I31
-I45
-I0
-I110
-I1
-tp1023
-(dp1024
-tp1025
-Rp1026
-sg31
-(lp1027
-sg33
-g26
-((I2015
-I4
-I18
-I17
-I10
-I7
-I5
-I108
-I1
-tp1028
-(dp1029
-tp1030
-Rp1031
-sbsa(dp1032
-g14
-I00
-sg15
-(lp1033
-F2208.1468847361703
-aF450.95990969095004
-asg17
-(itiddlywiki
-Tiddler
-p1034
-(dp1035
-g21
-V<<setspeaker " ">>\u000a<<msg "Many eons ago, there existed several gods and goddesses. Each deity possesed the power of an element. In the early days of humanity, there was chaos. When the gods gave the gift of elemental power to humanity, they used it to build great cities.">>\u000a<<continue "intro01">>
-p1036
-sg23
-VGreeting00 1
-p1037
-sg25
-g26
-((I2015
-I4
-I18
-I18
-I40
-I14
-I5
-I108
-I1
-tp1038
-(dp1039
-tp1040
-Rp1041
-sg31
-(lp1042
-sg33
-g26
-((I2015
-I4
-I16
-I15
-I49
-I43
-I3
-I106
-I1
-tp1043
-(dp1044
-tp1045
-Rp1046
-sbsa(dp1047
-g14
-I00
-sg15
-(lp1048
-F4687.114699671502
-aF448.5355948807705
-asg17
-(itiddlywiki
-Tiddler
-p1049
-(dp1050
-g21
-V<<addcharacter "counselor_normal.png">>\u000a<<setspeaker "Counselor">>\u000a<<msg "[Line up.]">>\u000a<<continue "scene_01 1">>
-p1051
-sg23
-Vscene_01
-p1052
-sg25
-g26
-((I2015
-I4
-I18
-I18
-I45
-I36
-I5
-I108
-I1
-tp1053
-(dp1054
-tp1055
-Rp1056
-sg31
-(lp1057
-sg33
-g26
-((I2015
-I4
-I18
-I18
-I41
-I27
-I5
-I108
-I1
-tp1058
-(dp1059
-tp1060
-Rp1061
-sbsa(dp1062
-g14
-I00
-sg15
-(lp1063
-F4811.614699671502
-aF448.5355948807705
-asg17
-(itiddlywiki
-Tiddler
-p1064
-(dp1065
-g21
-V<<addcharacter "counselor_normal.png">>\u000a<<setspeaker " ">>\u000a<<msg "[Everyone lines up. He begins seperating people based on their faction. You watch in amazement.]">>\u000a<<continue "scene_01 2">>
-p1066
-sg23
-Vscene_01 1
-p1067
-sg25
-g26
-((I2015
-I4
-I18
-I18
-I47
-I28
-I5
-I108
-I1
-tp1068
-(dp1069
-tp1070
-Rp1071
-sg31
-(lp1072
-sg33
-g26
-((I2015
-I4
-I18
-I18
-I41
-I27
-I5
-I108
-I1
-tp1073
-(dp1074
-tp1075
-Rp1076
-sbsa(dp1077
-g14
-I00
-sg15
-(lp1078
-F4934.114699671502
-aF448.5355948807705
-asg17
-(itiddlywiki
-Tiddler
-p1079
-(dp1080
-g21
-V<<addcharacter "counselor_normal.png">>\u000a<<setspeaker "Counselor">>\u000a<<msg "[You there, what faction are you from?]">>\u000a<<continue "intro02">>
-p1081
-sg23
-Vscene_01 2
-p1082
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I0
-I21
-I5
-I108
-I1
-tp1083
-(dp1084
-tp1085
-Rp1086
-sg31
-(lp1087
-sg33
-g26
-((I2015
-I4
-I18
-I18
-I41
-I27
-I5
-I108
-I1
-tp1088
-(dp1089
-tp1090
-Rp1091
-sbsa(dp1092
-g14
-I00
-sg15
-(lp1093
-F5477.8646996715015
-aF457.2855948807705
-asg17
-(itiddlywiki
-Tiddler
-p1094
-(dp1095
-g21
-V<<setspeaker "Counselor">>\u000a<<msg "[Well then, %n of %e, get with the other %e kids.]">>\u000a<<continue "scene_01 4">>
-p1096
-sg23
-Vscene_01 3
-p1097
-sg25
-g26
-((I2015
-I4
-I18
-I18
-I53
-I56
-I5
-I108
-I1
-tp1098
-(dp1099
-tp1100
-Rp1101
-sg31
-(lp1102
-sg33
-g26
-((I2015
-I4
-I18
-I18
-I41
-I27
-I5
-I108
-I1
-tp1103
-(dp1104
-tp1105
-Rp1106
-sbsa(dp1107
-g14
-I00
-sg15
-(lp1108
-F5600.3646996715015
-aF456.0355948807705
-asg17
-(itiddlywiki
-Tiddler
-p1109
-(dp1110
-g21
-V<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<msg '[I grab my bag and run off towards the cabin labelled "%e." On my way I see a kid named %a. It appears %r is harrassing him.]'>>\u000a<<continue "scene_01 5">>
-p1111
-sg23
-Vscene_01 4
-p1112
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I11
-I22
-I5
-I108
-I1
-tp1113
-(dp1114
-tp1115
-Rp1116
-sg31
-(lp1117
-sg33
-g26
-((I2015
-I4
-I18
-I18
-I41
-I27
-I5
-I108
-I1
-tp1118
-(dp1119
-tp1120
-Rp1121
-sbsa(dp1122
-g14
-I00
-sg15
-(lp1123
-F5723.8646996715015
-aF460.2855948807707
-asg17
-(itiddlywiki
-Tiddler
-p1124
-(dp1125
-g21
-V<<setspeaker " ">>\u000a<div id="passageBox">What should I do?\u000a[[Side with bully|scene_01 5a]]\u000a[[Help the kid|scene_01 5b]]\u000a[[Do nothing|scene_01 5c]]\u000a</div>
-p1126
-sg23
-Vscene_01 5
-p1127
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I6
-I22
-I5
-I108
-I1
-tp1128
-(dp1129
-tp1130
-Rp1131
-sg31
-(lp1132
-sg33
-g26
-((I2015
-I4
-I16
-I16
-I7
-I2
-I3
-I106
-I1
-tp1133
-(dp1134
-tp1135
-Rp1136
-sbsa(dp1137
-g14
-I00
-sg15
-(lp1138
-F5894.114699671498
-aF461.8689282141033
-asg17
-(itiddlywiki
-Tiddler
-p1139
-(dp1140
-g21
-V<<addpoints "rival" -1>>\u000a<<addpoints "ally" 1>>\u000a<<setspeaker "%n">>\u000a<<msg "[Hey, %r, cut that out.]">>\u000a<<continue "scene_01 6">>
-p1141
-sg23
-Vscene_01 5b
-p1142
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I21
-I44
-I5
-I108
-I1
-tp1143
-(dp1144
-tp1145
-Rp1146
-sg31
-(lp1147
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I16
-I31
-I5
-I108
-I1
-tp1148
-(dp1149
-tp1150
-Rp1151
-sbsa(dp1152
-g14
-I00
-sg15
-(lp1153
-F5895.781366338166
-aF585.2022615474374
-asg17
-(itiddlywiki
-Tiddler
-p1154
-(dp1155
-g21
-V<<msg "[I pretend not to notice and continue walking towards my cabin]">>\u000a<<continue "scene_01 6">>
-p1156
-sg23
-Vscene_01 5c
-p1157
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I22
-I35
-I5
-I108
-I1
-tp1158
-(dp1159
-tp1160
-Rp1161
-sg31
-(lp1162
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I16
-I31
-I5
-I108
-I1
-tp1163
-(dp1164
-tp1165
-Rp1166
-sbsa(dp1167
-g14
-I00
-sg15
-(lp1168
-F5892.448033004835
-aF338.5355948807706
-asg17
-(itiddlywiki
-Tiddler
-p1169
-(dp1170
-g21
-V<<addpoints "rival" 1>>\u000a<<addpoints "ally" -1>>\u000a<<msg "[I antagonize %a a little bit, throwing a few insults. %r seems to get a kick out of it.]">>\u000a<<continue "scene_01 6">>
-p1171
-sg23
-Vscene_01 5a
-p1172
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I21
-I32
-I5
-I108
-I1
-tp1173
-(dp1174
-tp1175
-Rp1176
-sg31
-(lp1177
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I16
-I31
-I5
-I108
-I1
-tp1178
-(dp1179
-tp1180
-Rp1181
-sbsa(dp1182
-g14
-I00
-sg15
-(lp1183
-F6042.94803300483
-aF461.0355948807705
-asg17
-(itiddlywiki
-Tiddler
-p1184
-(dp1185
-g21
-V<<setspeaker " ">>\u000a<<msg "[I notice that %a is also a part of the %e faction. %r is a part of the %ae faction.]">>\u000a<<continue "EventSelection">>
-p1186
-sg23
-Vscene_01 6
-p1187
-sg25
-g26
-((I2015
-I4
-I28
-I15
-I28
-I7
-I1
-I118
-I1
-tp1188
-(dp1189
-tp1190
-Rp1191
-sg31
-(lp1192
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I23
-I34
-I5
-I108
-I1
-tp1193
-(dp1194
-tp1195
-Rp1196
-sbsa(dp1197
-g14
-I00
-sg15
-(lp1198
-F2162.2982970012963
-aF1767.8324266705692
-asg17
-(itiddlywiki
-Tiddler
-p1199
-(dp1200
-g21
-V<<setbackground "camp_outer.png">>\u000a<<showdialogue true>>\u000a<<msg "[No time to waste. I drop of my bag in my cabin and have to head out for our first training.]">>\u000a<<continue "scene_01 8">>
-p1201
-sg23
-Vscene_01 7
-p1202
-sg25
-g26
-((I2015
-I4
-I28
-I15
-I26
-I5
-I1
-I118
-I1
-tp1203
-(dp1204
-tp1205
-Rp1206
-sg31
-(lp1207
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I25
-I33
-I5
-I108
-I1
-tp1208
-(dp1209
-tp1210
-Rp1211
-sbsa(dp1212
-g14
-I00
-sg15
-(lp1213
-F2287.2982970013018
-aF1769.4990933372358
-asg17
-(itiddlywiki
-Tiddler
-p1214
-(dp1215
-g21
-V<<if $trainingElement is "Fire" or\u000a     $trainingElement is "Light">>\u000a	<<t1f>>\u000a<<endif>>\u000a<<if $trainingElement is "Air" or\u000a     $trainingElement is "Water">>\u000a	<<t1w>>\u000a<<endif>>\u000a<<if $trainingElement is "Darkness" or\u000a     $trainingElement is "Earth">>\u000a	<<t1d>>\u000a<<endif>>     
-p1216
-sg23
-Vscene_01 8
-p1217
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I56
-I16
-I5
-I108
-I1
-tp1218
-(dp1219
-tp1220
-Rp1221
-sg31
-(lp1222
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I27
-I14
-I5
-I108
-I1
-tp1223
-(dp1224
-tp1225
-Rp1226
-sbsa(dp1227
-g14
-I00
-sg15
-(lp1228
-F2430.6316303346357
-aF1395.332426670569
-asg17
-(itiddlywiki
-Tiddler
-p1229
-(dp1230
-g21
-V<<setbackground "combatpit.png">>\u000a<<msg "[Combat training. %a and %r are both here. This will be teams of 2 fighting against eachother.]">>\u000a<<continue "t1f 1">>
-p1231
-sg23
-Vt1f
-p1232
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I42
-I18
-I5
-I108
-I1
-tp1233
-(dp1234
-tp1235
-Rp1236
-sg31
-(lp1237
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I34
-I17
-I5
-I108
-I1
-tp1238
-(dp1239
-tp1240
-Rp1241
-sbsa(dp1242
-g14
-I00
-sg15
-(lp1243
-F2553.9649636679687
-aF1398.665760003902
-asg17
-(itiddlywiki
-Tiddler
-p1244
-(dp1245
-g21
-V\u000a<div id="passageBox">\u005c\u000a[[Join the bully's team.|t1fa]]\u000a[[Join the kids team.|t1fb]]\u000a</div>
-p1246
-sg23
-Vt1f 1
-p1247
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I37
-I52
-I5
-I108
-I1
-tp1248
-(dp1249
-tp1250
-Rp1251
-sg31
-(lp1252
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I36
-I40
-I5
-I108
-I1
-tp1253
-(dp1254
-tp1255
-Rp1256
-sbsa(dp1257
-g14
-I00
-sg15
-(lp1258
-F2687.6316303346366
-aF1473.6657600039027
-asg17
-(itiddlywiki
-Tiddler
-p1259
-(dp1260
-g21
-V<<addpoints "ally" 1>>\u000a<<msg "[I decide to take %a on my team. He says we should fight fairly.]">>\u000a<<continue "t1f 2">>
-p1261
-sg23
-Vt1fb
-p1262
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I45
-I12
-I5
-I108
-I1
-tp1263
-(dp1264
-tp1265
-Rp1266
-sg31
-(lp1267
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I38
-I4
-I5
-I108
-I1
-tp1268
-(dp1269
-tp1270
-Rp1271
-sbsa(dp1272
-g14
-I00
-sg15
-(lp1273
-F2684.2982970013045
-aF1333.665760003902
-asg17
-(itiddlywiki
-Tiddler
-p1274
-(dp1275
-g21
-V<<addpoints "rival" 1>>\u000a<<msg "[I team up with %r. He suggests that we fight dirty.]">>\u000a<<continue "t1f 2">>\u000a
-p1276
-sg23
-Vt1fa
-p1277
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I55
-I41
-I5
-I108
-I1
-tp1278
-(dp1279
-tp1280
-Rp1281
-sg31
-(lp1282
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I38
-I4
-I5
-I108
-I1
-tp1283
-(dp1284
-tp1285
-Rp1286
-sbsa(dp1287
-g14
-I00
-sg15
-(lp1288
-F2817.298297001299
-aF1401.9990933372355
-asg17
-(itiddlywiki
-Tiddler
-p1289
-(dp1290
-g21
-V\u000a<div id="passageBox">\u005c\u000a[[Fight dirty.|t1fa 1]]\u000a[[Fight clean.|t1fb 1]]\u000a</div>
-p1291
-sg23
-Vt1f 2
-p1292
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I45
-I56
-I5
-I108
-I1
-tp1293
-(dp1294
-tp1295
-Rp1296
-sg31
-(lp1297
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I42
-I12
-I5
-I108
-I1
-tp1298
-(dp1299
-tp1300
-Rp1301
-sbsa(dp1302
-g14
-I00
-sg15
-(lp1303
-F2944.2982970013063
-aF1328.6657600039016
-asg17
-(itiddlywiki
-Tiddler
-p1304
-(dp1305
-g21
-V<<addpoints "rival" 1>>\u000a<<msg "[%r notices your fighting tactics, and seems pleased.]">>\u000a<<continue "t1f 3">>
-p1306
-sg23
-Vt1fa 1
-p1307
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I55
-I29
-I5
-I108
-I1
-tp1308
-(dp1309
-tp1310
-Rp1311
-sg31
-(lp1312
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I46
-I0
-I5
-I108
-I1
-tp1313
-(dp1314
-tp1315
-Rp1316
-sbsa(dp1317
-g14
-I00
-sg15
-(lp1318
-F2947.6316303346293
-aF1470.3324266705688
-asg17
-(itiddlywiki
-Tiddler
-p1319
-(dp1320
-g21
-V<<addpoints "ally" 1>>\u000a<<msg "[%a notices the way you fight, and is glad you're not taking advantage of anyone.]">>\u000a<<continue "t1f 3">>
-p1321
-sg23
-Vt1fb 1
-p1322
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I55
-I23
-I5
-I108
-I1
-tp1323
-(dp1324
-tp1325
-Rp1326
-sg31
-(lp1327
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I46
-I0
-I5
-I108
-I1
-tp1328
-(dp1329
-tp1330
-Rp1331
-sbsa(dp1332
-g14
-I00
-sg15
-(lp1333
-F3091.4649636679687
-aF1395.332426670569
-asg17
-(itiddlywiki
-Tiddler
-p1334
-(dp1335
-g21
-V<<msg "[You manage to defeat your opponents without much difficulty.]">>\u000a<<continue "n1">>
-p1336
-sg23
-Vt1f 3
-p1337
-sg25
-g26
-((I2015
-I4
-I18
-I19
-I55
-I14
-I5
-I108
-I1
-tp1338
-(dp1339
-tp1340
-Rp1341
-sg31
-(lp1342
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I54
-I33
-I5
-I108
-I1
-tp1343
-(dp1344
-tp1345
-Rp1346
-sbsa(dp1347
-g14
-I00
-sg15
-(lp1348
-F2430.6316303346357
-aF1776.9990933372358
-asg17
-(itiddlywiki
-Tiddler
-p1349
-(dp1350
-g21
-V<<setbackground "classroom.png">>\u000a<<msg "[Intelligence training. I'm taking a placement exam to see where I'll start at. There are two open seats.]">>\u000a<<continue "t1w 1">>
-p1351
-sg23
-Vt1w
-p1352
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I42
-I30
-I5
-I108
-I1
-tp1353
-(dp1354
-tp1355
-Rp1356
-sg31
-(lp1357
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I55
-I57
-I5
-I108
-I1
-tp1358
-(dp1359
-tp1360
-Rp1361
-sbsa(dp1362
-g14
-I00
-sg15
-(lp1363
-F2433.9649636679696
-aF2105.3324266705704
-asg17
-(itiddlywiki
-Tiddler
-p1364
-(dp1365
-g21
-V<<setbackground "workshop.png">>\u000a<<msg "[I enter a workshop full of machines and tools. It looks like we'll be making things. Dexterity training? The only places left to sit are either by %a or %r.]">>\u000a<<continue "t1d 1">>
-p1366
-sg23
-Vt1d
-p1367
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I50
-I4
-I5
-I108
-I1
-tp1368
-(dp1369
-tp1370
-Rp1371
-sg31
-(lp1372
-sg33
-g26
-((I2015
-I4
-I18
-I19
-I56
-I25
-I5
-I108
-I1
-tp1373
-(dp1374
-tp1375
-Rp1376
-sbsa(dp1377
-g14
-I00
-sg15
-(lp1378
-F1733.6085616007215
-aF41.32975763696747
-asg17
-(itiddlywiki
-Tiddler
-p1379
-(dp1380
-g21
-V<<setspeaker "Jaiden King">>\u000a<<setbackground "spacer.png">>\u000a<<msg "End of demo.">>\u000a<<continue "Start">>
-p1381
-sg23
-VEndOfDemo
-p1382
-sg25
-g26
-((I2015
-I4
-I18
-I20
-I57
-I10
-I5
-I108
-I1
-tp1383
-(dp1384
-tp1385
-Rp1386
-sg31
-(lp1387
-sg33
-g26
-((I2015
-I4
-I18
-I17
-I10
-I7
-I5
-I108
-I1
-tp1388
-(dp1389
-tp1390
-Rp1391
-sbsa(dp1392
-g14
-I00
-sg15
-(lp1393
-F3272.298297001301
-aF1762.8324266705697
-asg17
-(itiddlywiki
-Tiddler
-p1394
-(dp1395
-g21
-V<<setbackground "camp_outer.png">>\u000a<<setspeaker " ">>\u000a<<msg "[It's been a long day. I head back to my cabin and try to get some sleep.]">>\u000a<<continue "n1 1">>
-p1396
-sg23
-Vn1
-p1397
-sg25
-g26
-((I2015
-I4
-I19
-I16
-I53
-I3
-I6
-I109
-I1
-tp1398
-(dp1399
-tp1400
-Rp1401
-sg31
-(lp1402
-sg33
-g26
-((I2015
-I4
-I18
-I20
-I57
-I40
-I5
-I108
-I1
-tp1403
-(dp1404
-tp1405
-Rp1406
-sbsa(dp1407
-g14
-I00
-sg15
-(lp1408
-F2555.6316303346302
-aF1774.4990933372358
-asg17
-(itiddlywiki
-Tiddler
-p1409
-(dp1410
-g21
-V\u000a<div id="passageBox">\u005c\u000a[[Sit next to the bully.|t1wa]]\u000a[[Sit next to the kid.|t1wb]]\u000a</div>
-p1411
-sg23
-Vt1w 1
-p1412
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I10
-I51
-I5
-I108
-I1
-tp1413
-(dp1414
-tp1415
-Rp1416
-sg31
-(lp1417
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I10
-I19
-I5
-I108
-I1
-tp1418
-(dp1419
-tp1420
-Rp1421
-sbsa(dp1422
-g14
-I00
-sg15
-(lp1423
-F2680.9649636679715
-aF1707.832426670568
-asg17
-(itiddlywiki
-Tiddler
-p1424
-(dp1425
-g21
-V<<addpoints "rival" 1>>\u000a<<msg "[I sit next to %r. He's telling me he's seen the answer sheet, and could give me the answers.]">>\u000a<<continue "t1w 2">>
-p1426
-sg23
-Vt1wa
-p1427
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I13
-I26
-I5
-I108
-I1
-tp1428
-(dp1429
-tp1430
-Rp1431
-sg31
-(lp1432
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I10
-I53
-I5
-I108
-I1
-tp1433
-(dp1434
-tp1435
-Rp1436
-sbsa(dp1437
-g14
-I00
-sg15
-(lp1438
-F2679.298297001299
-aF1841.1657600039025
-asg17
-(itiddlywiki
-Tiddler
-p1439
-(dp1440
-g21
-V<<addpoints "ally" 1>>\u000a<<msg "[I sit by %a. %a is clearly smart, and I can see what he's writing easily from here.]">>\u000a<<continue "t1w 2">>
-p1441
-sg23
-Vt1wb
-p1442
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I15
-I9
-I5
-I108
-I1
-tp1443
-(dp1444
-tp1445
-Rp1446
-sg31
-(lp1447
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I10
-I53
-I5
-I108
-I1
-tp1448
-(dp1449
-tp1450
-Rp1451
-sbsa(dp1452
-g14
-I00
-sg15
-(lp1453
-F2807.298297001301
-aF1777.8324266705688
-asg17
-(itiddlywiki
-Tiddler
-p1454
-(dp1455
-g21
-V\u000a<div id="passageBox">\u005c\u000a[[Cheat on the test.|t1wa 1]]\u000a[[Don't cheat on the test.|t1wb 1]]\u000a</div>
-p1456
-sg23
-Vt1w 2
-p1457
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I15
-I54
-I5
-I108
-I1
-tp1458
-(dp1459
-tp1460
-Rp1461
-sg31
-(lp1462
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I15
-I12
-I5
-I108
-I1
-tp1463
-(dp1464
-tp1465
-Rp1466
-sbsa(dp1467
-g14
-I00
-sg15
-(lp1468
-F2930.6316303346357
-aF1839.499093337236
-asg17
-(itiddlywiki
-Tiddler
-p1469
-(dp1470
-g21
-V<<addpoints "ally" 1>>\u000a<<msg "[No, this is a placement test. Cheating now will only make things more difficult later on.]">>\u000a<<continue "t1w 3">>
-p1471
-sg23
-Vt1wb 1
-p1472
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I19
-I58
-I5
-I108
-I1
-tp1473
-(dp1474
-tp1475
-Rp1476
-sg31
-(lp1477
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I15
-I57
-I5
-I108
-I1
-tp1478
-(dp1479
-tp1480
-Rp1481
-sbsa(dp1482
-g14
-I00
-sg15
-(lp1483
-F2930.9649636679733
-aF1702.832426670569
-asg17
-(itiddlywiki
-Tiddler
-p1484
-(dp1485
-g21
-V<<addpoints "rival" 1>>\u000a<<msg "[I take any opprotunity I see to get a better score on the test.]">>\u000a<<continue "t1w 3">>
-p1486
-sg23
-Vt1wa 1
-p1487
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I20
-I9
-I5
-I108
-I1
-tp1488
-(dp1489
-tp1490
-Rp1491
-sg31
-(lp1492
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I15
-I57
-I5
-I108
-I1
-tp1493
-(dp1494
-tp1495
-Rp1496
-sbsa(dp1497
-g14
-I00
-sg15
-(lp1498
-F3057.2982970013027
-aF1779.4990933372358
-asg17
-(itiddlywiki
-Tiddler
-p1499
-(dp1500
-g21
-V<<msg "[I finish the test after %a and %r. I turn it in without any issue.]">>\u000a<<continue "n1">>
-p1501
-sg23
-Vt1w 3
-p1502
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I33
-I45
-I5
-I108
-I1
-tp1503
-(dp1504
-tp1505
-Rp1506
-sg31
-(lp1507
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I20
-I11
-I5
-I108
-I1
-tp1508
-(dp1509
-tp1510
-Rp1511
-sbsa(dp1512
-g14
-I00
-sg15
-(lp1513
-F2559.2982970012918
-aF2104.499093337238
-asg17
-(itiddlywiki
-Tiddler
-p1514
-(dp1515
-g21
-V\u000a<div id="passageBox">\u005c\u000a[[Sit next to the bully.|t1da]]\u000a[[Sit next to the kid.|t1db]]\u000a</div>
-p1516
-sg23
-Vt1d 1
-p1517
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I50
-I23
-I5
-I108
-I1
-tp1518
-(dp1519
-tp1520
-Rp1521
-sg31
-(lp1522
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I10
-I19
-I5
-I108
-I1
-tp1523
-(dp1524
-tp1525
-Rp1526
-sbsa(dp1527
-g14
-I00
-sg15
-(lp1528
-F2684.298297001299
-aF2042.8324266705715
-asg17
-(itiddlywiki
-Tiddler
-p1529
-(dp1530
-g21
-V<<addpoints "rival" 1>>\u000a<<msg "[%r is not interested in making little trinkets. When %a leaves his workstation, %r tells me he's going to 'sabotage' his project.]">>\u000a<<continue "t1d 2">>
-p1531
-sg23
-Vt1da
-p1532
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I55
-I24
-I5
-I108
-I1
-tp1533
-(dp1534
-tp1535
-Rp1536
-sg31
-(lp1537
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I50
-I24
-I5
-I108
-I1
-tp1538
-(dp1539
-tp1540
-Rp1541
-sbsa(dp1542
-g14
-I00
-sg15
-(lp1543
-F2685.9649636679696
-aF2172.8324266705727
-asg17
-(itiddlywiki
-Tiddler
-p1544
-(dp1545
-g21
-V<<addpoints "ally" 1>>\u000a<<msg "[I'm impressed by how well %a can handle the fine tools. He goes to grab a different tool, and leaves the table. %r comes over, and is clearly intending to damage the creation.]">>\u000a<<continue "t1d 2">>
-p1546
-sg23
-Vt1db
-p1547
-sg25
-g26
-((I2015
-I4
-I18
-I21
-I59
-I52
-I5
-I108
-I1
-tp1548
-(dp1549
-tp1550
-Rp1551
-sg31
-(lp1552
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I50
-I24
-I5
-I108
-I1
-tp1553
-(dp1554
-tp1555
-Rp1556
-sbsa(dp1557
-g14
-I00
-sg15
-(lp1558
-F2809.631630334622
-aF2106.165760003905
-asg17
-(itiddlywiki
-Tiddler
-p1559
-(dp1560
-g21
-V\u000a<div id="passageBox">\u005c\u000a[[Stop him.|t1db 1]]\u000a[[Do nothing.|t1da 1]]\u000a</div>
-p1561
-sg23
-Vt1d 2
-p1562
-sg25
-g26
-((I2015
-I4
-I18
-I22
-I6
-I26
-I5
-I108
-I1
-tp1563
-(dp1564
-tp1565
-Rp1566
-sg31
-(lp1567
-sg33
-g26
-((I2015
-I4
-I18
-I21
-I10
-I19
-I5
-I108
-I1
-tp1568
-(dp1569
-tp1570
-Rp1571
-sbsa(dp1572
-g14
-I00
-sg15
-(lp1573
-F2932.2982970013063
-aF2171.165760003905
-asg17
-(itiddlywiki
-Tiddler
-p1574
-(dp1575
-g21
-V<<addpoints "ally" 1>>\u000a<<msg "[I stop %r before he does anything, and %a sees me stop him.]">>\u000a<<continue "t1d 3">>
-p1576
-sg23
-Vt1db 1
-p1577
-sg25
-g26
-((I2015
-I4
-I18
-I22
-I6
-I46
-I5
-I108
-I1
-tp1578
-(dp1579
-tp1580
-Rp1581
-sg31
-(lp1582
-sg33
-g26
-((I2015
-I4
-I18
-I22
-I1
-I12
-I5
-I108
-I1
-tp1583
-(dp1584
-tp1585
-Rp1586
-sbsa(dp1587
-g14
-I00
-sg15
-(lp1588
-F2930.964963667967
-aF2036.1657600039025
-asg17
-(itiddlywiki
-Tiddler
-p1589
-(dp1590
-g21
-V<<addpoints "rival" 1>>\u000a<<msg "[%r takes one strike at the creation, and it shatters violently. %a quickly returns after hearing the crash, and sees the mess.]">>\u000a<<continue "t1d 3">>
-p1591
-sg23
-Vt1da 1
-p1592
-sg25
-g26
-((I2015
-I4
-I18
-I22
-I6
-I20
-I5
-I108
-I1
-tp1593
-(dp1594
-tp1595
-Rp1596
-sg31
-(lp1597
-sg33
-g26
-((I2015
-I4
-I18
-I22
-I1
-I12
-I5
-I108
-I1
-tp1598
-(dp1599
-tp1600
-Rp1601
-sbsa(dp1602
-g14
-I00
-sg15
-(lp1603
-F3055.631630334632
-aF2101.1657600039034
-asg17
-(itiddlywiki
-Tiddler
-p1604
-(dp1605
-g21
-V<<msg "[I turn in my creation without a problem.]">>\u000a<<continue "n1">>
-p1606
-sg23
-Vt1d 3
-p1607
-sg25
-g26
-((I2015
-I4
-I18
-I22
-I7
-I29
-I5
-I108
-I1
-tp1608
-(dp1609
-tp1610
-Rp1611
-sg31
-(lp1612
-sg33
-g26
-((I2015
-I4
-I18
-I22
-I6
-I49
-I5
-I108
-I1
-tp1613
-(dp1614
-tp1615
-Rp1616
-sbsa(dp1617
-g14
-I00
-sg15
-(lp1618
-F3395.336491445748
-aF1763.8393711150136
-asg17
-(itiddlywiki
-Tiddler
-p1619
-(dp1620
-g21
-V<<if Math.abs($rprival - $rpally) >= 2>>\u000a	<<if $rprival > $rpally>>\u000a		<<n1r>>\u000a	<<else>>\u000a		<<n1a>>\u000a	<<endif>>\u000a<<else>>\u000a	<<n1c>>\u000a<<endif>>
-p1621
-sg23
-Vn1 1
-p1622
-sg25
-g26
-((I2015
-I4
-I19
-I16
-I56
-I37
-I6
-I109
-I1
-tp1623
-(dp1624
-tp1625
-Rp1626
-sg31
-(lp1627
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I53
-I7
-I6
-I109
-I1
-tp1628
-(dp1629
-tp1630
-Rp1631
-sbsa(dp1632
-g14
-I00
-sg15
-(lp1633
-F3608.0101025568574
-aF1542.0511766705688
-asg17
-(itiddlywiki
-Tiddler
-p1634
-(dp1635
-g21
-V<<msg "[I hear knocking on my door. It's %r. He's telling me to come with him. I follow him to a place nearby in the woods. There's another person there. They tell me of their plans to release hordes of demons on the camp by deactivating the pillars keeping the training portal closed. The pillars require sacrifices, and they plan on causing the deaths of the other campers. They want my help.]">>\u000a<<continue "n1r 1">>
-p1636
-sg23
-Vn1r
-p1637
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I29
-I30
-I0
-I110
-I1
-tp1638
-(dp1639
-tp1640
-Rp1641
-sg31
-(lp1642
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I56
-I42
-I6
-I109
-I1
-tp1643
-(dp1644
-tp1645
-Rp1646
-sbsa(dp1647
-g14
-I00
-sg15
-(lp1648
-F3620.162880334634
-aF2022.0858988927916
-asg17
-(itiddlywiki
-Tiddler
-p1649
-(dp1650
-g21
-V<<msg "[%a comes over to me from the other room. He says he's overheard something about a secret meeting involving %r. I agree to go check out the meeting with him. We sneek up on the meeting location and overhear %r and the other person ploting against the camp. They're going to release hordes of demons through the training portal, and kill other campers in the process. %a tells me we have to stop their plans.">>\u000a<<continue "n1a 1">>
-p1651
-sg23
-Vn1a
-p1652
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I30
-I11
-I0
-I110
-I1
-tp1653
-(dp1654
-tp1655
-Rp1656
-sg31
-(lp1657
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I56
-I55
-I6
-I109
-I1
-tp1658
-(dp1659
-tp1660
-Rp1661
-sbsa(dp1662
-g14
-I00
-sg15
-(lp1663
-F3608.0101025568592
-aF1766.8775655594584
-asg17
-(itiddlywiki
-Tiddler
-p1664
-(dp1665
-g21
-V<<msg "[Before I go to bed, I go get some water. I notice %a isn't in his room. Hmm, odd.]">>\u000a<<continue "m1">>
-p1666
-sg23
-Vn1c
-p1667
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I7
-I13
-I0
-I110
-I1
-tp1668
-(dp1669
-tp1670
-Rp1671
-sg31
-(lp1672
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I57
-I2
-I6
-I109
-I1
-tp1673
-(dp1674
-tp1675
-Rp1676
-sbsa(dp1677
-g14
-I00
-sg15
-(lp1678
-F4072.85385255686
-aF1763.8393711150136
-asg17
-(itiddlywiki
-Tiddler
-p1679
-(dp1680
-g21
-V<<msg "[After that, I go to sleep.]">>\u000a<<set $Time to $Time + 1>>\u000a<<continue "EventSelection">>
-p1681
-sg23
-Vm1
-p1682
-sg25
-g26
-((I2015
-I4
-I28
-I15
-I28
-I21
-I1
-I118
-I1
-tp1683
-(dp1684
-tp1685
-Rp1686
-sg31
-(lp1687
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I58
-I49
-I6
-I109
-I1
-tp1688
-(dp1689
-tp1690
-Rp1691
-sbsa(dp1692
-g14
-I00
-sg15
-(lp1693
-F3741.690658112414
-aF1542.0511766705692
-asg17
-(itiddlywiki
-Tiddler
-p1694
-(dp1695
-g21
-V<div id="passageBox">What should I do?\u000a[[Contribute to their schemes|n1ra]]\u000a[[Don't agree to help them|n1rb]]\u000a</div>
-p1696
-sg23
-Vn1r 1
-p1697
-sg25
-g26
-((I2015
-I4
-I19
-I17
-I8
-I38
-I6
-I109
-I1
-tp1698
-(dp1699
-tp1700
-Rp1701
-sg31
-(lp1702
-sg33
-g26
-((I2015
-I4
-I19
-I17
-I5
-I28
-I6
-I109
-I1
-tp1703
-(dp1704
-tp1705
-Rp1706
-sbsa(dp1707
-g14
-I00
-sg15
-(lp1708
-F3917.2496858901895
-aF1450.6622877816803
-asg17
-(itiddlywiki
-Tiddler
-p1709
-(dp1710
-g21
-V<<addpoints "rival" 2>>\u000a<<setflag "dec1" 1>>\u000a<<msg "[I agree to help them. This sounds fun.]">>\u000a<<continue "m1">>
-p1711
-sg23
-Vn1ra
-p1712
-sg25
-g26
-((I2015
-I4
-I19
-I17
-I12
-I26
-I6
-I109
-I1
-tp1713
-(dp1714
-tp1715
-Rp1716
-sg31
-(lp1717
-sg33
-g26
-((I2015
-I4
-I19
-I17
-I9
-I25
-I6
-I109
-I1
-tp1718
-(dp1719
-tp1720
-Rp1721
-sbsa(dp1722
-g14
-I00
-sg15
-(lp1723
-F3920.5309358901923
-aF1584.3428433372362
-asg17
-(itiddlywiki
-Tiddler
-p1724
-(dp1725
-g21
-V<<addpoints "rival" -1>>\u000a<<setflag "dec1" 2>>\u000a<<msg "[I cannot agree to help them. They tell me that if I snitch on them that I'm going to regret it. I leave go back to my cabin.]">>\u000a<<continue "m1">>
-p1726
-sg23
-Vn1rb
-p1727
-sg25
-g26
-((I2015
-I4
-I19
-I17
-I13
-I48
-I6
-I109
-I1
-tp1728
-(dp1729
-tp1730
-Rp1731
-sg31
-(lp1732
-sg33
-g26
-((I2015
-I4
-I19
-I17
-I9
-I25
-I6
-I109
-I1
-tp1733
-(dp1734
-tp1735
-Rp1736
-sbsa(dp1737
-g14
-I00
-sg15
-(lp1738
-F3741.690658112413
-aF2012.971315559459
-asg17
-(itiddlywiki
-Tiddler
-p1739
-(dp1740
-g21
-V<div id="passageBox">What should I do?\u000a[[Agree to help stop them.|n1aa]]\u000a[[Stay out of it.|n1ab]]\u000a</div>
-p1741
-sg23
-Vn1a 1
-p1742
-sg25
-g26
-((I2015
-I4
-I19
-I17
-I18
-I36
-I6
-I109
-I1
-tp1743
-(dp1744
-tp1745
-Rp1746
-sg31
-(lp1747
-sg33
-g26
-((I2015
-I4
-I19
-I17
-I16
-I53
-I6
-I109
-I1
-tp1748
-(dp1749
-tp1750
-Rp1751
-sbsa(dp1752
-g14
-I00
-sg15
-(lp1753
-F3911.8295470013018
-aF1958.0407600039032
-asg17
-(itiddlywiki
-Tiddler
-p1754
-(dp1755
-g21
-V<<addpoints "ally" 2>>\u000a<<setflag "dec1" 3>>\u000a<<msg "[I cannot let this go on. I agree to help %a stop them. We wait for them to finish talking so that we can hear all the details.]">>\u000a<<continue "m1">>
-p1756
-sg23
-Vn1aa
-p1757
-sg25
-g26
-((I2015
-I4
-I19
-I17
-I35
-I1
-I6
-I109
-I1
-tp1758
-(dp1759
-tp1760
-Rp1761
-sg31
-(lp1762
-sg33
-g26
-((I2015
-I4
-I19
-I17
-I18
-I38
-I6
-I109
-I1
-tp1763
-(dp1764
-tp1765
-Rp1766
-sbsa(dp1767
-g14
-I00
-sg15
-(lp1768
-F3908.378158112412
-aF2092.207426670571
-asg17
-(itiddlywiki
-Tiddler
-p1769
-(dp1770
-g21
-V<<addpoints "ally" -1>>\u000a<<setflag "dec1" 4>>\u000a<<msg "[I need to stay out of this. I'm not looking to get involved in any drama, I'm just here to train.]">>\u000a<<continue "m1">>
-p1771
-sg23
-Vn1ab
-p1772
-sg25
-g26
-((I2015
-I4
-I19
-I17
-I35
-I29
-I6
-I109
-I1
-tp1773
-(dp1774
-tp1775
-Rp1776
-sg31
-(lp1777
-sg33
-g26
-((I2015
-I4
-I19
-I17
-I18
-I38
-I6
-I109
-I1
-tp1778
-(dp1779
-tp1780
-Rp1781
-sbsa(dp1782
-g14
-I00
-sg15
-(lp1783
-F2256.6615620795774
-aF3194.145766542137
-asg17
-(itiddlywiki
-Tiddler
-p1784
-(dp1785
-g21
-V<<setbackground "camp_outer.png">>\u000a<<showdialogue true>>\u000a<<addcharacter "counselor_normal.png">>\u000a<<setspeaker "Counselor">>\u000a<<msg "Rise and shine you lazy mongrels. Today the real training starts">>\u000a<<continue "m1 2">>
-p1786
-sg23
-Vm1 1
-p1787
-sg25
-g26
-((I2015
-I4
-I28
-I15
-I26
-I20
-I1
-I118
-I1
-tp1788
-(dp1789
-tp1790
-Rp1791
-sg31
-(lp1792
-sg33
-g26
-((I2015
-I4
-I19
-I17
-I50
-I23
-I6
-I109
-I1
-tp1793
-(dp1794
-tp1795
-Rp1796
-sbsa(dp1797
-g14
-I00
-sg15
-(lp1798
-F2382.1189748035295
-aF3194.2264934098835
-asg17
-(itiddlywiki
-Tiddler
-p1799
-(dp1800
-g21
-V<<setspeaker " ">>\u000a<<addcharacter "spacer.gif">>\u000a<<msg "[I get dressed quickly and follow all the other trainees leaving their cabins.]">>\u000a<<continue "m1 3">>
-p1801
-sg23
-Vm1 2
-p1802
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I14
-I37
-I0
-I110
-I1
-tp1803
-(dp1804
-tp1805
-Rp1806
-sg31
-(lp1807
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I58
-I49
-I6
-I109
-I1
-tp1808
-(dp1809
-tp1810
-Rp1811
-sbsa(dp1812
-g14
-I00
-sg15
-(lp1813
-F2474.0653393580424
-aF3056.2255994857924
-asg17
-(itiddlywiki
-Tiddler
-p1814
-(dp1815
-g21
-V<<setbackground "arena.png">>\u000a<<addcharacter "counselor_normal.png">>\u000a<<setspeaker "Counselor">>\u000a<<msg "Welcome to the Arena. Here is where your elemental strengths will be tested.">>\u000a<<continue "m1 4">>
-p1816
-sg23
-Vm1 3
-p1817
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I25
-I59
-I0
-I110
-I1
-tp1818
-(dp1819
-tp1820
-Rp1821
-sg31
-(lp1822
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I58
-I49
-I6
-I109
-I1
-tp1823
-(dp1824
-tp1825
-Rp1826
-sbsa(dp1827
-g14
-I00
-sg15
-(lp1828
-F2622.011703912555
-aF3194.2264934098826
-asg17
-(itiddlywiki
-Tiddler
-p1829
-(dp1830
-g21
-V<<addcharacter "portal-kun.gif">>\u000a<<msg "I will be sending creatures through this portal for you to fight against. As training progresses, the challenges will become greater and greater. In addition to the enemies being sent through, the environment will also be adjusted, either for or against your elemental alignment.">>\u000a<<continue "m1 5">>
-p1831
-sg23
-Vm1 4
-p1832
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I43
-I0
-I0
-I110
-I1
-tp1833
-(dp1834
-tp1835
-Rp1836
-sg31
-(lp1837
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I58
-I49
-I6
-I109
-I1
-tp1838
-(dp1839
-tp1840
-Rp1841
-sbsa(dp1842
-g14
-I00
-sg15
-(lp1843
-F2743.9571745429766
-aF3198.2247055617004
-asg17
-(itiddlywiki
-Tiddler
-p1844
-(dp1845
-g21
-V<<addcharacter "counselor_normal.png">>\u000a<<msg "Today's training will have no elemental alignment, since you are all incappable of harnessing the powers of the elements anyway.">>\u000a<<continue "m1 6">>
-p1846
-sg23
-Vm1 5
-p1847
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I45
-I46
-I0
-I110
-I1
-tp1848
-(dp1849
-tp1850
-Rp1851
-sg31
-(lp1852
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I58
-I49
-I6
-I109
-I1
-tp1853
-(dp1854
-tp1855
-Rp1856
-sbsa(dp1857
-g14
-I00
-sg15
-(lp1858
-F2863.903539097491
-aF3196.2255994857915
-asg17
-(itiddlywiki
-Tiddler
-p1859
-(dp1860
-g21
-V<<msg "You there, %n. You're going first.">>\u000a<<continue "m1 7">>
-p1861
-sg23
-Vm1 6
-p1862
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I46
-I29
-I0
-I110
-I1
-tp1863
-(dp1864
-tp1865
-Rp1866
-sg31
-(lp1867
-sg33
-g26
-((I2015
-I4
-I19
-I16
-I58
-I49
-I6
-I109
-I1
-tp1868
-(dp1869
-tp1870
-Rp1871
-sbsa(dp1872
-g14
-I00
-sg15
-(lp1873
-F2986.295427018014
-aF3195.3880397521402
-asg17
-(itiddlywiki
-Tiddler
-p1874
-(dp1875
-g21
-V<<addcharacter "spacer.png">>\u000a<<setspeaker " ">>\u000a<<msg "As instructed, I enter the arena. Among the obstacles I find several weapons.">>\u000a<<continue "m1 8">>
-p1876
-sg23
-Vm1 7
-p1877
-sg25
-g26
-((I2015
-I4
-I20
-I18
-I57
-I4
-I0
-I110
-I1
-tp1878
-(dp1879
-tp1880
-Rp1881
-sg31
-(lp1882
-sg33
-g26
-((I2015
-I4
-I20
-I18
-I46
-I35
-I0
-I110
-I1
-tp1883
-(dp1884
-tp1885
-Rp1886
-sbsa(dp1887
-g14
-I00
-sg15
-(lp1888
-F3110.2400037243397
-aF3199.386251903957
-asg17
-(itiddlywiki
-Tiddler
-p1889
-(dp1890
-g21
-V<div id="passageBox">[[I pick up a sword.|m1a]]\u000a[[I pick up a mace.|m1b]]\u000a[[I pick up a shield.|m1c]]\u000a[[I pick up a gun.|m1d]]\u000a[[I wait.|m1e]]\u000a</div>
-p1891
-sg23
-Vm1 8
-p1892
-sg25
-g26
-((I2015
-I4
-I21
-I17
-I30
-I12
-I1
-I111
-I1
-tp1893
-(dp1894
-tp1895
-Rp1896
-sg31
-(lp1897
-sg33
-g26
-((I2015
-I4
-I20
-I18
-I49
-I48
-I0
-I110
-I1
-tp1898
-(dp1899
-tp1900
-Rp1901
-sbsa(dp1902
-g14
-I00
-sg15
-(lp1903
-F3262.15955055611
-aF2827.4899470985665
-asg17
-(itiddlywiki
-Tiddler
-p1904
-(dp1905
-g21
-V<<addpoints "rival" 1>>\u000a<<set $weapon to "sword">>\u000a<<setspeaker "%r">>\u000a<<msg "Give 'em hell!">>\u000a<<continue "m1 9">>
-p1906
-sg23
-Vm1a
-p1907
-sg25
-g26
-((I2015
-I4
-I20
-I19
-I6
-I1
-I0
-I110
-I1
-tp1908
-(dp1909
-tp1910
-Rp1911
-sg31
-(lp1912
-sg33
-g26
-((I2015
-I4
-I20
-I18
-I54
-I34
-I0
-I110
-I1
-tp1913
-(dp1914
-tp1915
-Rp1916
-sbsa(dp1917
-g14
-I00
-sg15
-(lp1918
-F3262.222125242517
-aF3193.658798399071
-asg17
-(itiddlywiki
-Tiddler
-p1919
-(dp1920
-g21
-V<<addpoints "ally" 1>>\u000a<<set $weapon to "shield">>\u000a<<setspeaker "%a">>\u000a<<msg "Good luck">>\u000a<<continue "m1 9">>
-p1921
-sg23
-Vm1c
-p1922
-sg25
-g26
-((I2015
-I4
-I20
-I19
-I15
-I54
-I0
-I110
-I1
-tp1923
-(dp1924
-tp1925
-Rp1926
-sg31
-(lp1927
-sg33
-g26
-((I2015
-I4
-I20
-I18
-I54
-I34
-I0
-I110
-I1
-tp1928
-(dp1929
-tp1930
-Rp1931
-sbsa(dp1932
-g14
-I00
-sg15
-(lp1933
-F3262.222125242516
-aF3013.531961530865
-asg17
-(itiddlywiki
-Tiddler
-p1934
-(dp1935
-g21
-V<<addpoints "counselor" 1>>\u000a<<addcharacter "counselor_normal.png">>\u000a<<set $weapon to "mace">>\u000a<<setspeaker "Counselor">>\u000a<<msg "Wise choice.">>\u000a<<continue "m1 9">>
-p1936
-sg23
-Vm1b
-p1937
-sg25
-g26
-((I2015
-I4
-I20
-I19
-I7
-I54
-I0
-I110
-I1
-tp1938
-(dp1939
-tp1940
-Rp1941
-sg31
-(lp1942
-sg33
-g26
-((I2015
-I4
-I20
-I18
-I54
-I35
-I0
-I110
-I1
-tp1943
-(dp1944
-tp1945
-Rp1946
-sbsa(dp1947
-g14
-I00
-sg15
-(lp1948
-F3262.1595505561118
-aF3393.362115953488
-asg17
-(itiddlywiki
-Tiddler
-p1949
-(dp1950
-g21
-V<<addpoints "counselor" -1>>\u000a<<set $weapon to "gun">>\u000a<<msg "I grab a gun and turn off the safety. At least I think I turned it off? I hide behind an obstacle and watch the portal.">>\u000a<<continue "m1 9">>
-p1951
-sg23
-Vm1d
-p1952
-sg25
-g26
-((I2015
-I4
-I20
-I19
-I23
-I10
-I0
-I110
-I1
-tp1953
-(dp1954
-tp1955
-Rp1956
-sg31
-(lp1957
-sg33
-g26
-((I2015
-I4
-I20
-I18
-I54
-I35
-I0
-I110
-I1
-tp1958
-(dp1959
-tp1960
-Rp1961
-sbsa(dp1962
-g14
-I00
-sg15
-(lp1963
-F3260.160444480196
-aF3567.1591951847254
-asg17
-(itiddlywiki
-Tiddler
-p1964
-(dp1965
-g21
-V<<addpoints "counselor" 2>>\u000a<<set $weapon to "none">>\u000a<<msg "No point choosing now. I decide that waiting to see what I'm up against is the best option.">>\u000a<<continue "m1 9">>
-p1966
-sg23
-Vm1e
-p1967
-sg25
-g26
-((I2015
-I4
-I20
-I19
-I25
-I23
-I0
-I110
-I1
-tp1968
-(dp1969
-tp1970
-Rp1971
-sg31
-(lp1972
-sg33
-g26
-((I2015
-I4
-I20
-I19
-I3
-I56
-I0
-I110
-I1
-tp1973
-(dp1974
-tp1975
-Rp1976
-sbsa(dp1977
-g14
-I00
-sg15
-(lp1978
-F3400.110384731081
-aF3193.3889336762318
-asg17
-(itiddlywiki
-Tiddler
-p1979
-(dp1980
-g21
-V<<setspeaker " ">>\u000a<<addcharacter "spacer.png">>\u000a<<msg "There's a quick flash of light and the sound of thunder, and then a skeleton walks out of the portal.">>\u000a<<set $Time to $Time + 1>>\u000a<<continue "EventSelection">>
-p1981
-sg23
-Vm1 9
-p1982
-sg25
-g26
-((I2015
-I4
-I28
-I15
-I28
-I30
-I1
-I118
-I1
-tp1983
-(dp1984
-tp1985
-Rp1986
-sg31
-(lp1987
-sg33
-g26
-((I2015
-I4
-I20
-I19
-I26
-I5
-I0
-I110
-I1
-tp1988
-(dp1989
-tp1990
-Rp1991
-sbsa(dp1992
-g14
-I00
-sg15
-(lp1993
-F893.7130503666422
-aF13.9937425313598
-asg17
-(itiddlywiki
-Tiddler
-p1994
-(dp1995
-g21
-V<div id="settings">[[Back|previous()]]\u000a\u000a<<nobr>>\u000a<table>\u000a<tr><td><input type="button" id="s1" value="Autosave" /></td><td><<previewslot "auto">></td></tr>\u000a<tr><td><input type="button" id="s1" value="Slot 1" /></td><td><<previewslot 1>></td></tr>\u000a<tr><td><input type="button" id="s2" value="Slot 2" /></td><td><<previewslot 2>></td></tr>\u000a</table>\u000a</div>\u000a<<endnobr>>\u000a<<readyloadpage>>
-p1996
-sg23
-VLoad
-p1997
-sg25
-g26
-((I2015
-I4
-I20
-I20
-I38
-I29
-I0
-I110
-I1
-tp1998
-(dp1999
-tp2000
-Rp2001
-sg31
-(lp2002
-sg33
-g26
-((I2015
-I4
-I20
-I19
-I34
-I28
-I0
-I110
-I1
-tp2003
-(dp2004
-tp2005
-Rp2006
-sbsa(dp2007
-g14
-I00
-sg15
-(lp2008
-F1029.652263528423
-aF18.05452936957892
-asg17
-(itiddlywiki
-Tiddler
-p2009
-(dp2010
-g21
-V<div id="settings">[[Back|previous()]]\u000a\u000a<<nobr>>\u000a<table>\u000a<tr><td>Autosave</td><td><<previewslot "auto">></td></tr>\u000a<tr><td><input type="button" id="s1" value="Slot 1" /></td><td><<previewslot 1>></td></tr>\u000a<tr><td><input type="button" id="s2" value="Slot 2" /></td><td><<previewslot 2>></td></tr>\u000a</table>\u000a</div>\u000a<<endnobr>>\u000a<<readysavepage>>
-p2011
-sg23
-VSave
-p2012
-sg25
-g26
-((I2015
-I4
-I20
-I20
-I38
-I38
-I0
-I110
-I1
-tp2013
-(dp2014
-tp2015
-Rp2016
-sg31
-(lp2017
-sg33
-g26
-((I2015
-I4
-I20
-I19
-I34
-I28
-I0
-I110
-I1
-tp2018
-(dp2019
-tp2020
-Rp2021
-sbsa(dp2022
-g14
-I00
-sg15
-(lp2023
-F817.3306302878333
-aF2384.262090363042
-asg17
-(itiddlywiki
-Tiddler
-p2024
-(dp2025
-g21
-V<<nobr>>\u000a\u000a\u000a<div class="background" id="eventSelection">\u000a</div>\u000a<<showdialogue false>>\u000a\u000a<<calendar>>\u000a<<TimeOfDay>>\u000a\u000a<<if $Time is 0>>\u000a<<setbackground "morning.png">>\u000a<<else>><<if $Time is 1 or $Time is 2>>\u000a<<setbackground "midday.png">>\u000a<<else>>\u000a<<setbackground "evening.png">>\u000a<<endif>><<endif>>\u000a\u000a<<readyeventselection>>\u000a\u000a<<if $Time is 4>>\u000a<<timedgoto "GoHome" 500ms>>\u000a<<endif>>\u000a\u000a<<endnobr>>
-p2026
-sg23
-VEventSelection
-p2027
-sg25
-g26
-((I2015
-I4
-I27
-I18
-I10
-I3
-I0
-I117
-I1
-tp2028
-(dp2029
-tp2030
-Rp2031
-sg31
-(lp2032
-sg33
-g26
-((I2015
-I4
-I23
-I12
-I7
-I43
-I3
-I113
-I1
-tp2033
-(dp2034
-tp2035
-Rp2036
-sbsa(dp2037
-g14
-I00
-sg15
-(lp2038
-F808.4088508969922
-aF2150.524515978407
-asg17
-(itiddlywiki
-Tiddler
-p2039
-(dp2040
-g21
-V<<advancetime>>\u000a<<goto "EventSelection">>
-p2041
-sg23
-VDoNothing
-p2042
-sg25
-g26
-((I2015
-I4
-I23
-I15
-I50
-I40
-I3
-I113
-I1
-tp2043
-(dp2044
-tp2045
-Rp2046
-sg31
-(lp2047
-sg33
-g26
-((I2015
-I4
-I23
-I15
-I49
-I27
-I3
-I113
-I1
-tp2048
-(dp2049
-tp2050
-Rp2051
-sbsa(dp2052
-g14
-I00
-sg15
-(lp2053
-F1212.6132763454887
-aF2201.5406085107415
-asg17
-(itiddlywiki
-Tiddler
-p2054
-(dp2055
-g21
-V<<setbackground "camp_outer.png">>\u000a<<showdialogue true>>\u000a<<setspeaker "%n">>\u000a<<playsound "">>\u000a<<msg "I suppose it's time I head back to my cabin.">>\u000a<<continue "GoHome 1">>
-p2056
-sg23
-VGoHome
-p2057
-sg25
-g26
-((I2015
-I4
-I23
-I16
-I0
-I2
-I3
-I113
-I1
-tp2058
-(dp2059
-tp2060
-Rp2061
-sg31
-(lp2062
-sg33
-g26
-((I2015
-I4
-I23
-I15
-I55
-I38
-I3
-I113
-I1
-tp2063
-(dp2064
-tp2065
-Rp2066
-sbsa(dp2067
-g14
-I00
-sg15
-(lp2068
-F1338.191350271235
-aF2197.616293700562
-asg17
-(itiddlywiki
-Tiddler
-p2069
-(dp2070
-g21
-V<<setbackground "cabin_inner.png">>\u000a<<set $s to either("Today was a tough day.","Wow, I got a lot accomplished today.","Man, I'm tired.")>> \u000a<<msg $s>>\u000a<<continue "Menu">>
-p2071
-sg23
-VGoHome 1
-p2072
-sg25
-g26
-((I2015
-I4
-I23
-I16
-I35
-I43
-I3
-I113
-I1
-tp2073
-(dp2074
-tp2075
-Rp2076
-sg31
-(lp2077
-sg33
-g26
-((I2015
-I4
-I23
-I16
-I28
-I30
-I3
-I113
-I1
-tp2078
-(dp2079
-tp2080
-Rp2081
-sbsa(dp2082
-g14
-I00
-sg15
-(lp2083
-F823.7694241969816
-aF1901.5406085107415
-asg17
-(itiddlywiki
-Tiddler
-p2084
-(dp2085
-g21
-V<<showdialogue false>>\u000a<<setspeaker " ">>\u000a<div id="title_screen" class="stroke">\u005c\u000a	[[Sleep]]\u000a	[[Save]]\u000a	[[Load]]\u000a	[[Settings]]\u000a</div>
-p2086
-sg23
-VMenu
-p2087
-sg25
-g26
-((I2015
-I4
-I26
-I16
-I44
-I7
-I6
-I116
-I1
-tp2088
-(dp2089
-tp2090
-Rp2091
-sg31
-(lp2092
-sg33
-g26
-((I2015
-I4
-I23
-I16
-I36
-I30
-I3
-I113
-I1
-tp2093
-(dp2094
-tp2095
-Rp2096
-sbsa(dp2097
-g14
-I00
-sg15
-(lp2098
-F822.7420166041643
-aF1654.9673120568468
-asg17
-(itiddlywiki
-Tiddler
-p2099
-(dp2100
-g21
-V<<set $Time to 0>>\u000a<<set $Day to $Day + 1>>\u000a<<setbackground "night.png">>\u000a<<showdialogue true>>\u000a<<setspeaker " ">>\u000a<<msg "...">>\u000a<<continue "EventSelection">>
-p2101
-sg23
-VSleep
-p2102
-sg25
-g26
-((I2015
-I4
-I27
-I17
-I43
-I38
-I0
-I117
-I1
-tp2103
-(dp2104
-tp2105
-Rp2106
-sg31
-(lp2107
-sg33
-g26
-((I2015
-I4
-I23
-I16
-I38
-I18
-I3
-I113
-I1
-tp2108
-(dp2109
-tp2110
-Rp2111
-sbsa(dp2112
-g14
-I00
-sg15
-(lp2113
-F2025.0
-aF1770.0
-asg17
-(itiddlywiki
-Tiddler
-p2114
-(dp2115
-g21
-V<<confirmentry>>
-p2116
-sg23
-Vs1_start
-p2117
-sg25
-g26
-((I2015
-I4
-I23
-I17
-I8
-I23
-I3
-I113
-I1
-tp2118
-(dp2119
-tp2120
-Rp2121
-sg31
-(lp2122
-sg33
-g26
-((I2015
-I4
-I23
-I17
-I4
-I54
-I3
-I113
-I1
-tp2123
-(dp2124
-tp2125
-Rp2126
-sbsa(dp2127
-g14
-I00
-sg15
-(lp2128
-F957.0
-aF1905.0
-asg17
-(itiddlywiki
-Tiddler
-p2129
-(dp2130
-g21
-V<div id="settings">[[Back|previous()]]\u000a\u000a	[[Return to Morning|RetryDay]]\u000a	<<if $cansave is true>>[[Save]]\u000a	<<endif>>[[Load]]\u000a	[[Title Screen|Start]]\u000a</div>
-p2131
-sg23
-VInGameMenu
-p2132
-sg25
-g26
-((I2015
-I4
-I26
-I17
-I0
-I24
-I6
-I116
-I1
-tp2133
-(dp2134
-tp2135
-Rp2136
-sg31
-(lp2137
-sg33
-g26
-((I2015
-I4
-I26
-I16
-I46
-I32
-I6
-I116
-I1
-tp2138
-(dp2139
-tp2140
-Rp2141
-sbsa(dp2142
-g14
-I00
-sg15
-(lp2143
-F550.0
-aF2375.0
-asg17
-(itiddlywiki
-Tiddler
-p2144
-(dp2145
-g21
-V<div id="calendar"><span id="calInner" class="stroke"></span></div>\u000a<<buildcalendar>>
-p2146
-sg23
-Vcalendar
-p2147
-sg25
-g26
-((I2015
-I4
-I26
-I17
-I32
-I31
-I6
-I116
-I1
-tp2148
-(dp2149
-tp2150
-Rp2151
-sg31
-(lp2152
 sg33
 g26
 ((I2015
@@ -7134,28 +1282,28 @@ I40
 I6
 I116
 I1
-tp2153
-(dp2154
-tp2155
-Rp2156
-sbsa(dp2157
+tp397
+(dp398
+tp399
+Rp400
+sbsa(dp401
 g14
 I00
 sg15
-(lp2158
-F548.25
-aF2240.0
+(lp402
+F570.0
+aF2250.0
 asg17
 (itiddlywiki
 Tiddler
-p2159
-(dp2160
+p403
+(dp404
 g21
 V<<nobr>>\u000a<div id="timeofday">\u000a<img style="width:20px;height:20px;position:fixed;top:45px;left:415px;" src="http://www.ballistaline.com/link-game/images/timeInd.png" id="tod1" />\u000a<img style="width:20px;height:20px;position:fixed;top:45px;left:449px;" src="http://www.ballistaline.com/link-game/images/timeInd.png" id="tod2" />\u000a<img style="width:20px;height:20px;position:fixed;top:45px;left:483px;" src="http://www.ballistaline.com/link-game/images/timeInd.png" id="tod3" />\u000a<img style="width:20px;height:20px;position:fixed;top:45px;left:517px;" src="http://www.ballistaline.com/link-game/images/timeInd.png" id="tod4" />\u000a</div>\u000a<<buildTOD>>\u000a<<endnobr>>
-p2161
+p405
 sg23
 VTimeOfDay
-p2162
+p406
 sg25
 g26
 ((I2015
@@ -7167,12 +1315,12 @@ I55
 I0
 I117
 I1
-tp2163
-(dp2164
-tp2165
-Rp2166
+tp407
+(dp408
+tp409
+Rp410
 sg31
-(lp2167
+(lp411
 sg33
 g26
 ((I2015
@@ -7184,14 +1332,64 @@ I40
 I6
 I116
 I1
-tp2168
-(dp2169
-tp2170
-Rp2171
-sbsasS'scale'
-p2172
-F0.2
-sS'snapping'
-p2173
+tp412
+(dp413
+tp414
+Rp415
+sbsa(dp416
+g14
 I00
+sg15
+(lp417
+F570.0
+aF2110.0
+asg17
+(itiddlywiki
+Tiddler
+p418
+(dp419
+g21
+V<<set $Time to $Time + 1>>\u000a<<goto "EventSelection">>
+p420
+sg23
+VEventEnd
+p421
+sg25
+g26
+((I2015
+I4
+I28
+I17
+I57
+I23
+I1
+I118
+I1
+tp422
+(dp423
+tp424
+Rp425
+sg31
+(lp426
+sg33
+g26
+((I2015
+I4
+I28
+I17
+I56
+I52
+I1
+I118
+I1
+tp427
+(dp428
+tp429
+Rp430
+sbsasS'scale'
+p431
+F0.4000000000000001
+sS'snapping'
+p432
+I01
 ss.
