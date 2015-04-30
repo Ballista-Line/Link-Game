@@ -686,8 +686,12 @@ function openEvent(x,y) {
 
 function buildAllEvents() {
    newEvent(14,16,"Other00","Prologue","other.png",[0,1],[true,true,true,true],false,[],[{x:19,y:16},{x:19,y:17}]);
-   newEvent(19,16,"Nick00","I wonder what's going on at the PE field?","nick_ico.png",[2,3,4,5,6,7,8,9,10],[false,false,true,false],false,[{x:19,y:17}],[]);
-   newEvent(19,17,"Nick01","I'll go wander around the seniors' lockers.","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,false,false],false,[{x:19,y:16}],[]);
+
+   newEvent(19,16,"Nick00","I wonder what's going on at the PE field?","nick_ico.png",[2,3,4,5,6,7,8,9,10],[false,false,true,false],false,[{x:19,y:17}],[{x:20,y:16}]);
+   newEvent(19,17,"Nick01","I'll go wander around the seniors' lockers.","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,false,false],false,[{x:19,y:16}],[{x:20,y:16}]);
+   newEvent(20,16,"Nick02","I wonder if Nick is at the PE field?","event.png",[2,3,4,5,6,7,8,9,10],[false,false,false,true],false,[],[{x:20,y:15}]);
+   newEvent(20,15,"Nick03","I'll go see what's up at the PE field.","event.png",[2,3,4,5,6,7,8,9,10],[false,false,true,false],false,[],[]);
+
 
    openEvent(14,16);
 }
