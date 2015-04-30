@@ -539,7 +539,7 @@ macros['readyeventselection'] = {
             var x = i*32;
             var y = r*32+16*(i%2);
             var name = "spacer.png";
-            if(r==16&&i==16){
+            if(r==16&&i==16&&d>1){
                name = "clock.png";
                dest = "DoNothing";
             }
@@ -678,7 +678,7 @@ function addEvent(x,y,pass,img,day,time,strong,close,open) {
 }
 
 function buildAllEvents() {
-   addEvent(14,16,"Other00","other.png",[],[true,true,true,true],false,[],[{x:19,y:16}]);
+   addEvent(14,16,"Other00","other.png",[0,1],[true,true,true,true],false,[],[{x:19,y:16}]);
    availableEvents = allEvents.slice(0);
    addEvent(19,16,"Nick00","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,true,true],false,[],[]);
 }
