@@ -176,3 +176,12 @@
    top: 35px;
    left: 415px;
 }
+
+#eventDesc {
+   position: fixed;
+   left: 555px;
+   top: 25px;
+   width: 420px;
+   height: 100px;
+   text-align: right;
+}

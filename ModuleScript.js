@@ -12,8 +12,8 @@ var points = {"rival":0,"ally":0,"counselor":0};
 var flags = {"f1":0,"f2":0,"f3":0,"f4":0};
 var effectivePassage = "";
 var currChar = ""; // the current character according to 'addcharacter'
-var allEvents = [[{pass:"Start",img:"ball.png"}]];
-var availableEvents = allEvents;
+var allEvents = [[]];
+var availableEvents = [[]];
 var IMGURL = "http://www.ballistaline.com/link-game/images/"
 
 // The following 3 functions are from w3schools.com
@@ -315,19 +315,9 @@ macros['loadTitlescreen'] = {
 
 function loadGame(slot,place){
       var game = getCookieObject(slot);
-         
-      setSpeaker(game.speaker);
-      addCharacter(game.char);
 
-      setBackgroundSrc(game.background);
-      setVar("background",game.background);
-      
-      showDialogue(game.showdialogue);
-      
       setPlayerName(game.name);
       
-      setVar("trainingElement",game.element);
-
       setVar("Day",game.day);
       setVar("Time",game.gameTime);
 
@@ -336,8 +326,10 @@ function loadGame(slot,place){
       addpoints("rival",game.points.rival);
       addpoints("ally",game.points.ally);
       addpoints("counselor",game.points.counselor)
+
+      availableEvents = game.events;
       
-      state.display(game.passage,place);
+      state.display("EventSelection",place);
       
 }
 
@@ -418,17 +410,12 @@ macros['addpoints'] = {
 function saveGame(slot) {
    var date = new Date();
    var game = {
-      "speaker": getSpeaker(),
-      "char": currChar,
-      "background": getVar("background"),
-      "passage": effectivePassage,
       "name": getPlayerName(),
-      "element": getPlayerElement(),
-      "showdialogue": getVar("showdialogue"),
       "points": points,
       "time": date.toString(),
       "day": getVar("Day"),
-      "gameTime": getVar("Time")
+      "gameTime": getVar("Time"),
+      "events": availableEvents
    }
    if(checkCookie(slot)&&slot!="saveSlotauto"){
       if(!confirm("Overwrite existing data in "+slot+"?")){
@@ -517,6 +504,11 @@ function showCons(dest,place,vis){
       }else{
          $("#tod"+(x+1)).hide();
       }
+   }
+   if(vis){
+      $("#eventDesc").html(dest.desc);
+   }else{
+      $("#eventDesc").html("");
    }
 }
 
@@ -622,9 +614,10 @@ macros['closeevent'] = {
             try{
                if(availableEvents[r][c].pass==effectivePassage){
                   availableEvents[r][c].completed = true;
-                  var x;
-                  for(x in  availableEvents[r][c].open){
-                     alert(x.x+" "+x.y);
+                  var op;
+                  for(op in availableEvents[r][c].open){
+                     var coord = availableEvents[r][c].open[op];
+                     openEvent(coord.x,coord.y);
                   }
                }
             }catch(e){}
@@ -662,7 +655,9 @@ macros['buildTOD'] = {
    }
 }
 
-function addEvent(x,y,pass,img,day,time,strong,close,open) {
+
+
+function newEvent(x,y,pass,desc,img,day,time,strong,close,open) {
    if(!allEvents[y]){ allEvents[y] = []; }
    allEvents[y][x] = {};
    allEvents[y][x]["pass"] = pass;
@@ -675,12 +670,20 @@ function addEvent(x,y,pass,img,day,time,strong,close,open) {
    allEvents[y][x]["visited"] = false;
    allEvents[y][x]["close"] = close;
    allEvents[y][x]["open"] = open;
+   allEvents[y][x]["desc"] = desc;
+   return allEvents[y][x];
+}
+
+function openEvent(x,y) {
+   if(!availableEvents[y]){ availableEvents[y] = []; }
+   availableEvents[y][x] = allEvents[y][x];
 }
 
 function buildAllEvents() {
-   addEvent(14,16,"Other00","other.png",[0,1],[true,true,true,true],false,[],[{x:19,y:16}]);
-   availableEvents = allEvents.slice(0);
-   addEvent(19,16,"Nick00","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,true,true],false,[],[]);
+   newEvent(14,16,"Other00","Prologue","other.png",[0,1],[true,true,true,true],false,[],[{x:19,y:16}]);
+   newEvent(19,16,"Nick00","I wonder what's going on at the PE field?","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,true,true],false,[],[]);
+
+   openEvent(14,16);
 }
 
 /* Build the out-of-passage html elements.
