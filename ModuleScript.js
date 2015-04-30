@@ -621,7 +621,7 @@ macros['closeevent'] = {
                      openEvent(coord.x,coord.y);
                   }
                   for(op in availableEvents[r][c].close){
-                     var coord = availableEvents[r][c].open[op];
+                     var coord = availableEvents[r][c].close[op];
                      availableEvents[coord.y][coord.x].locked = true;
                   }
                }
