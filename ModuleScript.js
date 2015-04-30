@@ -497,12 +497,13 @@ function showCons(dest,place,vis){
       }
    }
    for (x in dest.time) {
+      var id = "#tod"+(parseInt(x)+1);
       if(vis){
          if(dest.time[x]){
-            $("#tod"+(x+1)).show();
+            $(id).show();
          }
       }else{
-         $("#tod"+(x+1)).hide();
+         $(id).hide();
       }
    }
    if(vis){
@@ -619,6 +620,10 @@ macros['closeevent'] = {
                      var coord = availableEvents[r][c].open[op];
                      openEvent(coord.x,coord.y);
                   }
+                  for(op in availableEvents[r][c].close){
+                     var coord = availableEvents[r][c].open[op];
+                     availableEvents[coord.y][coord.x].locked = true;
+                  }
                }
             }catch(e){}
          }   
@@ -680,8 +685,9 @@ function openEvent(x,y) {
 }
 
 function buildAllEvents() {
-   newEvent(14,16,"Other00","Prologue","other.png",[0,1],[true,true,true,true],false,[],[{x:19,y:16}]);
-   newEvent(19,16,"Nick00","I wonder what's going on at the PE field?","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,true,true],false,[],[]);
+   newEvent(14,16,"Other00","Prologue","other.png",[0,1],[true,true,true,true],false,[],[{x:19,y:16},{x:19,y:17}]);
+   newEvent(19,16,"Nick00","I wonder what's going on at the PE field?","nick_ico.png",[2,3,4,5,6,7,8,9,10],[false,false,true,false],false,[{x:19,y:17}],[]);
+   newEvent(19,17,"Nick01","I'll go wander around the seniors' lockers.","nick_ico.png",[2,3,4,5,6,7,8,9,10],[true,true,false,false],false,[{x:19,y:16}],[]);
 
    openEvent(14,16);
 }
