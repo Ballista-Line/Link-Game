@@ -4,8 +4,6 @@
 // 
 // ALL EDITS SHOULD BE MADE TO THE SOURCE FILE, NOT THE TWINE PASSAGE
 
-var rivalName = "Alastor";
-var allyName = "Ian"
 var audio = new Audio("");
 var volume = 0.6;
 var points = {"rival":0,"ally":0,"counselor":0};
@@ -130,21 +128,6 @@ function getVar(name) {
    return state.history[0].variables[name];
 }
 
-function getPlayerElement() {
-   return state.history[0].variables["trainingElement"];
-}
-
-function getOppositeElement(e) {
-   switch(e){
-      case "Fire": return "Water";
-      case "Water": return "Fire";
-      case "Earth": return "Air";
-      case "Air": return "Earth";
-      case "Light": return "Darkness";
-      case "Darkness": return "Light";
-   }
-}
-
 function isAuto() {
    return state.history[0].variables["autoAdvance"];
 }
@@ -160,10 +143,6 @@ function toggleAuto() {
 // Filters out flags from a string and replaces them with appropriate values
 function filter(string) {
    return string.replace(new RegExp("%n",'g'),getPlayerName())
-                .replace(new RegExp("%e",'g'),getPlayerElement())
-                .replace(new RegExp("%ae",'g'),getOppositeElement(getPlayerElement()))
-                .replace(new RegExp("%r",'g'),rivalName)
-                .replace(new RegExp("%a",'g'),allyName);
 }
 
 // This is the name of the passage when typing begins.
@@ -660,7 +639,14 @@ macros['buildTOD'] = {
    }
 }
 
-
+function openMenu(){
+   var pass = getPassageTitle();
+   if(pass=="EventSelection"){
+      state.display("InGameMenu");
+   }else if(pass=="InGameMenu"){
+      state.display("EventSelection");
+   }
+}
 
 function newEvent(x,y,pass,desc,img,day,time,strong,close,open) {
    if(!allEvents[y]){ allEvents[y] = []; }
@@ -703,6 +689,11 @@ function initialize() {
    $("body").append("<div id='textBox'></div>");
    $("body").append("<div id='speaker' class='stroke'></div>");
    $("body").append("<div id='characters'></div>");
+   $("body").keypress(function(e){
+      if(e.which=="0"){
+         openMenu();
+      }
+   });
    buildAllEvents();
 }
 
